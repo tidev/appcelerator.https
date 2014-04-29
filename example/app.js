@@ -25,9 +25,9 @@ httpClient = Ti.Network.createHTTPClient({
 
 /*
  * Obtain the file containing your server's X.509 certificate that you
- * bundled with your app. It can have any name and extension you wish,
- * but it must be in either the standard PEM textual format or the DER
- * binary format.
+ * bundled with your app. This file can have any name and extension
+ * you wish, but it must be in either the standard PEM textual format
+ * or the DER binary format.
  *
  * Here I have named my server's certificate
  * "dashboard.appcelerator.com.pem" and placed it in my app's
@@ -36,11 +36,10 @@ httpClient = Ti.Network.createHTTPClient({
 serverCertificateFile = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, 'dashboard.appcelerator.com.pem');
 
 /*
- * Next create an https.SecureURL that associates an HTTPS server's
- * URL with that server's TLS (or SSL) certificate that you bundled
- * with you app.
+ * Next create an https.SecureURL that "pins" an HTTPS server to the
+ * TLS (or SSL) certificate that you bundled with your app.
  */
-secureURL = new https.SecureURL({
+secureURL = https.createSecureURL({
 	url: "https://dashboard.appcelerator.com",
 	serverCertificateFile: serverCertificateFile
 });
@@ -49,8 +48,8 @@ secureURL = new https.SecureURL({
  * Prepare the connection in the same way you always have, except you
  * pass in the secureURL object for the second parameter instead of a
  * string that specifies the URL. This guarantees that the HTTPS
- * server you communicate with uses the same SSL certificate that you
- * bundled in your app.
+ * server you communicate with has the same public key as the one from
+ * the SSL certificate that you bundled in your app.
  *
  * The use of the https.SecureURL is what prevents the
  * Man-in-the-Middle attack. If you were to just pass in a string URL
@@ -63,3 +62,9 @@ httpClient.open("GET", secureURL);
  * Send the request in the same way you always have.
  */
 httpClient.send();
+
+/*
+ * This is a convenience function that finds an X.509 server
+ * certificate by file name from your app's Resources directory.
+ */
+// https.findServerCertificateByFileName();
