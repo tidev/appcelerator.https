@@ -1,13 +1,3 @@
-* ti.https
-
-This Titanium module for both iOS and Android will prevent a
-"Man-in-the-Middle" attack when used with
-
-
-The following code excerpt does a simple GET request and logs the
-response text in a way that prevents a "Man-in-the-Middle" attack.
-
-```
 /**
  * This is an example of how to use the appcelerator.https module.
  */
@@ -73,23 +63,3 @@ httpClient.open("GET", secureURL);
  * Send the request in the same way you always have.
  */
 httpClient.send();
-```
-
-
-
-This module imlpements the Enterprise module portion for "TLS
-Certificate Pinning", specifically
-[MOD-1706](https://jira.appcelerator.org/browse/MOD-1706) and
-[MOD-1707](https://jira.appcelerator.org/browse/MOD-1707).
-
-These are all of the tickets associated with this feature.
-
-* [TIMOB-16856 (Story) Prevent HTTPS "Man-in-the-Middle" attack](https://jira.appcelerator.org/browse/TIMOB-16856)
-
-* [TIMOB-16855 (New Feature) iOS: Support custom NSURLConnectionDelegate in TiHTTPRequest](https://jira.appcelerator.org/browse/TIMOB-16855)
-
-* [TIMOB-16857 (New Feature) Android: Support custom TLS Server Trust evaluation for TiHTTPRequest](https://jira.appcelerator.org/browse/TIMOB-16857)
-  
-* [MOD-1706 (Module) iOS: Authenticate server in HTTPS connections made by TiHTTPRequest](https://jira.appcelerator.org/browse/MOD-1706)
-  
-* [MOD-1707 (Module) Android: Authenticate server in HTTPS connections made by TiHTTPClient](https://jira.appcelerator.org/browse/MOD-1707)
