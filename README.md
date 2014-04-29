@@ -7,7 +7,7 @@ This Titanium module for both iOS and Android will prevent a
 The following code excerpt does a simple GET request and logs the
 response text in a way that prevents a "Man-in-the-Middle" attack.
 
-```
+```JavaScript
 /**
  * This is an example of how to use the appcelerator.https module.
  */
