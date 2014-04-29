@@ -11,15 +11,56 @@ The following example does a simple secure GET request that prevents a
 ```JavaScript
 /**
  * This is an example of how to use the appcelerator.https module.
+ *
+ * Author: Matt Langston
+ * Created: 2014.04.29
  */
 
 var https = require('appcelerator.https'),
-	httpClient,
-	serverCertificateFile,
-	secureURL;
+	securityManager,
+	httpClient;
 
 /*
- * Create an HTTP client the same way you always have.
+ * Create a Security Manager for Titanium.Network.HTTPClient that
+ * authenticates a currated set of HTTPS servers. It does this by
+ * "pinning" an HTTPS server's URL to it's public key which I have
+ * embedded in my app. The security manager will guarantee that all
+ * HTTPClient connections to this URL are to a server that holds the
+ * private key corresponding to the public key embedded in my app,
+ * therefore authenticating the server.
+ *
+ * This is what prevents the "Man-in-the-Middle" attack.
+ *
+ * In this example I am pinning two URLs.
+ *
+ * The first URL, https://dashboard.appcelerator.com, is pinned to the
+ * public key in the X.509 certificate in the file named
+ * dashboard.appcelerator.com.pem in my App's Resources directory.
+ *
+ * The second URL, https://www.wellsfargo.com, is pinned to the public
+ * key in the X.509 certificate in the file named wellsfargo.der in my
+ * App's Resources directory.
+ *
+ * The X.509 certificate files can have any name and extension you
+ * wish, but they must be in either the standard PEM textual format or
+ * the DER binary format.
+ */
+securityManager = https.createCertificatePinningSecurityManager([
+	{
+		url: "https://dashboard.appcelerator.com",
+		serverCertificate: "dashboard.appcelerator.com.pem"
+	},
+	{
+		url: "https://www.wellsfargo.com",
+		serverCertificate: "wellsfargo.der"
+	}
+]);
+
+
+/*
+ * Create an HTTP client the same way you always have, but pass in an
+ * (optional) Security Manager. In this example, we pass in the
+ * "Certificate Pinning Security Manager " that I configured above.
  */
 httpClient = Ti.Network.createHTTPClient({
 	
@@ -31,57 +72,30 @@ httpClient = Ti.Network.createHTTPClient({
         Ti.API.debug(e.error);
     },
 	
-    timeout : 5000				// in milliseconds
+    timeout : 5000,				// in milliseconds
+
+	// This is new.
+	securityManager: securityManager
 });
 
-/*
- * Obtain the file containing your server's X.509 certificate that you
- * bundled with your app. This file can have any name and extension
- * you wish, but it must be in either the standard PEM textual format
- * or the DER binary format.
- *
- * Here I have named my server's certificate
- * "dashboard.appcelerator.com.pem" and placed it in my app's
- * Resources directory.
- */
-serverCertificateFile = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, 'dashboard.appcelerator.com.pem');
 
 /*
- * Next create an https.SecureURL that "pins" an HTTPS server to the
- * TLS (or SSL) certificate that you bundled with your app.
- */
-secureURL = https.createSecureURL({
-	url: "https://dashboard.appcelerator.com",
-	serverCertificateFile: serverCertificateFile
-});
-
-/*
- * Prepare the connection in the same way you always have, except you
- * pass in the secureURL object for the second parameter instead of a
- * string that specifies the URL. This guarantees that the HTTPS
- * server you communicate with has the same public key as the one from
- * the SSL certificate that you bundled in your app.
+ * Prepare and use the HTTPS connection in the same way you always
+ * have and the Security Manager will authenticate all servers for
+ * which it was configured before any communication happens.
  *
- * The use of the https.SecureURL is what prevents the
- * Man-in-the-Middle attack. If you were to just pass in a string URL
- * then there is no guarantee that you are communicating with a server
- * that you trust.
+ * In this example, the server with the DNS name
+ * dashboard.appcelerator.com will be authenticated before any
+ * communications happens. A Security Exception it thrown if
+ * authentication fails.
  */
-httpClient.open("GET", secureURL);
+httpClient.open("GET", "https://dashboard.appcelerator.com");
 
 /*
  * Send the request in the same way you always have.
  */
 httpClient.send();
-
-/*
- * This is a convenience function that finds an X.509 server
- * certificate by file name from your app's Resources directory.
- */
-// https.findServerCertificateByFileName();
 ```
-
-
 
 This module imlpements the Enterprise module portion for "TLS
 Certificate Pinning", specifically
