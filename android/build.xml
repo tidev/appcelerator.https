@@ -14,6 +14,8 @@
   <symlink link="${basedir}/assets" resource="${basedir}/../assets" overwrite="true"/>
   <symlink link="${basedir}/LICENSE" resource="${basedir}/../LICENSE" overwrite="true"/>
   
+  <echo>MDL: ${titanium.platform}</echo>
+  <echo>MDL: ${user.home}</echo>
   <import file="${titanium.platform}/../module/android/build.xml"/>
   
   <!--If these next couple of lines are uncommented then you will not be able to 'ant run' the example -->
