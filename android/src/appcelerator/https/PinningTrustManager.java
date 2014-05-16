@@ -16,12 +16,11 @@ import android.net.Uri;
 
 public class PinningTrustManager implements X509TrustManager {
 
-	private HashMap<String, PublicKey> supportedHosts = new HashMap<String, PublicKey>();
-	
+	private HashMap<String, PublicKey> supportedHosts;
 	private HTTPClientProxy proxy;
 	private X509TrustManager standardTrustManager;
 	
-	protected PinningTrustManager() throws Exception {
+	protected PinningTrustManager(HTTPClientProxy proxy, HashMap<String, PublicKey> supportedHosts) throws Exception {
 		TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 		factory.init((KeyStore) null);
 		TrustManager[] trustmanagers = factory.getTrustManagers();
@@ -30,7 +29,8 @@ public class PinningTrustManager implements X509TrustManager {
 			throw new NoSuchAlgorithmException("no trust manager found");
 		}
 		this.standardTrustManager = (X509TrustManager) trustmanagers[0];
-		
+		this.proxy = proxy;
+		this.supportedHosts = (supportedHosts == null) ? new HashMap<String, PublicKey>() : supportedHosts;
 	}
 	
 	@Override
@@ -77,15 +77,7 @@ public class PinningTrustManager implements X509TrustManager {
 		return this.standardTrustManager.getAcceptedIssuers();
 	}
 	
-	protected void addProfile(String host, PublicKey key) {
-		supportedHosts.put(host, key);
-	}
-	
-	protected void setHttpClientProxy(HTTPClientProxy arg) {
-		this.proxy = arg;
-	}
-
-	protected boolean hostConfigured(String host) {
+	private boolean hostConfigured(String host) {
 		return supportedHosts.keySet().contains(host);
 	}
 }

@@ -14,7 +14,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.util.HashMap;
 
-import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiApplication;
@@ -28,7 +27,7 @@ import android.net.Uri;
 public class HttpsModule extends KrollModule
 {
 	// Standard Debugging variables
-	private static final String TAG = "HttpsModule";
+	protected static final String TAG = "HttpsModule";
 	private static final String PROP_URL = "url";
 	private static final String PROP_CERT = "serverCertificate";
 	
