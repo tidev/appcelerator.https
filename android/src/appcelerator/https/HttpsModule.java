@@ -36,7 +36,6 @@ public class HttpsModule extends KrollModule
 	public HttpsModule()
 	{
 		super();
-		
 	}
 	
 	@Kroll.onAppCreate
@@ -47,7 +46,7 @@ public class HttpsModule extends KrollModule
 	
 	@SuppressWarnings("rawtypes")
 	@Kroll.method
-	public PinningSecurityManager createCertificatePinningSecurityManager(HashMap[] args) throws Exception
+	public PinningSecurityManager createX509CertificatePinningSecurityManager(HashMap[] args) throws Exception
 	{
 		PinningSecurityManager theManager = new PinningSecurityManager();
 		CertificateFactory factory = CertificateFactory.getInstance("X.509");
