@@ -5,27 +5,32 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import ti.modules.titanium.network.HTTPClientProxy;
+import android.net.Uri;
+
 public class PinningTrustManager implements X509TrustManager {
 
-	private PublicKey publicKey;
+	private HashMap<String, PublicKey> supportedHosts = new HashMap<String, PublicKey>();
+	
+	private HTTPClientProxy proxy;
 	private X509TrustManager standardTrustManager;
 	
-	protected PinningTrustManager(PublicKey key) throws Exception {
+	protected PinningTrustManager() throws Exception {
 		TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 		factory.init((KeyStore) null);
 		TrustManager[] trustmanagers = factory.getTrustManagers();
 		if (trustmanagers.length == 0)
 		{
-			throw new NoSuchAlgorithmException("No trust manager found");
+			throw new NoSuchAlgorithmException("no trust manager found");
 		}
 		this.standardTrustManager = (X509TrustManager) trustmanagers[0];
-		this.publicKey = key;
-
+		
 	}
 	
 	@Override
@@ -36,21 +41,51 @@ public class PinningTrustManager implements X509TrustManager {
 	@Override
 	public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
 		this.standardTrustManager.checkServerTrusted(arg0, arg1);
-		X509Certificate leaf = arg0[0];
-		try {
-			PublicKey leafKey = leaf.getPublicKey();
-			if (!leafKey.equals(this.publicKey)) {
-				throw new CertificateException("Leaf certificate public key does not match provided public key");
+		
+		if (this.proxy != null) {
+			boolean hostPinned = false;
+			String host = "";
+			String curLocation = proxy.getLocation();
+			try {
+				Uri uri = Uri.parse(curLocation);
+				host = uri.getHost();
+				hostPinned = hostConfigured(host);
+				
+			} catch (Exception e) {
+				hostPinned = false;
+			}
+			
+			if (hostPinned) {
+				X509Certificate leaf = arg0[0];
+				try {
+					PublicKey leafKey = leaf.getPublicKey();
+					PublicKey compareKey = supportedHosts.get(host);
+					if (!leafKey.equals(compareKey)) {
+						throw new CertificateException("Leaf certificate could not be verified with provided public key");
+					}
+				}
+				catch (Throwable t) {
+					throw new CertificateException(t.getMessage());
+				}
 			}
 		}
-		catch (Throwable t) {
-			throw new CertificateException(t.getMessage());
-		}
+
 	}
 
 	@Override
 	public X509Certificate[] getAcceptedIssuers() {
 		return this.standardTrustManager.getAcceptedIssuers();
 	}
+	
+	protected void addProfile(String host, PublicKey key) {
+		supportedHosts.put(host, key);
+	}
+	
+	protected void setHttpClientProxy(HTTPClientProxy arg) {
+		this.proxy = arg;
+	}
 
+	protected boolean hostConfigured(String host) {
+		return supportedHosts.keySet().contains(host);
+	}
 }
