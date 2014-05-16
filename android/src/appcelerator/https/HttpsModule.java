@@ -62,9 +62,9 @@ public class HttpsModule extends KrollModule
 				String certPath = TiConvert.toString(arg.get(PROP_CERT));
 				
 				Uri hostUri = Uri.parse(host);
-				TiUrl imageUrl = new TiUrl((String) certPath);
+				TiUrl certUrl = new TiUrl(certPath);
 				
-				is = tfh.openInputStream(imageUrl.resolve(), false);
+				is = tfh.openInputStream(certUrl.resolve(), false);
 				Certificate cert = factory.generateCertificate(is);
 				theManager.addProfile(hostUri.getHost(), cert.getPublicKey());
 			}
