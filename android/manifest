@@ -9,4 +9,4 @@ name: https
 moduleid: appcelerator.https
 guid: 2163621d-1a78-4215-8244-bda08724ffed
 platform: android
-minsdk: 3.2.2.GA
+minsdk: 3.3.0
