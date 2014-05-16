@@ -15,24 +15,23 @@
 
 "use strict";
 
-module.exports.ServerCertificate;
+module.exports.createX509CertificatePinningSecurityManager;
 
-function ServerCertificate(certificatePath) {
-	this.certificatePath = certificatePath;
-	this.dnsNameList = [];
+function createX509CertificatePinningSecurityManager(args) {
+	return new X509CertificatePinningSecurityManager(args);
+};
+
+function X509CertificatePinningSecurityManager(args) {
+	this.args = args;
+	this.pinnedCertificateList = [];
 }
 
 /**
  * Return true if this certificate is valid.
  */
-ServerCertificate.prototype.isValid = function () {
-	return false;
+X509CertificatePinningSecurityManager.prototype.pinnedCertificateList = function () {
+	// TODO
+	return this.pinnedCertificateList;
 };
 
-/**
- * Return the list of DNS names that this certificate is pinned to.
- */
-ServerCertificate.prototype.dnsNameList = function () {
-	// TODO
-	return this.dnsNameList;
-};
+

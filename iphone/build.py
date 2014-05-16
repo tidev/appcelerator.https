@@ -3,9 +3,25 @@
 # Appcelerator Titanium Module Packager
 #
 #
-import os, subprocess, sys, glob, string, optparse, subprocess
+import os, subprocess, sys, glob, string
 import zipfile
 from datetime import date
+
+def add_symlinks():
+	if not os.path.islink('assets'):
+		os.symlink('../assets', 'assets')
+	if not os.path.islink('example'):
+		os.symlink('../example', 'example')
+	if not os.path.islink('documentation'):
+		os.symlink('../documentation', 'documentation')
+	if not os.path.islink('LICENSE'):
+		os.symlink('../LICENSE', 'LICENSE')	
+
+def remove_symlinks():
+	os.unlink('assets')
+	os.unlink('example')
+	os.unlink('documentation')
+	os.unlink('LICENSE')
 
 cwd = os.path.abspath(os.path.dirname(sys._getframe(0).f_code.co_filename))
 os.chdir(cwd)
@@ -50,7 +66,7 @@ def read_ti_xcconfig():
 def generate_doc(config):
 	docdir = os.path.join(cwd,'documentation')
 	if not os.path.exists(docdir):
-		warn("Couldn't find documentation file at: %s" % docdir)
+		print "Couldn't find documentation file at: %s" % docdir
 		return None
 
 	try:
@@ -67,7 +83,7 @@ def generate_doc(config):
 	return documentation
 
 def compile_js(manifest,config):
-	js_file = os.path.join(cwd,'assets','com.appcelerator.timob16856mod1706.js')
+	js_file = os.path.join(cwd,'assets','appcelerator.syncserver.client.js')
 	if not os.path.exists(js_file): return
 
 	from compiler import Compiler
@@ -76,6 +92,7 @@ def compile_js(manifest,config):
 	except:
 		import simplejson as json
 
+	path = os.path.basename(js_file)
 	compiler = Compiler(cwd, manifest['moduleid'], manifest['name'], 'commonjs')
 	root_asset, module_assets = compiler.compile_module()
 
@@ -97,7 +114,7 @@ def compile_js(manifest,config):
 
 	from tools import splice_code
 
-	assets_router = os.path.join(cwd,'Classes','ComAppceleratorTimob16856mod1706ModuleAssets.m')
+	assets_router = os.path.join(cwd,'Classes','AppceleratorSyncserverClientModuleAssets.m')
 	splice_code(assets_router, 'asset', root_asset_content)
 	splice_code(assets_router, 'resolve_asset', module_asset_content)
 
@@ -109,9 +126,6 @@ def compile_js(manifest,config):
 def die(msg):
 	print msg
 	sys.exit(1)
-
-def info(msg):
-	print "[INFO] %s" % msg
 
 def warn(msg):
 	print "[WARN] %s" % msg
@@ -181,37 +195,6 @@ def build_module(manifest,config):
 		libpaths+='%s ' % libfile
 
 	os.system("lipo %s -create -output build/lib%s.a" %(libpaths,moduleid))
-	
-def generate_apidoc(apidoc_build_path):
-	global options
-	
-	if options.skip_docs:
-		info("Skipping documentation generation.")
-		return False
-	else:
-		info("Module apidoc generation can be skipped using --skip-docs")
-	apidoc_path = os.path.join(cwd, "apidoc")
-	if not os.path.exists(apidoc_path):
-		warn("Skipping apidoc generation. No apidoc folder found at: %s" % apidoc_path)
-		return False
-		
-	if not os.path.exists(apidoc_build_path):
-	    os.makedirs(apidoc_build_path)
-	ti_root = string.strip(subprocess.check_output(["echo $TI_ROOT"], shell=True))
-	if not len(ti_root) > 0:
-		warn("Not generating documentation from the apidoc folder. The titanium_mobile repo could not be found.")
-		warn("Set the TI_ROOT environment variable to the parent folder where the titanium_mobile repo resides (eg.'export TI_ROOT=/Path').")
-		return False
-	docgen = os.path.join(ti_root, "titanium_mobile", "apidoc", "docgen.py")
-	if not os.path.exists(docgen):
-		warn("Not generating documentation from the apidoc folder. Couldn't find docgen.py at: %s" % docgen)
-		return False
-		
-	info("Generating documentation from the apidoc folder.")
-	rc = os.system("\"%s\" --format=jsca,modulehtml --css=styles.css -o \"%s\" -e \"%s\"" % (docgen, apidoc_build_path, apidoc_path))
-	if rc != 0:
-		die("docgen failed")
-	return True
 
 def package_module(manifest,mf,config):
 	name = manifest['name'].lower()
@@ -230,14 +213,6 @@ def package_module(manifest,mf,config):
 			for file, html in doc.iteritems():
 				filename = string.replace(file,'.md','.html')
 				zf.writestr('%s/documentation/%s'%(modulepath,filename),html)
-				
-	apidoc_build_path = os.path.join(cwd, "build", "apidoc")
-	if generate_apidoc(apidoc_build_path):
-		for file in os.listdir(apidoc_build_path):
-			if file in ignoreFiles or os.path.isdir(os.path.join(apidoc_build_path, file)):
-				continue
-			zf.write(os.path.join(apidoc_build_path, file), '%s/documentation/apidoc/%s' % (modulepath, file))
-	
 	zip_dir(zf,'assets',modulepath,['.pyc','.js'])
 	zip_dir(zf,'example',modulepath,['.pyc'])
 	zip_dir(zf,'platform',modulepath,['.pyc','.js'])
@@ -250,16 +225,7 @@ def package_module(manifest,mf,config):
 
 
 if __name__ == '__main__':
-	global options
-	
-	parser = optparse.OptionParser()
-	parser.add_option("-s", "--skip-docs",
-			dest="skip_docs",
-			action="store_true",
-			help="Will skip building documentation in apidoc folder",
-			default=False)
-	(options, args) = parser.parse_args()
-	
+	add_symlinks()
 	manifest,mf = validate_manifest()
 	validate_license()
 	config = read_ti_xcconfig()
@@ -271,5 +237,6 @@ if __name__ == '__main__':
 	compile_js(manifest,config)
 	build_module(manifest,config)
 	package_module(manifest,mf,config)
+	remove_symlinks()
 	sys.exit(0)
 

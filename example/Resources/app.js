@@ -4,6 +4,7 @@
  * Author: Matt Langston
  * Created: 2014.04.29
  */
+require('ti-mocha');
 
 var https = require('appcelerator.https'),
 	securityManager,
@@ -34,7 +35,7 @@ var https = require('appcelerator.https'),
  * wish, but they must be in either the standard PEM textual format or
  * the DER binary format.
  */
-securityManager = https.createCertificatePinningSecurityManager([
+securityManager = https.createX509CertificatePinningSecurityManager([
 	{
 		url: "https://dashboard.appcelerator.com",
 		serverCertificate: "dashboard.appcelerator.com.pem"
@@ -54,11 +55,11 @@ securityManager = https.createCertificatePinningSecurityManager([
 httpClient = Ti.Network.createHTTPClient({
 	
     onload: function(e) {
-        Ti.API.info("Received text: " + this.responseText);
+        Ti.API.info('MDL (onload): ' + this.responseText);
     },
 	
     onerror: function(e) {
-        Ti.API.debug(e.error);
+        Ti.API.debug('MDL (onerror):' + e.error);
     },
 	
     timeout : 5000,				// in milliseconds
@@ -67,6 +68,8 @@ httpClient = Ti.Network.createHTTPClient({
 	securityManager: securityManager
 });
 
+
+require('test/app_test')(securityManager, httpClient);
 
 /*
  * Prepare and use the HTTPS connection in the same way you always
