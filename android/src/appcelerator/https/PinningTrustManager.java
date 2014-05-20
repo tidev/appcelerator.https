@@ -6,6 +6,7 @@ import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
@@ -16,11 +17,11 @@ import android.net.Uri;
 
 public class PinningTrustManager implements X509TrustManager {
 
-	private HashMap<String, PublicKey> supportedHosts;
+	private Map<String, PublicKey> supportedHosts;
 	private HTTPClientProxy proxy;
 	private X509TrustManager standardTrustManager;
 	
-	protected PinningTrustManager(HTTPClientProxy proxy, HashMap<String, PublicKey> supportedHosts) throws Exception {
+	protected PinningTrustManager(HTTPClientProxy proxy, Map<String, PublicKey> supportedHosts) throws Exception {
 		TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 		factory.init((KeyStore) null);
 		TrustManager[] trustmanagers = factory.getTrustManagers();
@@ -57,15 +58,10 @@ public class PinningTrustManager implements X509TrustManager {
 			
 			if (hostPinned) {
 				X509Certificate leaf = arg0[0];
-				try {
-					PublicKey leafKey = leaf.getPublicKey();
-					PublicKey compareKey = supportedHosts.get(host);
-					if (!leafKey.equals(compareKey)) {
-						throw new CertificateException("Leaf certificate could not be verified with provided public key");
-					}
-				}
-				catch (Throwable t) {
-					throw new CertificateException(t.getMessage());
+				PublicKey leafKey = leaf.getPublicKey();
+				PublicKey compareKey = supportedHosts.get(host);
+				if (!leafKey.equals(compareKey)) {
+					throw new CertificateException("Leaf certificate could not be verified with provided public key");
 				}
 			}
 		}

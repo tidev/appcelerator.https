@@ -2,6 +2,7 @@ package appcelerator.https;
 
 import java.security.PublicKey;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.net.ssl.X509KeyManager;
 import javax.net.ssl.X509TrustManager;
@@ -17,7 +18,7 @@ import ti.modules.titanium.network.SecurityManagerProtocol;
 @Kroll.proxy
 public class PinningSecurityManager extends KrollProxy implements SecurityManagerProtocol {
 
-	private HashMap<String, PublicKey> supportedHosts = new HashMap<String, PublicKey>();
+	private Map<String, PublicKey> supportedHosts = new HashMap<String, PublicKey>();
 	@Override
 	public X509KeyManager[] getKeyManagers(HTTPClientProxy proxy) {
 		// Always returns null. This module does server side trust only.
