@@ -27,6 +27,7 @@ only need to do this once.
 4. Add these to your .bashrc (you should only need to change
    ANDROID_DOWNLOAD_HOME).
 
+```bash
 ANDROID_DOWNLOAD_HOME="/Users/xxx/Documents/Android"
 export ANDROID_SDK="${ANDROID_DOWNLOAD_HOME}/adt-bundle-mac-x86_64/sdk"
 export ANDROID_NDK="${ANDROID_DOWNLOAD_HOME}/android-ndk-r9d"
@@ -39,6 +40,7 @@ export JAVA_HOME=$(/usr/libexec/java_home)
 export PATH="${HOME}/Downloads/maven/apache-maven-3.2.1/bin:$PATH"
 export PATH="${PATH}:${ANDROID_SDK}/tools"
 export PATH="${PATH}:${ANDROID_SDK}/platform-tools"
+```
 
 5. git clone https://github.com/mosabua/maven-android-sdk-deployer.git
 
