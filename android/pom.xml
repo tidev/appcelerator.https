@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>com.appcelerator</groupId>
+  <artifactId>appcelerator.https-android</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  
+  <name>Appcelerator Certificate Pinning Module</name>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <titanium.sdk.version>3.3.0</titanium.sdk.version>
+    <junit.version>4.11</junit.version>
+  </properties>
+  
+  <dependencies>
+
+	<dependency>
+	  <groupId>android</groupId>
+	  <artifactId>android</artifactId>
+	  <version>2.3.3_r2</version>
+	  <scope>provided</scope>
+	</dependency>
+	
+	<dependency>
+	  <groupId>com.appcelerator</groupId>
+	  <artifactId>kroll-apt</artifactId>
+	  <version>${titanium.sdk.version}</version>
+	  <scope>provided</scope>
+	</dependency>
+	
+	<dependency>
+	  <groupId>com.appcelerator</groupId>
+	  <artifactId>kroll-common</artifactId>
+	  <version>${titanium.sdk.version}</version>
+	  <scope>provided</scope>
+	</dependency>
+	
+	<dependency>
+	  <groupId>com.appcelerator</groupId>
+	  <artifactId>titanium</artifactId>
+	  <version>${titanium.sdk.version}</version>
+	  <scope>provided</scope>
+	</dependency>
+	
+	<dependency>
+	  <groupId>com.appcelerator</groupId>
+	  <artifactId>titanium-network</artifactId>
+	  <version>${titanium.sdk.version}</version>
+	  <scope>provided</scope>
+	</dependency>
+	
+	<dependency>
+	  <groupId>com.googlecode.json-simple</groupId>
+	  <artifactId>json-simple</artifactId>
+	  <version>1.1</version>
+	</dependency>
+	
+  </dependencies>
+  
+  <build>
+	<!-- <finalName>${project.artifactId}</finalName> -->
+	<sourceDirectory>src</sourceDirectory>
+	
+	<pluginManagement>
+	  <plugins>
+
+		<plugin>
+		  <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+		  <artifactId>android-maven-plugin</artifactId>
+		  <version>3.8.0</version>
+		  <extensions>true</extensions>
+		</plugin>
+
+	  </plugins>
+	</pluginManagement>
+	
+    <plugins>
+
+      <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<version>3.0</version>
+		<configuration>
+		  <source>1.6</source>
+		  <target>1.6</target>
+		</configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.2</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+	  <plugin>
+		<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+		<artifactId>android-maven-plugin</artifactId>
+		<configuration>
+		  <sdk>
+			<!-- platform or api level (api level 10 = platform 2.3.3) -->
+			<platform>10</platform>
+		  </sdk>
+		</configuration>
+	  </plugin>
+
+    </plugins>
+  </build> 
+
+</project>

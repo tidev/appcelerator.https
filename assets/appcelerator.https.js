@@ -15,23 +15,21 @@
 
 "use strict";
 
-module.exports.createX509CertificatePinningSecurityManager;
+// module.exports.createX509CertificatePinningSecurityManager;
 
-function createX509CertificatePinningSecurityManager(args) {
-	return new X509CertificatePinningSecurityManager(args);
-};
+// function createX509CertificatePinningSecurityManager(args) {
+// 	return new X509CertificatePinningSecurityManager(args);
+// };
 
-function X509CertificatePinningSecurityManager(args) {
-	this.args = args;
-	this.pinnedCertificateList = [];
-}
+// function X509CertificatePinningSecurityManager(args) {
+// 	this.args = args;
+// 	this.pinnedCertificateList = [];
+// }
 
-/**
- * Return true if this certificate is valid.
- */
-X509CertificatePinningSecurityManager.prototype.pinnedCertificateList = function () {
-	// TODO
-	return this.pinnedCertificateList;
-};
-
-
+// /**
+//  * Return true if this certificate is valid.
+//  */
+// X509CertificatePinningSecurityManager.prototype.pinnedCertificateList = function () {
+// 	// TODO
+// 	return this.pinnedCertificateList;
+// };
