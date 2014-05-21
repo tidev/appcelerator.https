@@ -75,6 +75,6 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	@Override
 	public String getApiName()
 	{
-		return "appcelerator.https.PinningSecurityManager";
+		return "appcelerator.Https.PinningSecurityManager";
 	}
 }

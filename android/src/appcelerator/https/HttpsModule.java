@@ -23,7 +23,7 @@ import org.appcelerator.titanium.util.TiUrl;
 
 import android.net.Uri;
 
-@Kroll.module(name="https", id="appcelerator.https")
+@Kroll.module(name="Https", id="appcelerator.https")
 public class HttpsModule extends KrollModule
 {
 	// Standard Debugging variables
@@ -94,7 +94,7 @@ public class HttpsModule extends KrollModule
 	@Override
 	public String getApiName()
 	{
-		return "appcelerator.https";
+		return "appcelerator.Https";
 	}
 }
 

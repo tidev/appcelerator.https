@@ -1,6 +1,6 @@
-<project name="security" default="dist">
+<project name="https" default="dist">
   <description>
-	Ant build script for Titanium Android module appcelerator.security
+	Ant build script for Titanium Android module appcelerator.https
   </description>
   
   <property name="ti.module.root" location="${basedir}"/>
@@ -11,7 +11,6 @@
   <!-- Set up references to shared files -->
   <symlink link="${basedir}/documentation" resource="${basedir}/../documentation" overwrite="true"/>
   <symlink link="${basedir}/example" resource="${basedir}/../example" overwrite="true"/>
-  <symlink link="${basedir}/assets" resource="${basedir}/../assets" overwrite="true"/>
   <symlink link="${basedir}/LICENSE" resource="${basedir}/../LICENSE" overwrite="true"/>
   
   <echo>MDL: ${titanium.platform}</echo>
