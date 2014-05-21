@@ -1,3 +1,9 @@
-titanium.platform=/Users/matt/Library/Application Support/Titanium/mobilesdk/osx/3.2.2.GA/android
-android.platform=~/Documents/Android/adt-bundle-mac-x86_64/sdk/platforms/android-10
-google.apis=~/Documents/Android/adt-bundle-mac-x86_64/sdk/add-ons/addon-google_apis-google-10
+titanium.sdk.version=3.3.0
+android.api.level=10
+
+# All of the ant properties set below this line is a hack. I shouldn't
+# have to do this, but
+# ~/Library/Application Support/Titanium/mobilesdk/osx/3.3.0/module/builder.py
+# actually reads this ant.properties file (line 193).
+android.sdk=${user.home}/Documents/Android/adt-bundle-mac-x86_64/sdk
+android.platform=${android.sdk}/platforms/android-${android.api.level}
