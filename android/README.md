@@ -32,7 +32,7 @@ ANDROID_DOWNLOAD_HOME="/Users/xxx/Documents/Android"
 export ANDROID_SDK="${ANDROID_DOWNLOAD_HOME}/adt-bundle-mac-x86_64/sdk"
 export ANDROID_NDK="${ANDROID_DOWNLOAD_HOME}/android-ndk-r9d"
 
-\# Required for Android Maven Plugin
+# Required for Android Maven Plugin
 export ANDROID_HOME="${ANDROID_SDK}"
 export ANDROID_NDK_HOME="${ANDROID_NDK}"
 
