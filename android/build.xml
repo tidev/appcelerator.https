@@ -3,8 +3,22 @@
 	Ant build script for Titanium Android module appcelerator.https
   </description>
   
-  <property name="ti.module.root" location="${basedir}"/>
+  <property environment="env"/>
   <property file="build.properties" />
+  
+  <property name="ti.module.root" location="${basedir}"/>
+  
+  <property name="titanium.platform" location="${user.home}/Library/Application Support/Titanium/mobilesdk/osx/${titanium.sdk.version}/android"/>
+  <!--
+	  I should be setting android.platform here in build.xml instead
+	  of build.properties, but I can't because of line 193 in
+	  builder.py which actually reads the build.properties file:
+	  
+	  ~/Library/Application Support/Titanium/mobilesdk/osx/3.3.0/module/builder.py
+	  
+	  <property name="android.platform" location="${env.ANDROID_SDK}/platforms/android-${android.api.level}"/>
+  -->
+  <property name="google.apis" location="${env.ANDROID_SDK}/add-ons/addon-google_apis-google-${android.api.level}"/>
   
   <!-- Hybrid build environment -->
   
@@ -14,8 +28,6 @@
   <symlink link="${basedir}/assets" resource="${basedir}/../assets" overwrite="true"/>
   <symlink link="${basedir}/LICENSE" resource="${basedir}/../LICENSE" overwrite="true"/>
   
-  <echo>MDL: ${titanium.platform}</echo>
-  <echo>MDL: ${user.home}</echo>
   <import file="${titanium.platform}/../module/android/build.xml"/>
   
   <!--If these next couple of lines are uncommented then you will not be able to 'ant run' the example -->

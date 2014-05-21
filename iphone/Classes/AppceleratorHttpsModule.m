@@ -19,7 +19,7 @@
 
 -(id)moduleGUID
 {
-  return @"62986987-5406-416b-810b-342267fac9af";
+  return @"2163621d-1a78-4215-8244-bda08724ffed";
 }
 
 -(NSString*)moduleId
