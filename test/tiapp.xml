@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ti:app xmlns:ti="http://ti.appcelerator.org">
-  <id>appcelerator.PinExample</id>
-  <name>PinExample</name>
+  <id>appcelerator.PinTest</id>
+  <name>PinTest</name>
   <version>1.0</version>
-  <guid>55f79537-7456-4785-a728-e2fda9abc585</guid>
+  <guid>992b1c24-0230-4d3b-9ba1-e715b3440d5c</guid>
   <modules>
     <module platform="iphone">appcelerator.https</module> 
   </modules>
