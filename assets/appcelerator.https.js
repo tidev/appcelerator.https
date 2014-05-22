@@ -15,13 +15,15 @@
 
 "use strict";
 
-// module.exports.createX509CertificatePinningSecurityManager;
+// module.exports.createX509CertificatePinningSecurityManager = createX509CertificatePinningSecurityManager;
 
 // function createX509CertificatePinningSecurityManager(args) {
+// 	Ti.API.debug('MDL: createX509CertificatePinningSecurityManager');
 // 	return new X509CertificatePinningSecurityManager(args);
 // };
 
 // function X509CertificatePinningSecurityManager(args) {
+// 	Ti.API.debug('MDL: X509CertificatePinningSecurityManager (constructor)');
 // 	this.args = args;
 // 	this.pinnedCertificateList = [];
 // }
@@ -30,6 +32,7 @@
 //  * Return true if this certificate is valid.
 //  */
 // X509CertificatePinningSecurityManager.prototype.pinnedCertificateList = function () {
+// 	Ti.API.debug('MDL: X509CertificatePinningSecurityManager.pinnedCertificateList');
 // 	// TODO
 // 	return this.pinnedCertificateList;
 // };
