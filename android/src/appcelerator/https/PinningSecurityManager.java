@@ -1,3 +1,12 @@
+/**
+ * Appcelerator.Https Module - Authenticate server in HTTPS
+ * connections made by TiHTTPClient.
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ *
+ * Licensed under the terms of the Appcelerator Commercial License.
+ * Please see the LICENSE included with this distribution for details.
+ */
 package appcelerator.https;
 
 import java.security.PublicKey;
@@ -43,7 +52,7 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 
 	/**
 	 * Defines if the SecurityManager will provide TrustManagers and KeyManagers for SSL Context given a Uri
-	 * @param uri - The end point for the network connection
+	 * @param uri - The end point for the network connection. The host of this Uri must be one of the configured hosts for the SecurityManager.
 	 * @return true if SecurityManagers will define SSL Context, false otherwise.
 	 */
 	@Override
@@ -54,6 +63,12 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 		return false;
 	}
 	
+	/**
+	 * Adds the <Host,PublicKey> pair to list of supported configurations. 
+	 * @param host - String representing the host portion of supported Uris
+	 * @param key - The PublicKey against which the server certificate will be pinned.
+	 * @throws Exception - If the arguments are invalid or if the given host is already added as a supported configuration.
+	 */
 	protected void addProfile(String host, PublicKey key) throws Exception{
 		String theHost = (host == null) ? "" : host;
 		
@@ -68,6 +83,11 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 		}
 	}
 	
+	/**
+	 * Returns if the host is part of the supported configurations.
+	 * @param host - String representing the host portion of supported Uris
+	 * @return - True if the host is configured, false otherwise.
+	 */
 	private boolean hostConfigured(String host) {
 		return supportedHosts.keySet().contains(host);
 	}
