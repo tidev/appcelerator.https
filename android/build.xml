@@ -1,4 +1,4 @@
-<project name="security" default="dist">
+<project name="https" default="dist">
   <description>
 	Ant build script for Titanium Android module appcelerator.https
   </description>
