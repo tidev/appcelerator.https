@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/Users/vduggal/Library/Application Support/Titanium/mobilesdk/osx/3.3.0/android/kroll-apt.jar"/>
+	<classpathentry kind="lib" path="/Users/vduggal/Library/Application Support/Titanium/mobilesdk/osx/3.3.0/android/kroll-common.jar"/>
+	<classpathentry kind="lib" path="/Users/vduggal/Library/Application Support/Titanium/mobilesdk/osx/3.3.0/android/titanium.jar"/>
+	<classpathentry kind="lib" path="/Users/vduggal/android-sdk-macosx/platforms/android-10/android.jar"/>
+	<classpathentry kind="lib" path="/Users/vduggal/Library/Application Support/Titanium/mobilesdk/osx/3.3.0/android/modules/titanium-network.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
