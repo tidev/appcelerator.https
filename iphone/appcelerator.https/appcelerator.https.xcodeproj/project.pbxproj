@@ -8,14 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		C9078D08192E4E1400B7BDDE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9078D07192E4E1400B7BDDE /* Foundation.framework */; };
+		C9078D0D192E4E1400B7BDDE /* appcelerator_https.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = C9078D0C192E4E1400B7BDDE /* appcelerator_https.h */; };
+		C9078D0F192E4E1400B7BDDE /* appcelerator_https.m in Sources */ = {isa = PBXBuildFile; fileRef = C9078D0E192E4E1400B7BDDE /* appcelerator_https.m */; };
 		C9078D16192E4E1400B7BDDE /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9078D15192E4E1400B7BDDE /* XCTest.framework */; };
 		C9078D17192E4E1400B7BDDE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9078D07192E4E1400B7BDDE /* Foundation.framework */; };
 		C9078D19192E4E1400B7BDDE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9078D18192E4E1400B7BDDE /* UIKit.framework */; };
 		C9078D1C192E4E1400B7BDDE /* libappcelerator.https.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9078D04192E4E1400B7BDDE /* libappcelerator.https.a */; };
 		C9078D22192E4E1400B7BDDE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C9078D20192E4E1400B7BDDE /* InfoPlist.strings */; };
 		C9078D24192E4E1400B7BDDE /* appcelerator_httpsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C9078D23192E4E1400B7BDDE /* appcelerator_httpsTests.m */; };
-		C9A3A15C192E530E00FC7696 /* AppceleratorHttpsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A3A159192E530E00FC7696 /* AppceleratorHttpsModule.m */; };
-		C9A3A15D192E530E00FC7696 /* AppceleratorHttpsModuleAssets.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A3A15B192E530E00FC7696 /* AppceleratorHttpsModuleAssets.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +35,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				C9078D0D192E4E1400B7BDDE /* appcelerator_https.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,17 +45,14 @@
 		C9078D04192E4E1400B7BDDE /* libappcelerator.https.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libappcelerator.https.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9078D07192E4E1400B7BDDE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C9078D0B192E4E1400B7BDDE /* appcelerator.https-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "appcelerator.https-Prefix.pch"; sourceTree = "<group>"; };
+		C9078D0C192E4E1400B7BDDE /* appcelerator_https.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = appcelerator_https.h; sourceTree = "<group>"; };
+		C9078D0E192E4E1400B7BDDE /* appcelerator_https.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = appcelerator_https.m; sourceTree = "<group>"; };
 		C9078D14192E4E1400B7BDDE /* appcelerator.httpsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = appcelerator.httpsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9078D15192E4E1400B7BDDE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		C9078D18192E4E1400B7BDDE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		C9078D1F192E4E1400B7BDDE /* appcelerator.httpsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "appcelerator.httpsTests-Info.plist"; sourceTree = "<group>"; };
 		C9078D21192E4E1400B7BDDE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C9078D23192E4E1400B7BDDE /* appcelerator_httpsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = appcelerator_httpsTests.m; sourceTree = "<group>"; };
-		C9A3A157192E529100FC7696 /* titanium.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = titanium.xcconfig; path = ../titanium.xcconfig; sourceTree = "<group>"; };
-		C9A3A158192E530E00FC7696 /* AppceleratorHttpsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppceleratorHttpsModule.h; sourceTree = "<group>"; };
-		C9A3A159192E530E00FC7696 /* AppceleratorHttpsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppceleratorHttpsModule.m; sourceTree = "<group>"; };
-		C9A3A15A192E530E00FC7696 /* AppceleratorHttpsModuleAssets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppceleratorHttpsModuleAssets.h; sourceTree = "<group>"; };
-		C9A3A15B192E530E00FC7696 /* AppceleratorHttpsModuleAssets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppceleratorHttpsModuleAssets.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,10 +110,8 @@
 		C9078D09192E4E1400B7BDDE /* appcelerator.https */ = {
 			isa = PBXGroup;
 			children = (
-				C9A3A158192E530E00FC7696 /* AppceleratorHttpsModule.h */,
-				C9A3A159192E530E00FC7696 /* AppceleratorHttpsModule.m */,
-				C9A3A15A192E530E00FC7696 /* AppceleratorHttpsModuleAssets.h */,
-				C9A3A15B192E530E00FC7696 /* AppceleratorHttpsModuleAssets.m */,
+				C9078D0C192E4E1400B7BDDE /* appcelerator_https.h */,
+				C9078D0E192E4E1400B7BDDE /* appcelerator_https.m */,
 				C9078D0A192E4E1400B7BDDE /* Supporting Files */,
 			);
 			path = appcelerator.https;
@@ -124,7 +120,6 @@
 		C9078D0A192E4E1400B7BDDE /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				C9A3A157192E529100FC7696 /* titanium.xcconfig */,
 				C9078D0B192E4E1400B7BDDE /* appcelerator.https-Prefix.pch */,
 			);
 			name = "Supporting Files";
@@ -229,8 +224,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9A3A15D192E530E00FC7696 /* AppceleratorHttpsModuleAssets.m in Sources */,
-				C9A3A15C192E530E00FC7696 /* AppceleratorHttpsModule.m in Sources */,
+				C9078D0F192E4E1400B7BDDE /* appcelerator_https.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,7 +260,6 @@
 /* Begin XCBuildConfiguration section */
 		C9078D25192E4E1400B7BDDE /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C9A3A157192E529100FC7696 /* titanium.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -304,7 +297,6 @@
 		};
 		C9078D26192E4E1400B7BDDE /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C9A3A157192E529100FC7696 /* titanium.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -413,7 +405,6 @@
 				C9078D29192E4E1400B7BDDE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
 		};
 		C9078D2A192E4E1400B7BDDE /* Build configuration list for PBXNativeTarget "appcelerator.httpsTests" */ = {
 			isa = XCConfigurationList;
@@ -422,7 +413,6 @@
 				C9078D2C192E4E1400B7BDDE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -39,11 +39,4 @@
   [super shutdown:sender];
 }
 
-#pragma mark Cleanup 
-
--(void)dealloc
-{
-  [super dealloc];
-}
-
 @end
