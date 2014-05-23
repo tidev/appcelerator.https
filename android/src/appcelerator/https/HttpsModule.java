@@ -42,7 +42,16 @@ public class HttpsModule extends KrollModule
 	{
 		//Nothing
 	}
-	
+	/**
+	 * Create an instance of PinningSecurityManager which implements the SecurityManagerProtocol
+	 * @param args - An array of dictionaries specifying the Pinning Parameters. 
+	 * Each dictionary must define the following key value pairs
+	 * <"url",String> - The String representing the URL of the connection end point. Must be a valid URL. The host name of the URL is used to match pinned hosts.
+	 * <"serverCertificate", String> - The String representing the path to the certificate to parse. The certificate must be either DER or PEM encoded. 
+	 * The path is relative to the Resources directory of the application. The PublicKey portion of the certificate is used for Pinning during SSL Server Trust Handshake.
+	 * @return - An instance of of the PinningSecurityManager
+	 * @throws Exception - If the specified key value pair could not be parsed to retrieve a valid <Host,PublicKey> pair.
+	 */
 	@SuppressWarnings("rawtypes")
 	@Kroll.method
 	public PinningSecurityManager createX509CertificatePinningSecurityManager(HashMap[] args) throws Exception
