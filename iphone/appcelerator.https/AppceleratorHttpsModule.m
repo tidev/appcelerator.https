@@ -9,34 +9,51 @@
  */
 
 #import "AppceleratorHttpsModule.h"
-#import "TiBase.h"
-#import "TiHost.h"
-#import "TiUtils.h"
+#import "X509CertificatePinningSecurityManagerProxy.h"
+//#import "TiBase.h"
+//#import "TiHost.h"
+//#import "TiUtils.h"
+
+@interface AppceleratorHttpsModule ()
+@end
+
 
 @implementation AppceleratorHttpsModule
 
-#pragma mark Internal
-
--(id)moduleGUID
-{
-  return @"2163621d-1a78-4215-8244-bda08724ffed";
+-(id)init {
+    self = [super init];
+    if (self) {
+    }
+    
+    return self;
 }
 
--(NSString*)moduleId
-{
-  return @"appcelerator.https";
+-(id)createX509CertificatePinningSecurityManager:(id)args {
+    NSLog(@"[%@] createX509CertificatePinningSecurityManager, args = %@", self.moduleId, args);
+    X509CertificatePinningSecurityManagerProxy *proxy = [[X509CertificatePinningSecurityManagerProxy alloc] _initWithPageContext:self.pageContext args:args];
+    return proxy;
 }
 
 #pragma mark Lifecycle
 
--(void)startup
-{
-  [super startup];
+-(void)startup {
+    [super startup];
+    NSLog(@"[%@] startup", self.moduleId);
 }
 
--(void)shutdown:(id)sender
-{
-  [super shutdown:sender];
+-(void)shutdown:(id)sender {
+    NSLog(@"[%@] shutdown", self.moduleId);
+    [super shutdown:sender];
+}
+
+#pragma mark Internal
+
+-(id)moduleGUID {
+    return @"2163621d-1a78-4215-8244-bda08724ffed";
+}
+
+-(NSString*)moduleId {
+    return @"appcelerator.https";
 }
 
 @end

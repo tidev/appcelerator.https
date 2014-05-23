@@ -50,9 +50,13 @@ win.open();
 /*
  * Create a Security Manager for Titanium.Network.HTTPClient that
  * authenticates a currated set of HTTPS servers. It does this by
- * "pinning" an HTTPS server's URL to it's X509 certificate's public
- * key which is embedded in the app. The security manager will
- * guarantee that all HTTPClient connections to this URL are to a
+ * "pinning" an HTTPS server's DNS name to the public key contained in
+ * the X509 certificate it uses for TLS communication. The public key
+ * is embedded in an app by adding this X509 certificate to the app's
+ * Resources directory.
+ *
+ * With such a "pin" in place, the security manager will guarantee
+ * that all HTTPClient connections to this HTTPS server are to a
  * server that holds the private key corresponding to the public key
  * embedded in the app, therefore authenticating the server.
  *
@@ -71,16 +75,16 @@ win.open();
  * The X.509 certificate files can have any name and extension you
  * wish, but they must be in the standard DER binary format.
  */
-// securityManager = https.createX509CertificatePinningSecurityManager([
-// 	{
-// 		url: "https://dashboard.appcelerator.com",
-// 		serverCertificate: "*.appcelerator.com.cer"
-// 	},
-// 	{
-// 		url: "https://www.wellsfargo.com",
-// 		serverCertificate: "www.wellsfargo.com.cer"
-// 	}
-// ]);
+securityManager = https.createX509CertificatePinningSecurityManager([
+	{
+		url: "https://dashboard.appcelerator.com",
+		serverCertificate: "*.appcelerator.com.cer"
+	},
+	{
+		url: "https://www.wellsfargo.com",
+		serverCertificate: "www.wellsfargo.com.cer"
+	}
+]);
 
 
 /*
@@ -117,7 +121,7 @@ httpClient = Ti.Network.createHTTPClient({
  * communications happens. A Security Exception it thrown if
  * authentication fails.
  */
-//httpClient.open("GET", "https://dashboard.appcelerator.com");
+httpClient.open("GET", "https://dashboard.appcelerator.com");
 httpClient.open("GET", "https://www.wellsfargo.com");
 
 /*
