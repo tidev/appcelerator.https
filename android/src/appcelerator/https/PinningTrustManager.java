@@ -1,3 +1,13 @@
+/**
+ * Appcelerator.Https Module - Authenticate server in HTTPS
+ * connections made by TiHTTPClient.
+ *
+ * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ *
+ * Licensed under the terms of the Appcelerator Commercial License.
+ * Please see the LICENSE included with this distribution for details.
+ */
+
 package appcelerator.https;
 
 import java.security.KeyStore;
@@ -21,6 +31,12 @@ public class PinningTrustManager implements X509TrustManager {
 	private HTTPClientProxy proxy;
 	private X509TrustManager standardTrustManager;
 	
+	/**
+	 * Constructor for the PinningTrustManager.
+	 * @param proxy - The HTTPClientProxy representing this network connection.
+	 * @param supportedHosts - The supported configurations for which PublicKey Pinning must be performed.
+	 * @throws Exception - If a standard Trustmanager could not be instantiated.
+	 */
 	protected PinningTrustManager(HTTPClientProxy proxy, Map<String, PublicKey> supportedHosts) throws Exception {
 		TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 		factory.init((KeyStore) null);
@@ -43,6 +59,10 @@ public class PinningTrustManager implements X509TrustManager {
 	public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
 		this.standardTrustManager.checkServerTrusted(arg0, arg1);
 		
+		/**
+		 * If the HTTPClient proxy is currently connected to a Uri with a configured host, compare the leaf certificate
+		 * in the chain with the configured PublicKey. Throws a Certificate Exception if the keys do not match.
+		 */
 		if (this.proxy != null) {
 			boolean hostPinned = false;
 			String host = "";

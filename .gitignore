@@ -4,8 +4,19 @@
 # environment.
 android/build.properties
 
-# Titanium module build artifact
+# Titanium module build artifacts
+iphone/appcelerator.https-iphone-*.zip
+iphone/build
 iphone/metadata.json
+
+# These four are symlinks
+iphone/LICENSE
+iphone/assets
+iphone/documentation
+iphone/example
+
+example/build/
+example/modules/
 
 # User-specific Xcode settings.
 iphone/appcelerator.https.xcodeproj/xcuserdata
