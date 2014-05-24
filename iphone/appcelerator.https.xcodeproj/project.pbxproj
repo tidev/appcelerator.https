@@ -150,10 +150,10 @@
 				C9448267192E825B00ECCC14 /* SecurityManager.m */,
 				C9448262192E825B00ECCC14 /* PinnedURL.h */,
 				C9448263192E825B00ECCC14 /* PinnedURL.m */,
-				C9448264192E825B00ECCC14 /* PublicKey.h */,
-				C9448265192E825B00ECCC14 /* PublicKey.m */,
 				C944826A192E825B00ECCC14 /* X509Certificate.h */,
 				C944826B192E825B00ECCC14 /* X509Certificate.m */,
+				C9448264192E825B00ECCC14 /* PublicKey.h */,
+				C9448265192E825B00ECCC14 /* PublicKey.m */,
 				C9078D0A192E4E1400B7BDDE /* Supporting Files */,
 			);
 			path = appcelerator.https;
@@ -212,7 +212,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9078D27192E4E1400B7BDDE /* Build configuration list for PBXNativeTarget "appcelerator.https" */;
 			buildPhases = (
-				C9B1A29E192EEAD70080C7DA /* ShellScript */,
 				C9078D00192E4E1400B7BDDE /* Sources */,
 				C9078D01192E4E1400B7BDDE /* Frameworks */,
 				C9078D02192E4E1400B7BDDE /* CopyFiles */,
@@ -285,22 +284,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		C9B1A29E192EEAD70080C7DA /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "echo \"MDL\"";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C9078D00192E4E1400B7BDDE /* Sources */ = {

@@ -104,10 +104,10 @@ httpClient = Ti.Network.createHTTPClient({
 		label.text = 'Status: Fail';
     },
 	
-    timeout : 5000				// in milliseconds
+    timeout: 5000,				// in milliseconds
 	
 	// This is new.
-	// securityManager: securityManager
+	securityManager: securityManager
 });
 
 

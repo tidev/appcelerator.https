@@ -7,8 +7,14 @@ android/build.properties
 
 # Titanium module build artifacts
 iphone/appcelerator.https-iphone-*.zip
-iphone/build/
+iphone/build
 iphone/metadata.json
+
+# These four are symlinks
+iphone/LICENSE
+iphone/assets
+iphone/documentation
+iphone/example
 
 example/build/
 example/modules/

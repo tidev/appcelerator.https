@@ -4,7 +4,8 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "TiProxy.h"
+#import "TiBase.h"
+#import "TiNetworkHTTPClientProxy.h"
 
 /*!
  @class X509CertificatePinningSecurityManagerProxy
@@ -30,7 +31,7 @@
 
  @seealso AppceleratorHttpsModule: @/seealso
  */
-@interface X509CertificatePinningSecurityManagerProxy : TiProxy
+@interface X509CertificatePinningSecurityManagerProxy : TiProxy <SecurityManagerProtocol>
 
 // This class provides no API for Objecive-C developers. All of this classes
 // functionality is accessed from JavaScript and is only meant to be used in a

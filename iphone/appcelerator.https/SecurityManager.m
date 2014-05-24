@@ -25,6 +25,28 @@
 -(instancetype)initWithPinnedURLs:(NSSet *)pinnedUrlSet {
     self = [super init];
     if (self) {
+        if (!(nil != pinnedUrlSet)) {
+            NSString *reason = @"pinnedUrlSet must not be nil";
+            NSDictionary *userInfo = nil;
+            NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                             reason:reason
+                                                           userInfo:userInfo];
+            
+            self = nil;
+            @throw exception;
+        }
+
+        if (!(pinnedUrlSet.count > 0)) {
+            NSString *reason = @"pinnedUrlSet must have at least one PinnedURL object.";
+            NSDictionary *userInfo = @{ @"pinnedUrlSet": pinnedUrlSet };
+            NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                             reason:reason
+                                                           userInfo:userInfo];
+            
+            self = nil;
+            @throw exception;
+        }
+
         // Make a copy of the set. This is basic secure coding practice.
         _pinnedUrlSet = [pinnedUrlSet copy];
         

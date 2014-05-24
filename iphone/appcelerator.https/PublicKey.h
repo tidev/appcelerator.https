@@ -68,13 +68,13 @@
  @property x509Certificate
  @abstract The X509 certificate used to instantiate this object.
  */
-@property (nonatomic, strong, readonly) X509Certificate *x509Certificate;
+@property (nonatomic, weak, readonly) X509Certificate *x509Certificate;
 
 /*!
  @property publicKey
  @abstract The SecKeyRef contained in the X509 certificate used to instantiate this object.
  */
-@property (nonatomic, strong, readonly)  __attribute__((NSObject)) SecKeyRef publicKey;
+@property (nonatomic, strong, readonly) __attribute__((NSObject)) SecKeyRef publicKey;
 
 /*!
  @method isEqualToPublicKey

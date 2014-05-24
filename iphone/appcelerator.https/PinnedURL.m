@@ -18,6 +18,28 @@
 -(instancetype)initWithURL:(NSURL *)url andPublicKey:(PublicKey *) publicKey {
     self = [super init];
     if (self) {
+        if (!(nil != url)) {
+            NSString *reason = @"url must not be nil";
+            NSDictionary *userInfo = nil;
+            NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                             reason:reason
+                                                           userInfo:userInfo];
+            
+            self = nil;
+            @throw exception;
+        }
+
+        if (!(nil != publicKey)) {
+            NSString *reason = @"publicKey must not be nil";
+            NSDictionary *userInfo = nil;
+            NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                             reason:reason
+                                                           userInfo:userInfo];
+            
+            self = nil;
+            @throw exception;
+        }
+
         _url = [url copy];
 
         // The scheme must be https. Note the use of

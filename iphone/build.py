@@ -35,7 +35,7 @@ module_defaults = {
 module_license_default = "TODO: place your license here and we'll include it in the module distribution"
 
 def find_sdk(config):
-	sdk = config['TITANIUM_SDK']
+	sdk = config['TITANIUM_SDK_DIR']
 	return os.path.expandvars(os.path.expanduser(sdk))
 
 def replace_vars(config,token):
@@ -59,7 +59,7 @@ def read_ti_xcconfig():
 		idx = line.find('=')
 		if idx > 0:
 			key = line[0:idx].strip()
-			value = line[idx+1:].strip()
+			value = line[idx+1:].strip(" \";")
 			config[key] = replace_vars(config,value)
 	return config
 

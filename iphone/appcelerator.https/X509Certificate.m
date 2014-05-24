@@ -2,6 +2,7 @@
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
 
 #import "X509Certificate.h"
+#import "PublicKey.h"
 
 @interface X509Certificate ()
 @end
@@ -22,10 +23,21 @@
 -(instancetype)initWithURL:(NSURL *)url {
     self = [super init];
     if (self) {
+        if (!(nil != url)) {
+            NSString *reason = @"url must not be nil";
+            NSDictionary *userInfo = nil;
+            NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                             reason:reason
+                                                           userInfo:userInfo];
+            
+            self = nil;
+            @throw exception;
+        }
+
         NSDataReadingOptions options = NSDataReadingUncached;
         NSError *error;
         NSData *certificateNSData = [NSData dataWithContentsOfURL:url options:options error:&error];
-        if (error) {
+        if (!(nil == error)) {
             NSString *reason = [NSString stringWithFormat:@"Failed to read certificate data from URL %@", url];
             NSDictionary *userInfo = @{ @"url" : url, @"error" : error };
             NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
@@ -40,7 +52,7 @@
         CFDataRef certificateCFData = (__bridge CFDataRef)certificateNSData;
         _certificate = SecCertificateCreateWithData(NULL, certificateCFData);
 
-        if (_certificate == NULL) {
+        if (!(NULL != _certificate)) {
             NSString *reason = [NSString stringWithFormat:@"Failed to create SecCertificateRef from URL %@", url];
             NSDictionary *userInfo = @{ @"url" : url };
             NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
@@ -58,6 +70,17 @@
 -(instancetype)initWithSecCertificate:(SecCertificateRef)secCertificate {
     self = [super init];
     if (self) {
+        if (!(NULL == secCertificate)) {
+            NSString *reason = @"secCertificate must not be nil";
+            NSDictionary *userInfo = nil;
+            NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                             reason:reason
+                                                           userInfo:userInfo];
+            
+            self = nil;
+            @throw exception;
+        }
+
         _certificate = (SecCertificateRef)CFRetain(secCertificate);
     }
     
@@ -65,7 +88,9 @@
 }
 
 - (void) dealloc {
-    CFRelease(_certificate);
+    if (_certificate) {
+        CFRelease(_certificate);
+    }
 }
 
 - (BOOL)isEqualToX509Certificate:(X509Certificate *)rhs {

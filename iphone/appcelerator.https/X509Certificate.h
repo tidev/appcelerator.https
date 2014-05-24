@@ -5,6 +5,9 @@
 
 #import <Foundation/Foundation.h>
 
+// Forward declararion.
+@class PublicKey;
+
 /*!
  @class X509Certificate
  
@@ -33,6 +36,10 @@
     does not factor into the implementation of isEqual or hash.
 
  4. It is immutable, and therefore thread safe.
+ 
+ 5. It provides access to the certificate's public key in the form of
+    a PublicKey object (which is an Objective-C wrapper around the C
+    interface SecKeyRef from Apple's Security Framework).
  
  An easy way to add a DER encoded X509 certificate to your app on Mac
  OS X is to use Safari. Do this by using Safari to visit the trusted
@@ -88,6 +95,12 @@
  @seealso X509CertificateWithSecCertificate: @/seealso
  */
 -(instancetype)initWithSecCertificate:(SecCertificateRef)secCertificate;
+
+/*!
+ @property certificate
+ @abstract The SecCertificateRef contained in the DER encoded X509 certificate referred to by the NSURL used to instantiate this object.
+ */
+@property (nonatomic, strong, readonly) PublicKey *publicKey;
 
 /*!
  @property certificate

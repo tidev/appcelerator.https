@@ -8,8 +8,11 @@
 
 #import "X509CertificatePinningSecurityManagerProxy.h"
 #include <libkern/OSAtomic.h>
-#import "PinnedURL.h"
+
 #import "SecurityManager.h"
+#import "PinnedURL.h"
+#import "X509Certificate.h"
+#import "PublicKey.h"
 
 
 // Private extensions required by the implementation of
@@ -17,10 +20,12 @@
 @interface X509CertificatePinningSecurityManagerProxy ()
 
 // A unique integer that identifies this proxy.
-@property (nonatomic,readonly) int32_t proxyId;
+@property (nonatomic, readonly) int32_t proxyId;
 
 // A unique name that identifies this proxy.
-@property (nonatomic,readonly) NSString *proxyName;
+@property (nonatomic, strong, readonly) NSString *proxyName;
+
+@property (nonatomic, strong, readonly) SecurityManager *securityManager;
 
 @end
 
@@ -56,8 +61,8 @@ static int32_t proxyCount = 0;
     // incorrectly.
     
     // The argument from the Titanium developer must be an array.
-    if (![args isKindOfClass:[NSArray class]]) {
-        NSString *reason = @"An X509CertificatePinningSecurityManager must be constructed with an array of objects containing only the two keys \"url\" and \"serverCertificate\".";
+    if (![args isKindOfClass:[NSArray class]] || !(args.count == 1) || ![args[0] isKindOfClass:[NSArray class]]) {
+        NSString *reason = @"An X509CertificatePinningSecurityManager must be constructed with an array of objects containing only the two keys 'url' and 'serverCertificate'.";
         NSDictionary *userInfo = @{ @"argument": args };
         NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                          reason:reason
@@ -66,12 +71,14 @@ static int32_t proxyCount = 0;
         self = nil;
         @throw exception;
     }
-
-    for (NSDictionary *pinnedURLDict in args) {
+    
+    NSArray *arrayOfObjects = args[0];
+    NSMutableSet *pinnedUrlSet = [NSMutableSet set];
+    for (NSDictionary *pinnedURLDict in arrayOfObjects) {
         
         // Each element of the array must be an object.
         if (![pinnedURLDict isKindOfClass:[NSDictionary class]]) {
-            NSString *reason = [NSString stringWithFormat:@"Expected an object containing only the two keys \"url\" and \"serverCertificate\", but received %@.", pinnedURLDict];
+            NSString *reason = [NSString stringWithFormat:@"Expected an object containing only the two keys 'url' and 'serverCertificate', but received %@.", pinnedURLDict];
             NSDictionary *userInfo = @{ @"object": pinnedURLDict };
             NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                              reason:reason
@@ -83,7 +90,7 @@ static int32_t proxyCount = 0;
 
         // The object must have a "url" key that is a string.
         NSString *urlString = pinnedURLDict[@"url"];
-        if (urlString == nil || ![urlString isKindOfClass:[NSString class]]) {
+        if (!(nil != urlString) || ![urlString isKindOfClass:[NSString class]]) {
             NSString *reason = @"Missing url property for X509CertificatePinningSecurityManager";
             NSDictionary *userInfo = nil;
             NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
@@ -94,10 +101,9 @@ static int32_t proxyCount = 0;
             @throw exception;
         }
         
-        
         // The object must have a "serverCertificate" key that is a string.
         NSString *serverCertificate = pinnedURLDict[@"serverCertificate"];
-        if (serverCertificate == nil || ![serverCertificate isKindOfClass:[NSString class]]) {
+        if (!(nil != serverCertificate) || ![serverCertificate isKindOfClass:[NSString class]]) {
             NSString *reason = @"Missing serverCertificate property for X509CertificatePinningSecurityManager";
             NSDictionary *userInfo = nil;
             NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
@@ -111,8 +117,8 @@ static int32_t proxyCount = 0;
         // It is an error if there are additional entries in the object,
         // which is an indication that the Titanium developer is creating a
         // SecurityManager incorrectly.
-        if (pinnedURLDict.count > 2) {
-            NSString *reason = [NSString stringWithFormat:@"Unknown key(s) found in object used to construct X509CertificatePinningSecurityManager (only \"url\" and \"serverCertificate\" are allowed): %@", pinnedURLDict.allKeys];
+        if (!(2 == pinnedURLDict.count)) {
+            NSString *reason = [NSString stringWithFormat:@"Unknown key(s) found in object used to construct X509CertificatePinningSecurityManager (only 'url' and 'serverCertificate' are allowed): %@", pinnedURLDict.allKeys];
             NSDictionary *userInfo = @{ @"keys": pinnedURLDict.allKeys };
             NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                              reason:reason
@@ -121,9 +127,57 @@ static int32_t proxyCount = 0;
             self = nil;
             @throw exception;
         }
+
+        NSURL *url = [NSURL URLWithString:urlString];
+        if (!(nil != url)) {
+            NSString *reason = [NSString stringWithFormat:@"Malformed URL string %@", urlString];
+            NSDictionary *userInfo = @{ @"url": urlString };
+            NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                             reason:reason
+                                                           userInfo:userInfo];
+            
+            self = nil;
+            @throw exception;
+        }
+        
+        NSString *baseName       = [serverCertificate stringByDeletingPathExtension];
+        NSString *ext            = [serverCertificate pathExtension];
+        NSURL    *certificateURL = [[NSBundle mainBundle] URLForResource:baseName withExtension:ext];
+        if (!(nil != certificateURL)) {
+            NSString *reason = [NSString stringWithFormat:@"Could not find X509 certificate resource with file name %@", serverCertificate];
+            NSDictionary *userInfo = @{ @"serverCertificate": serverCertificate };
+            NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                             reason:reason
+                                                           userInfo:userInfo];
+            
+            self = nil;
+            @throw exception;
+        }
+        
+        // The following factory methods are self-validating and will throw
+        // NSInvalidArgumentException exceptions. If construction succeeds then
+        // the objects are guaranteed to be in a good state.
+        X509Certificate *x509Certificate = [X509Certificate X509CertificateWithURL:certificateURL];
+        PinnedURL       *pinnedURL       = [PinnedURL PinnedURLWithURL:url andPublicKey:x509Certificate.publicKey];
+        [pinnedUrlSet addObject:pinnedURL];
     }
+    
+    _securityManager = [SecurityManager SecurityManagerWithPinnedURLs:pinnedUrlSet];
     
 	return [super _initWithPageContext:context_ args:args];
 }
 
+#pragma mark SecurityManagerProtocol methods
+
+// Delegate to the SecurityManager.
+-(BOOL) willHandleURL:(NSURL*)url {
+    return [self.securityManager willHandleURL:url];
+}
+
+// Delegate to the SecurityManager.
+-(id<APSConnectionDelegate>) connectionDelegateForUrl:(NSURL*)url {
+    return [self.securityManager connectionDelegateForUrl:url];
+}
+
 @end
+
