@@ -53,6 +53,9 @@
 //    NSLog(@"certificate2 = %@", certificate2);
     
     XCTAssertNotEqualObjects(certificate1, certificate2);
+
+    XCTAssertNotNil(certificate1.publicKey);
+    XCTAssertNotNil(certificate2.publicKey);
 }
 
 @end

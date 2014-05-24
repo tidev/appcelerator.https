@@ -1,18 +1,20 @@
 //
-//  PublicKeyTests.m
-//  CertificatePinningSecurityManager
+//  SecurityManagerTests.m
+//  appcelerator.https
 //
-//  Created by Matt Langston on 5/19/14.
+//  Created by Matt Langston on 5/23/14.
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
 //
 
 #import "AbstractBaseTest.h"
-#import "PublicKey.h"
+#import "SecurityManager.h"
+#import "PinnedURL.h"
 
-@interface PublicKeyTests : AbstractBaseTest
+@interface SecurityManagerTests : AbstractBaseTest
+
 @end
 
-@implementation PublicKeyTests
+@implementation SecurityManagerTests
 
 - (void)setUp
 {
@@ -28,18 +30,6 @@
 
 - (void)testDesignatedInitializer
 {
-    NSURL *certificateURL = self.certificateURLDict[@"*.prod.ace.appcelerator.com-1"];
-    XCTAssertNotNil(certificateURL);
-    
-    X509Certificate *certificate = [X509Certificate X509CertificateWithURL:certificateURL];
-    XCTAssertNotNil(certificate);
-
-    PublicKey *publicKey = [PublicKey PublicKeyWithX509Certificate:certificate];
-    XCTAssertNotNil(publicKey);
-}
-
-- (void)testEqual
-{
     NSURL *certificateURL1 = self.certificateURLDict[@"*.prod.ace.appcelerator.com-1"];
     NSURL *certificateURL2 = self.certificateURLDict[@"*.prod.ace.appcelerator.com-2"];
     
@@ -51,14 +41,23 @@
     
     XCTAssertNotNil(certificate1);
     XCTAssertNotNil(certificate2);
-
+    
     XCTAssertNotNil(certificate1.publicKey);
     XCTAssertNotNil(certificate2.publicKey);
+
+    NSURL *url1 = [NSURL URLWithString:@"https://server1.prod.ace.appcelerator.com"];
+    NSURL *url2 = [NSURL URLWithString:@"https://server2.prod.ace.appcelerator.com"];
+    NSLog(@"host = %@", url1.host);
+    NSLog(@"host = %@", url2.host);
     
-    NSLog(@"publicKey1 = %@", certificate1.publicKey);
-    NSLog(@"publicKey2 = %@", certificate2.publicKey);
+    NSMutableSet *pinnedUrlSet = [NSMutableSet set];
+    [pinnedUrlSet addObject:[PinnedURL PinnedURLWithURL:url1 andPublicKey:certificate1.publicKey]];
+    [pinnedUrlSet addObject:[PinnedURL PinnedURLWithURL:url2 andPublicKey:certificate2.publicKey]];
     
-//    XCTAssertEqualObjects(publicKey1, publicKey2);
+    XCTAssertEqual(2, pinnedUrlSet.count);
+    
+    SecurityManager *securityManager = [SecurityManager SecurityManagerWithPinnedUrlSet:pinnedUrlSet];
+    XCTAssertNotNil(securityManager);
 }
 
 @end

@@ -162,7 +162,7 @@ static int32_t proxyCount = 0;
         [pinnedUrlSet addObject:pinnedURL];
     }
     
-    _securityManager = [SecurityManager SecurityManagerWithPinnedURLs:pinnedUrlSet];
+    _securityManager = [SecurityManager SecurityManagerWithPinnedUrlSet:pinnedUrlSet];
     
 	return [super _initWithPageContext:context_ args:args];
 }

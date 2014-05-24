@@ -16,7 +16,7 @@
 
 @implementation SecurityManager
 
-+(instancetype)SecurityManagerWithPinnedURLs:(NSSet *)pinnedUrlSet {
++(instancetype)SecurityManagerWithPinnedUrlSet:(NSSet *)pinnedUrlSet {
     SecurityManager *securityManager = [[SecurityManager alloc] initWithPinnedURLs:pinnedUrlSet];
     return securityManager;
 }
@@ -167,17 +167,6 @@
             OSStatus status = SecTrustEvaluate(serverTrust, NULL);
             if(!(errSecSuccess == status)) break; /* failed */
             
-            // Obtain the server's certificate.
-            SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0);
-            if(!(nil != serverCertificate)) break;  /* failed */
-            
-            // Create a friendlier Objective-C wrapper around this server's X509 certificate.
-            X509Certificate *x509Certificate = [X509Certificate X509CertificateWithSecCertificate:serverCertificate];
-            if(!(nil != x509Certificate)) break;  /* failed */
-            
-            // Get the public key from this server's X509 certificate.
-            PublicKey *serverPublicKey = [PublicKey PublicKeyWithX509Certificate:x509Certificate];
-            
             // Normalize the server's host name to lower case.
             NSString *host = [connection.currentRequest.URL.host lowercaseString];
             
@@ -187,8 +176,40 @@
             // It is a logic error (a bug in this SecurityManager class) if this
             // security manager does not have a PinnedURL for this server.
             if (!(nil != pinnedURL)) {
-                NSString *reason = [NSString stringWithFormat:@"LOGIC ERROR: appcelerator.https module bug could not find a PinnedURL for host \"%@\". Please report this issue to us at https://jira.appcelerator.org/browse/MOD-1706", connection.currentRequest.URL.host];
+                NSString *reason = [NSString stringWithFormat:@"LOGIC ERROR: appcelerator.https module bug: SecurityManager could not find a PinnedURL for host \"%@\". Please report this issue to us at https://jira.appcelerator.org/browse/MOD-1706", connection.currentRequest.URL.host];
                 NSDictionary *userInfo = @{ @"connection" : connection };
+                NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                                 reason:reason
+                                                               userInfo:userInfo];
+                
+                @throw exception;
+            }
+            
+            // Obtain the server's X509 certificate and public key.
+            SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0);
+            if(!(nil != serverCertificate)) break;  /* failed */
+            
+            // Create a friendlier Objective-C wrapper around this server's X509
+            // certificate.
+            X509Certificate *x509Certificate = [X509Certificate X509CertificateWithSecCertificate:serverCertificate];
+            if (!(nil != x509Certificate)) {
+                // CFBridgingRelease transfer's ownership of the CFStringRef
+                // returned by CFCopyDescription to ARC.
+                NSString *serverCertificateDescription = (NSString *)CFBridgingRelease(CFCopyDescription(serverCertificate));
+                NSString *reason = [NSString stringWithFormat:@"LOGIC ERROR: appcelerator.https module bug: SecurityManager could not create an X509Certificate for host \"%@\" using the SecCertificateRef \"%@\". Please report this issue to us at https://jira.appcelerator.org/browse/MOD-1706", connection.currentRequest.URL.host, serverCertificateDescription];
+                NSDictionary *userInfo = @{ @"x509Certificate" : x509Certificate };
+                NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                                 reason:reason
+                                                               userInfo:userInfo];
+                
+                @throw exception;
+            }
+            
+            // Get the public key from this server's X509 certificate.
+            PublicKey *serverPublicKey = x509Certificate.publicKey;
+            if (!(nil != serverPublicKey)) {
+                NSString *reason = [NSString stringWithFormat:@"LOGIC ERROR: appcelerator.https module bug: SecurityManager could not find the server's public key for host \"%@\" in the X509 certificate \"%@\". Please report this issue to us at https://jira.appcelerator.org/browse/MOD-1706", connection.currentRequest.URL.host, x509Certificate];
+                NSDictionary *userInfo = @{ @"x509Certificate" : x509Certificate };
                 NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                                  reason:reason
                                                                userInfo:userInfo];

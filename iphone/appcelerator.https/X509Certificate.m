@@ -9,6 +9,8 @@
 
 @implementation X509Certificate
 
+@synthesize publicKey = _publicKey;
+
 +(instancetype)X509CertificateWithURL:(NSURL *)url {
     X509Certificate *certificate = [[X509Certificate alloc] initWithURL:url];
     return certificate;
@@ -70,7 +72,7 @@
 -(instancetype)initWithSecCertificate:(SecCertificateRef)secCertificate {
     self = [super init];
     if (self) {
-        if (!(NULL == secCertificate)) {
+        if (!(NULL != secCertificate)) {
             NSString *reason = @"secCertificate must not be nil";
             NSDictionary *userInfo = nil;
             NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
@@ -91,6 +93,17 @@
     if (_certificate) {
         CFRelease(_certificate);
     }
+}
+
+// The publicKey getter has to be written manually because it requires this
+// object (i.e. an X509Certificate object) for initialization, meaning that
+// it can be constructed in the X509Certificate designated initializer.
+- (PublicKey *) publicKey {
+    if (nil == _publicKey) {
+        _publicKey = [PublicKey PublicKeyWithX509Certificate:self];
+    }
+    
+    return _publicKey;
 }
 
 - (BOOL)isEqualToX509Certificate:(X509Certificate *)rhs {

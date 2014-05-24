@@ -48,7 +48,7 @@
   @result A SecurityManager that will authenticate the given set of servers using their pinned public keys.
   @seealso initWithX509Certificate: @/seealso
  */
-+(instancetype)SecurityManagerWithPinnedURLs:(NSSet *)pinnedUrlSet;
++(instancetype)SecurityManagerWithPinnedUrlSet:(NSSet *)pinnedUrlSet;
 
 /*!
   @method initWithPinnedURLs:
