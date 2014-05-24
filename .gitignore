@@ -1,1 +1,31 @@
-build.properties
+# We ignore the android/build.properties file becuase the user is
+# expected copy android/build.properties.example to
+# android/build.properties and modify it for their development
+# environment.
+android/build.properties
+
+
+# Titanium module build artifacts
+iphone/appcelerator.https-iphone-*.zip
+iphone/build
+iphone/metadata.json
+
+# These four are symlinks
+iphone/LICENSE
+iphone/assets
+iphone/documentation
+iphone/example
+
+example/build/
+example/modules/
+
+
+# User-specific Xcode settings.
+iphone/appcelerator.https.xcodeproj/xcuserdata
+iphone/appcelerator.https.xcodeproj/project.xcworkspace/xcuserdata
+
+# Emacs backup files
+*~
+
+# OS X
+.DS_Store
