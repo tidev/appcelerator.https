@@ -102,7 +102,7 @@
     // since URL components are case-insensitive as described in RFCs 1808,
     // 1738, and 2732.
     if ([url.scheme localizedCaseInsensitiveCompare:@"https"] != NSOrderedSame) {
-        NSLog(@"Do not handle URL scheme %@ (the scheme must be https for us to handle it)");
+        NSLog(@"[WARN] Do not handle URL scheme %@ (the scheme must be https for us to handle it)");
         return FALSE;
     }
     
@@ -221,7 +221,7 @@
             // authenticated.
             BOOL publicKeysAreEqual = [pinnedURL.publicKey isEqualToPublicKey:serverPublicKey];
             if(!(YES == publicKeysAreEqual)) {
-                NSLog(@"Potential \"Man-in-the-Middle\" attack detected since host %@ does not hold the private key corresponding to the public key %@.", host, pinnedURL.publicKey);
+                NSLog(@"[WARN] Potential \"Man-in-the-Middle\" attack detected since host %@ does not hold the private key corresponding to the public key %@.", host, pinnedURL.publicKey);
                 break; /* failed */
             }
             

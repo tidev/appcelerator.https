@@ -42,7 +42,9 @@ static int32_t proxyCount = 0;
     if (self) {
         _proxyId = OSAtomicIncrement32(&proxyCount);
         _proxyName = [NSString stringWithFormat:@"X509CertificatePinningSecurityManagerProxy %d", _proxyId];
+#ifndef NDEBUG
         NSLog(@"[%@] init", _proxyName);
+#endif
     }
     
     return self;
@@ -50,7 +52,9 @@ static int32_t proxyCount = 0;
 
 -(id)_initWithPageContext:(id<TiEvaluator>)context_ args:(NSArray *)args
 {
+#ifndef NDEBUG
     NSLog(@"[%@] _initWithPageContext: properties = %@", self.proxyName, args);
+#endif
     
     // Validate the arguments the Titanium developer passed to the function
     // createX509CertificatePinningSecurityManager (defined in

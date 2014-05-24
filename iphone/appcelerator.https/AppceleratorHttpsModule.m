@@ -10,13 +10,6 @@
 
 #import "AppceleratorHttpsModule.h"
 #import "X509CertificatePinningSecurityManagerProxy.h"
-//#import "TiBase.h"
-//#import "TiHost.h"
-//#import "TiUtils.h"
-
-@interface AppceleratorHttpsModule ()
-@end
-
 
 @implementation AppceleratorHttpsModule
 
@@ -29,21 +22,10 @@
 }
 
 -(id)createX509CertificatePinningSecurityManager:(id)args {
+#ifndef NDEBUG
     NSLog(@"[%@] createX509CertificatePinningSecurityManager, args = %@", self.moduleId, args);
-    X509CertificatePinningSecurityManagerProxy *proxy = [[X509CertificatePinningSecurityManagerProxy alloc] _initWithPageContext:self.pageContext args:args];
-    return proxy;
-}
-
-#pragma mark Lifecycle
-
--(void)startup {
-    [super startup];
-    NSLog(@"[%@] startup", self.moduleId);
-}
-
--(void)shutdown:(id)sender {
-    NSLog(@"[%@] shutdown", self.moduleId);
-    [super shutdown:sender];
+#endif
+    return [[X509CertificatePinningSecurityManagerProxy alloc] _initWithPageContext:self.pageContext args:args];
 }
 
 #pragma mark Internal
