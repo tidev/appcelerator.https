@@ -8,7 +8,7 @@ import zipfile
 from datetime import date
 
 
-configuration = "Debug"
+configuration = "Release"
 
 def add_symlinks():
         print "MDL: add_symlinks"
