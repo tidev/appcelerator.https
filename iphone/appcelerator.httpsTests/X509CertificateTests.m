@@ -1,13 +1,9 @@
-//
-//  X509CertificateTests.m
-//  CertificatePinningSecurityManager
-//
-//  Created by Matt Langston on 5/19/14.
+//  Author: Matt Langston
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
-//
 
 #import "AbstractBaseTest.h"
 #import "X509Certificate.h"
+#import "AppceleratorHttps.h"
 
 @interface X509CertificateTests : AbstractBaseTest
 @end
@@ -31,7 +27,7 @@
     NSURL *certificateURL = self.certificateURLDict[@"*.prod.ace.appcelerator.com-1"];
     XCTAssertNotNil(certificateURL);
 
-    X509Certificate *certificate = [X509Certificate X509CertificateWithURL:certificateURL];
+    X509Certificate *certificate = [X509Certificate x509CertificateWithURL:certificateURL];
     XCTAssertNotNil(certificate);
 }
 
@@ -43,8 +39,8 @@
     XCTAssertNotNil(certificateURL1);
     XCTAssertNotNil(certificateURL2);
 
-    X509Certificate *certificate1 = [X509Certificate X509CertificateWithURL:certificateURL1];
-    X509Certificate *certificate2 = [X509Certificate X509CertificateWithURL:certificateURL2];
+    X509Certificate *certificate1 = [X509Certificate x509CertificateWithURL:certificateURL1];
+    X509Certificate *certificate2 = [X509Certificate x509CertificateWithURL:certificateURL2];
 
     XCTAssertNotNil(certificate1);
     XCTAssertNotNil(certificate2);

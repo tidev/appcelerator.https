@@ -1,10 +1,5 @@
-//
-//  AbstractBaseTest.m
-//  CertificatePinningSecurityManager
-//
-//  Created by Matt Langston on 5/19/14.
+//  Author: Matt Langston
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
-//
 
 #import "AbstractBaseTest.h"
 
@@ -65,8 +60,8 @@
     XCTAssertNotNil(url1);
     XCTAssertNotNil(url2);
     
-    NSLog(@"url1 = %@", url1);
-    NSLog(@"url2 = %@", url2);
+//    NSLog(@"url1 = %@", url1);
+//    NSLog(@"url2 = %@", url2);
     
     XCTAssertNotEqualObjects(url1, url2);
 }

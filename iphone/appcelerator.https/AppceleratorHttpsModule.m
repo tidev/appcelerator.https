@@ -1,12 +1,5 @@
-/**
- * Appcelerator.Https Module - Authenticate server in HTTPS connections made by
- * TiHTTPClient.
- *
- * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
- *
- * Licensed under the terms of the Appcelerator Commercial License.
- * Please see the LICENSE included with this distribution for details.
- */
+//  Author: Matt Langston
+//  Copyright (c) 2014 Appcelerator. All rights reserved.
 
 #import "AppceleratorHttpsModule.h"
 #import "X509CertificatePinningSecurityManagerProxy.h"
@@ -22,8 +15,8 @@
 }
 
 -(id)createX509CertificatePinningSecurityManager:(id)args {
-#ifndef NDEBUG
-    NSLog(@"[%@] createX509CertificatePinningSecurityManager, args = %@", self.moduleId, args);
+#ifdef DEBUG
+    NSLog(@"%s args = %@", __PRETTY_FUNCTION__, args);
 #endif
     return [[X509CertificatePinningSecurityManagerProxy alloc] _initWithPageContext:self.pageContext args:args];
 }

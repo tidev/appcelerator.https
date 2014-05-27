@@ -1,13 +1,9 @@
-//
-//  PinnedURLTests.m
-//  CertificatePinningSecurityManager
-//
-//  Created by Matt Langston on 5/20/14.
+//  Author: Matt Langston
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
-//
 
 #import "AbstractBaseTest.h"
 #import "PinnedURL.h"
+#import "AppceleratorHttps.h"
 
 @interface PinnedURLTests : AbstractBaseTest
 @end
@@ -31,16 +27,16 @@
     NSURL *certificateURL = self.certificateURLDict[@"*.prod.ace.appcelerator.com-1"];
     XCTAssertNotNil(certificateURL);
     
-    X509Certificate *certificate = [X509Certificate X509CertificateWithURL:certificateURL];
+    X509Certificate *certificate = [X509Certificate x509CertificateWithURL:certificateURL];
     XCTAssertNotNil(certificate);
     
-    PublicKey *publicKey = [PublicKey PublicKeyWithX509Certificate:certificate];
+    PublicKey *publicKey = [PublicKey publicKeyWithX509Certificate:certificate];
     XCTAssertNotNil(publicKey);
 
     NSURL *url = [NSURL URLWithString:@"https://71616668e3201581811ab36226837d53409a9ab0.prod.ace.appcelerator.com"];
     NSLog(@"host = %@", url.host);
     
-    PinnedURL *pinnedURL = [PinnedURL PinnedURLWithURL:url andPublicKey:publicKey];
+    PinnedURL *pinnedURL = [PinnedURL pinnedURLWithURL:url andPublicKey:publicKey];
     XCTAssertNotNil(pinnedURL);
     
     XCTAssertEqualObjects(@"71616668e3201581811ab36226837d53409a9ab0.prod.ace.appcelerator.com", pinnedURL.host);
