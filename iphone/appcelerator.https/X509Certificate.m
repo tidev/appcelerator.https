@@ -83,13 +83,18 @@
     NSLog(@"%s dataWithContentsOfURL returned %@ bytes", __PRETTY_FUNCTION__, @(certificateNSData.length));
 #endif
 
-    // __bridge means do not trasfer ownership from Objective-C ARC.
+    // __bridge means do not transfer ownership from Objective-C ARC.
     CFDataRef certificateCFData = (__bridge CFDataRef)certificateNSData;
     
     // Call the designated initializer.
-    SecCertificateRef certificate = SecCertificateCreateWithData(NULL, certificateCFData);
-    self = [self initWithSecCertificate:certificate];
-    CFRelease(certificate);
+    SecCertificateRef certificate;
+    @try {
+        certificate = SecCertificateCreateWithData(NULL, certificateCFData);
+        self = [self initWithSecCertificate:certificate];
+    }
+    @finally {
+        CFRelease(certificate);
+    }
   
     return self;
 }
