@@ -6,7 +6,7 @@
 #ifndef appcelerator_https_AppceleratorHttps_h
 #define appcelerator_https_AppceleratorHttps_h
 
-#ifdef NSLog
+#if defined(NSLog) && defined(APPCELERATOR_HTTPS_DEBUG)
 #undef NSLog
 
 /*!
