@@ -13,6 +13,7 @@
 		C9078D19192E4E1400B7BDDE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9078D18192E4E1400B7BDDE /* UIKit.framework */; };
 		C9078D1C192E4E1400B7BDDE /* libappcelerator.https.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9078D04192E4E1400B7BDDE /* libappcelerator.https.a */; };
 		C9078D22192E4E1400B7BDDE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C9078D20192E4E1400B7BDDE /* InfoPlist.strings */; };
+		C90DD284193251AB0084E138 /* AppceleratorHttpsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = C90DD283193251AB0084E138 /* AppceleratorHttpsUtils.m */; };
 		C944826C192E825B00ECCC14 /* PinnedURL.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448263192E825B00ECCC14 /* PinnedURL.m */; };
 		C944826D192E825B00ECCC14 /* PublicKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448265192E825B00ECCC14 /* PublicKey.m */; };
 		C944826E192E825B00ECCC14 /* SecurityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448267192E825B00ECCC14 /* SecurityManager.m */; };
@@ -62,6 +63,9 @@
 		C9078D18192E4E1400B7BDDE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		C9078D1F192E4E1400B7BDDE /* appcelerator.httpsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "appcelerator.httpsTests-Info.plist"; sourceTree = "<group>"; };
 		C9078D21192E4E1400B7BDDE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		C90DD282193251AB0084E138 /* AppceleratorHttpsUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppceleratorHttpsUtils.h; sourceTree = "<group>"; };
+		C90DD283193251AB0084E138 /* AppceleratorHttpsUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppceleratorHttpsUtils.m; sourceTree = "<group>"; };
+		C92CA6B919315132004D76D9 /* AppceleratorHttps.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppceleratorHttps.h; sourceTree = "<group>"; };
 		C9448262192E825B00ECCC14 /* PinnedURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PinnedURL.h; sourceTree = "<group>"; };
 		C9448263192E825B00ECCC14 /* PinnedURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PinnedURL.m; sourceTree = "<group>"; };
 		C9448264192E825B00ECCC14 /* PublicKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PublicKey.h; sourceTree = "<group>"; };
@@ -144,6 +148,9 @@
 		C9078D09192E4E1400B7BDDE /* appcelerator.https */ = {
 			isa = PBXGroup;
 			children = (
+				C92CA6B919315132004D76D9 /* AppceleratorHttps.h */,
+				C90DD282193251AB0084E138 /* AppceleratorHttpsUtils.h */,
+				C90DD283193251AB0084E138 /* AppceleratorHttpsUtils.m */,
 				C9A3A158192E530E00FC7696 /* AppceleratorHttpsModule.h */,
 				C9A3A159192E530E00FC7696 /* AppceleratorHttpsModule.m */,
 				C9A3A15F192E704400FC7696 /* X509CertificatePinningSecurityManagerProxy.h */,
@@ -299,6 +306,7 @@
 				C944826E192E825B00ECCC14 /* SecurityManager.m in Sources */,
 				C9448270192E825B00ECCC14 /* X509Certificate.m in Sources */,
 				C944826D192E825B00ECCC14 /* PublicKey.m in Sources */,
+				C90DD284193251AB0084E138 /* AppceleratorHttpsUtils.m in Sources */,
 				C944826C192E825B00ECCC14 /* PinnedURL.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -370,7 +378,6 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
-				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;

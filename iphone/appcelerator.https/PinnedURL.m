@@ -2,20 +2,22 @@
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
 
 #import "PinnedURL.h"
-
-@interface PinnedURL ()
-@end
-
+#import "AppceleratorHttps.h"
 
 @implementation PinnedURL
 
-+(instancetype)PinnedURLWithURL:(NSURL *)url andPublicKey:(PublicKey *)publicKey {
-    PinnedURL *pinnedURL = [[PinnedURL alloc] initWithURL:url andPublicKey:publicKey];
-    return pinnedURL;
++(instancetype)pinnedURLWithURL:(NSURL *)url andPublicKey:(PublicKey *)publicKey {
+#ifdef DEBUG
+    NSLog(@"%s", __PRETTY_FUNCTION__);
+#endif
+    return [[PinnedURL alloc] initWithURL:url andPublicKey:publicKey];
 }
 
 // Designated initializer.
 -(instancetype)initWithURL:(NSURL *)url andPublicKey:(PublicKey *) publicKey {
+#ifdef DEBUG
+    NSLog(@"%s url = %@, publicKey = %@", __PRETTY_FUNCTION__, url, publicKey);
+#endif
     self = [super init];
     if (self) {
         if (!(nil != url)) {
@@ -95,6 +97,10 @@
     result *= prime + self.host.hash;
     result *= prime + self.publicKey.hash;
     return result;
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@: %@, %@", NSStringFromClass(self.class), self.host, self.publicKey];
 }
 
 @end

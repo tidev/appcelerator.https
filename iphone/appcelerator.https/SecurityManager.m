@@ -3,6 +3,8 @@
 
 #import "SecurityManager.h"
 #import "PinnedURL.h"
+#import "AppceleratorHttpsUtils.h"
+#import "AppceleratorHttps.h"
 
 // Private extensions required by the implementation of SecurityManager.
 @interface SecurityManager ()
@@ -16,13 +18,19 @@
 
 @implementation SecurityManager
 
-+(instancetype)SecurityManagerWithPinnedUrlSet:(NSSet *)pinnedUrlSet {
-    SecurityManager *securityManager = [[SecurityManager alloc] initWithPinnedURLs:pinnedUrlSet];
-    return securityManager;
++(instancetype)securityManagerWithPinnedUrlSet:(NSSet *)pinnedUrlSet {
+#ifdef DEBUG
+    NSLog(@"%s", __PRETTY_FUNCTION__);
+#endif
+    return [[SecurityManager alloc] initWithPinnedURLs:pinnedUrlSet];
 }
 
 // Designated initializer.
 -(instancetype)initWithPinnedURLs:(NSSet *)pinnedUrlSet {
+#ifdef DEBUG
+    NSLog(@"%s pinnedUrlSet = %@", __PRETTY_FUNCTION__, pinnedUrlSet);
+#endif
+    
     self = [super init];
     if (self) {
         if (!(nil != pinnedUrlSet)) {
@@ -93,6 +101,9 @@
 // Return FALSE unless this security manager was specifically configured to
 // handle this URL.
 -(BOOL) willHandleURL:(NSURL*)url {
+#ifdef DEBUG
+    NSLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
+#endif
     if (url == nil) {
         return FALSE;
     }
@@ -102,18 +113,26 @@
     // since URL components are case-insensitive as described in RFCs 1808,
     // 1738, and 2732.
     if ([url.scheme localizedCaseInsensitiveCompare:@"https"] != NSOrderedSame) {
-        NSLog(@"[WARN] Do not handle URL scheme %@ (the scheme must be https for us to handle it)");
+        NSLog(@"[WARN] Do not handle URL scheme %@ (the scheme must be https for us to handle it)", url.scheme);
         return FALSE;
     }
     
     // Normalize the host to lower case.
     NSString *host = [url.host lowercaseString];
     BOOL containsHostName = (self.dnsNameToPublicKeyMap[host] != nil);
+
+#ifdef DEBUG
+    NSLog(@"%s returns %@ for url = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(containsHostName), url);
+#endif
+
     return containsHostName;
 }
 
 // If this security manager was configured to handle this url then return self.
 -(id<APSConnectionDelegate>) connectionDelegateForUrl:(NSURL*)url {
+#ifdef DEBUG
+    NSLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
+#endif
     if ([self willHandleURL:url]) {
         return self;
     } else {
@@ -127,20 +146,30 @@
 // validation (aka NSURLAuthenticationMethodServerTrust) and this security
 // manager was configured to handle the current url.
 -(BOOL)willHandleChallenge:(NSURLAuthenticationChallenge *)challenge forConnection:(NSURLConnection *)connection {
+#ifdef DEBUG
+    NSLog(@"%s challenge = %@, connection = %@", __PRETTY_FUNCTION__, challenge, connection);
+#endif
+    BOOL result = FALSE;
     if ([challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust])
     {
         NSURL *currentURL = connection.currentRequest.URL;
-        return [self willHandleURL:currentURL];
+        result = [self willHandleURL:currentURL];
     }
     
-    return FALSE;
+#ifdef DEBUG
+    NSLog(@"%s returns %@, challenge = %@, connection = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(result), challenge, connection);
+#endif
+    return result;
 }
 
 #pragma mark NSURLConnectionDelegate methods
 
 - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-    if ([[[challenge protectionSpace] authenticationMethod] isEqualToString: NSURLAuthenticationMethodServerTrust])
+#ifdef DEBUG
+    NSLog(@"%s connection = %@, challenge = %@", __PRETTY_FUNCTION__, connection, challenge);
+#endif
+    if ([challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust])
     {
         // It is a logic error (i.e. a bug in Titanium) if this method is
         // called with a URL the security manager was not configured to
@@ -157,26 +186,44 @@
 
         do
         {
-            SecTrustRef serverTrust = [[challenge protectionSpace] serverTrust];
-            if(!(nil != serverTrust)) break; /* failed */
+            SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
+            if(!(nil != serverTrust)) {
+#ifdef DEBUG
+                NSLog(@"%s FAIL: challenge.protectionSpace.serverTrust is nil", __PRETTY_FUNCTION__);
+#endif
+                break; /* failed */
+            }
             
             // SecTrustEvaluate performs customary X509
             // checks. Unusual conditions will cause the function to
             // return *non-success*. Unusual conditions include an
             // expired certifcate or self signed certifcate.
             OSStatus status = SecTrustEvaluate(serverTrust, NULL);
-            if(!(errSecSuccess == status)) break; /* failed */
-            
+            if(!(errSecSuccess == status)) {
+#ifdef DEBUG
+                NSLog(@"%s FAIL: standard TLS validation failed. SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
+#endif
+                break; /* failed */
+            }
+
+#ifdef DEBUG
+            NSLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
+#endif
+
             // Normalize the server's host name to lower case.
             NSString *host = [connection.currentRequest.URL.host lowercaseString];
             
+#ifdef DEBUG
+            NSLog(@"%s Normalized host name = %@", __PRETTY_FUNCTION__, host);
+#endif
+
             // Get the PinnedURL for this server.
-            PinnedURL *pinnedURL = self.dnsNameToPublicKeyMap[host];
+            PublicKey *pinnedPublicKey = self.dnsNameToPublicKeyMap[host];
 
             // It is a logic error (a bug in this SecurityManager class) if this
             // security manager does not have a PinnedURL for this server.
-            if (!(nil != pinnedURL)) {
-                NSString *reason = [NSString stringWithFormat:@"LOGIC ERROR: appcelerator.https module bug: SecurityManager could not find a PinnedURL for host \"%@\". Please report this issue to us at https://jira.appcelerator.org/browse/MOD-1706", connection.currentRequest.URL.host];
+            if (!(nil != pinnedPublicKey)) {
+                NSString *reason = [NSString stringWithFormat:@"LOGIC ERROR: appcelerator.https module bug: SecurityManager could not find a PublicKey for host \"%@\". Please report this issue to us at https://jira.appcelerator.org/browse/MOD-1706", connection.currentRequest.URL.host];
                 NSDictionary *userInfo = @{ @"connection" : connection };
                 NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                                  reason:reason
@@ -185,13 +232,22 @@
                 @throw exception;
             }
             
+#ifdef DEBUG
+            NSLog(@"%s host %@ pinned to publicKey %@", __PRETTY_FUNCTION__, host, pinnedPublicKey);
+#endif
+
             // Obtain the server's X509 certificate and public key.
             SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0);
-            if(!(nil != serverCertificate)) break;  /* failed */
+            if(!(nil != serverCertificate)) {
+#ifdef DEBUG
+                NSLog(@"%s FAIL: Could not find the server's X509 certificate in serverTrust", __PRETTY_FUNCTION__);
+#endif
+                break;  /* failed */
+            }
             
             // Create a friendlier Objective-C wrapper around this server's X509
             // certificate.
-            X509Certificate *x509Certificate = [X509Certificate X509CertificateWithSecCertificate:serverCertificate];
+            X509Certificate *x509Certificate = [X509Certificate x509CertificateWithSecCertificate:serverCertificate];
             if (!(nil != x509Certificate)) {
                 // CFBridgingRelease transfer's ownership of the CFStringRef
                 // returned by CFCopyDescription to ARC.
@@ -205,6 +261,9 @@
                 @throw exception;
             }
             
+#ifdef DEBUG
+            NSLog(@"%s server's X509 certificate = %@", __PRETTY_FUNCTION__, x509Certificate);
+#endif
             // Get the public key from this server's X509 certificate.
             PublicKey *serverPublicKey = x509Certificate.publicKey;
             if (!(nil != serverPublicKey)) {
@@ -217,14 +276,21 @@
                 @throw exception;
             }
             
+#ifdef DEBUG
+            NSLog(@"%s server's public key = %@", __PRETTY_FUNCTION__, serverPublicKey);
+#endif
+
             // Compare the public keys. If they match, then the server is
             // authenticated.
-            BOOL publicKeysAreEqual = [pinnedURL.publicKey isEqualToPublicKey:serverPublicKey];
+            BOOL publicKeysAreEqual = [pinnedPublicKey isEqualToPublicKey:serverPublicKey];
             if(!(YES == publicKeysAreEqual)) {
-                NSLog(@"[WARN] Potential \"Man-in-the-Middle\" attack detected since host %@ does not hold the private key corresponding to the public key %@.", host, pinnedURL.publicKey);
+                NSLog(@"[WARN] Potential \"Man-in-the-Middle\" attack detected since host %@ does not hold the private key corresponding to the public key %@.", host, pinnedPublicKey);
                 break; /* failed */
             }
             
+#ifdef DEBUG
+            NSLog(@"%s publicKeysAreEqual = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(publicKeysAreEqual));
+#endif
             // Return success since the server holds the private key
             // corresponding to the public key held bu this security manager.
             return [challenge.sender useCredential:[NSURLCredential credentialForTrust:serverTrust] forAuthenticationChallenge:challenge];
@@ -233,7 +299,7 @@
     }
     
     // Return fail.
-    return [[challenge sender] cancelAuthenticationChallenge:challenge];
+    return [challenge.sender cancelAuthenticationChallenge:challenge];
 }
 
 #pragma mark - NSObject
@@ -254,5 +320,8 @@
     return self.pinnedUrlSet.hash;
 }
 
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@: %@", NSStringFromClass(self.class), self.pinnedUrlSet];
+}
 
 @end

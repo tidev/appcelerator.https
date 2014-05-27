@@ -1,14 +1,10 @@
-//
-//  SecurityManagerTests.m
-//  appcelerator.https
-//
-//  Created by Matt Langston on 5/23/14.
+//  Author: Matt Langston
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
-//
 
 #import "AbstractBaseTest.h"
 #import "SecurityManager.h"
 #import "PinnedURL.h"
+#import "AppceleratorHttps.h"
 
 @interface SecurityManagerTests : AbstractBaseTest
 
@@ -36,8 +32,8 @@
     XCTAssertNotNil(certificateURL1);
     XCTAssertNotNil(certificateURL2);
     
-    X509Certificate *certificate1 = [X509Certificate X509CertificateWithURL:certificateURL1];
-    X509Certificate *certificate2 = [X509Certificate X509CertificateWithURL:certificateURL2];
+    X509Certificate *certificate1 = [X509Certificate x509CertificateWithURL:certificateURL1];
+    X509Certificate *certificate2 = [X509Certificate x509CertificateWithURL:certificateURL2];
     
     XCTAssertNotNil(certificate1);
     XCTAssertNotNil(certificate2);
@@ -51,12 +47,12 @@
     NSLog(@"host = %@", url2.host);
     
     NSMutableSet *pinnedUrlSet = [NSMutableSet set];
-    [pinnedUrlSet addObject:[PinnedURL PinnedURLWithURL:url1 andPublicKey:certificate1.publicKey]];
-    [pinnedUrlSet addObject:[PinnedURL PinnedURLWithURL:url2 andPublicKey:certificate2.publicKey]];
+    [pinnedUrlSet addObject:[PinnedURL pinnedURLWithURL:url1 andPublicKey:certificate1.publicKey]];
+    [pinnedUrlSet addObject:[PinnedURL pinnedURLWithURL:url2 andPublicKey:certificate2.publicKey]];
     
     XCTAssertEqual(2, pinnedUrlSet.count);
     
-    SecurityManager *securityManager = [SecurityManager SecurityManagerWithPinnedUrlSet:pinnedUrlSet];
+    SecurityManager *securityManager = [SecurityManager securityManagerWithPinnedUrlSet:pinnedUrlSet];
     XCTAssertNotNil(securityManager);
 }
 

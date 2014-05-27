@@ -7,7 +7,11 @@ import os, subprocess, sys, glob, string
 import zipfile
 from datetime import date
 
+
+configuration = "Release"
+
 def add_symlinks():
+        print "DEBUG: add_symlinks"
 	if not os.path.islink('assets'):
 		os.symlink('../assets', 'assets')
 	if not os.path.islink('example'):
@@ -18,12 +22,14 @@ def add_symlinks():
 		os.symlink('../LICENSE', 'LICENSE')	
 
 def remove_symlinks():
+        print "DEBUG: remove_symlinks"
 	os.unlink('assets')
 	os.unlink('example')
 	os.unlink('documentation')
 	os.unlink('LICENSE')
 
 cwd = os.path.abspath(os.path.dirname(sys._getframe(0).f_code.co_filename))
+print "DEBUG: cwd = %s" % cwd
 os.chdir(cwd)
 required_module_keys = ['name','version','moduleid','description','copyright','license','copyright','platform','minsdk']
 module_defaults = {
@@ -35,10 +41,15 @@ module_defaults = {
 module_license_default = "TODO: place your license here and we'll include it in the module distribution"
 
 def find_sdk(config):
+        print "DEBUG: find_sdk, config = {}".format(config)
 	sdk = config['TITANIUM_SDK_DIR']
-	return os.path.expandvars(os.path.expanduser(sdk))
+        print "DEBUG: find_sdk, sdk = {}".format(sdk)
+        sdk_path = os.path.expandvars(os.path.expanduser(sdk))
+        print "DEBUG: find_sdk, sdk_path = {}".format(sdk_path)
+	return sdk_path
 
 def replace_vars(config,token):
+        print "DEBUG: replace_vars, config = {}, token = {}".format(config, token)
 	idx = token.find('$(')
 	while idx != -1:
 		idx2 = token.find(')',idx+2)
@@ -51,7 +62,9 @@ def replace_vars(config,token):
 
 
 def read_ti_xcconfig():
-	contents = open(os.path.join(cwd,'titanium.xcconfig')).read()
+        config_path = os.path.join(cwd,'titanium.xcconfig')
+        print "DEBUG: read_ti_xcconfig, config_path = {}".format(config_path)
+	contents = open(config_path).read()
 	config = {}
 	for line in contents.splitlines(False):
 		line = line.strip()
@@ -65,6 +78,7 @@ def read_ti_xcconfig():
 
 def generate_doc(config):
 	docdir = os.path.join(cwd,'documentation')
+        print "DEBUG: generate_doc, docdir = {}".format(docdir)
 	if not os.path.exists(docdir):
 		print "Couldn't find documentation file at: %s" % docdir
 		return None
@@ -83,6 +97,7 @@ def generate_doc(config):
 	return documentation
 
 def compile_js(manifest,config):
+        print "DEBUG: compile_js, manifest = {}, config = {}".format(manifest, config)
 	js_file = os.path.join(cwd,'assets','appcelerator.https.js')
 	if not os.path.exists(js_file): return
 
@@ -124,18 +139,22 @@ def compile_js(manifest,config):
 	exports.close()
 
 def die(msg):
+        print "DEBUG: die, msg = {}".format(msg)
 	print msg
 	sys.exit(1)
 
 def warn(msg):
+        print "DEBUG: warn, msg = {}".format(msg)
 	print "[WARN] %s" % msg
 
 def validate_license():
+        print "DEBUG: validate_license"
 	c = open(os.path.join(cwd,'LICENSE')).read()
 	if c.find(module_license_default)!=-1:
 		warn('please update the LICENSE file with your license text before distributing')
 
 def validate_manifest():
+        print "DEBUG: validate_manifest"
 	path = os.path.join(cwd,'manifest')
 	f = open(path)
 	if not os.path.exists(path): die("missing %s" % path)
@@ -158,6 +177,7 @@ ignoreFiles = ['.DS_Store','.gitignore','libTitanium.a','titanium.jar','README']
 ignoreDirs = ['.DS_Store','.svn','.git','CVSROOT']
 
 def zip_dir(zf,dir,basepath,ignoreExt=[]):
+        print "DEBUG: zip_dir, dir = {}, ignoreExt = {}".format(dir, ignoreExt)
 	if not os.path.exists(dir): return
 	for root, dirs, files in os.walk(dir):
 		for name in ignoreDirs:
@@ -172,31 +192,41 @@ def zip_dir(zf,dir,basepath,ignoreExt=[]):
 			zf.write(from_, to_)
 
 def glob_libfiles():
+        print "DEBUG: glob_libfiles"
 	files = []
 	for libfile in glob.glob('build/**/*.a'):
-		if libfile.find('Release-')!=-1:
+		if libfile.find(configuration)!=-1:
 			files.append(libfile)
 	return files
 
 def build_module(manifest,config):
+        print "DEBUG: build_module, manifest = {}, config = {}".format(manifest, config)
 	from tools import ensure_dev_path
 	ensure_dev_path()
 
-	rc = os.system("xcodebuild -sdk iphoneos -configuration Release")
+        sdk = "iphoneos"
+        cmd = "xcodebuild -sdk {} -configuration {}".format(sdk, configuration)
+	rc = os.system(cmd)
+	if rc != 0:
+                die("xcodebuild failed")
+
+        sdk = "iphonesimulator"
+        cmd = "xcodebuild -sdk {} -configuration {}".format(sdk, configuration)
+	rc = os.system(cmd)
 	if rc != 0:
 		die("xcodebuild failed")
-	rc = os.system("xcodebuild -sdk iphonesimulator -configuration Release")
-	if rc != 0:
-		die("xcodebuild failed")
-    # build the merged library using lipo
+        # build the merged library using lipo
 	moduleid = manifest['moduleid']
 	libpaths = ''
 	for libfile in glob_libfiles():
 		libpaths+='%s ' % libfile
 
-	os.system("lipo %s -create -output build/lib%s.a" %(libpaths,moduleid))
+        lipo_cmd = "lipo {} -create -output build/lib{}.a".format(libpaths, moduleid)
+        print "DEBUG: lipo_cmd = {}".format(lipo_cmd)
+	os.system(lipo_cmd)
 
 def package_module(manifest,mf,config):
+        print "DEBUG: package_module, manifest = {}, config = {}".format(manifest, config)
 	name = manifest['name'].lower()
 	moduleid = manifest['moduleid'].lower()
 	version = manifest['version']

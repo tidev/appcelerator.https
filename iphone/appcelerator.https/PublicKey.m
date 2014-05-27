@@ -2,20 +2,22 @@
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
 
 #import "PublicKey.h"
-
-@interface PublicKey ()
-@end
-
+#import "AppceleratorHttps.h"
 
 @implementation PublicKey
 
-+(instancetype)PublicKeyWithX509Certificate:(X509Certificate *)x509Certificate {
-    PublicKey *publicKey = [[PublicKey alloc] initWithX509Certificate:x509Certificate];
-    return publicKey;
++(instancetype)publicKeyWithX509Certificate:(X509Certificate *)x509Certificate {
+#ifdef DEBUG
+    NSLog(@"%s", __PRETTY_FUNCTION__);
+#endif
+    return [[PublicKey alloc] initWithX509Certificate:x509Certificate];
 }
 
 // Designated initializer.
 -(instancetype)initWithX509Certificate:(X509Certificate *)x509Certificate {
+#ifdef DEBUG
+    NSLog(@"%s x509Certificate = %@", __PRETTY_FUNCTION__, x509Certificate);
+#endif
     self = [super init];
     if (self) {
         if (!(nil != x509Certificate)) {
@@ -33,8 +35,12 @@
         SecTrustRef  trust  = NULL;
         @try {
             policy = SecPolicyCreateBasicX509();
-            OSStatus status = SecTrustCreateWithCertificates(x509Certificate.certificate, policy, &trust);
-            //assert(errSecSuccess == status);
+            OSStatus status = SecTrustCreateWithCertificates(x509Certificate.SecCertificate, policy, &trust);
+
+#ifdef DEBUG
+            NSLog(@"%s SecTrustCreateWithCertificates returned %@ for %@", __PRETTY_FUNCTION__, @(status), x509Certificate);
+#endif
+
             if (!(errSecSuccess == status)) {
                 NSString *reason = [NSString stringWithFormat:@"SecTrustCreateWithCertificates returned result code %@", @(status)];
                 NSDictionary *userInfo = @{ @"OSStatus" : @(status) };
@@ -49,7 +55,11 @@
             // We need to call SecTrustEvaluate before calling
             // SecTrustCopyPublicKey.
             status = SecTrustEvaluate(trust, NULL);
-            //assert(errSecSuccess == status);
+
+#ifdef DEBUG
+            NSLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
+#endif
+            
             if (!(errSecSuccess == status)) {
                 NSString *reason = [NSString stringWithFormat:@"SecTrustEvaluate returned result code %@", @(status)];
                 NSDictionary *userInfo = @{ @"OSStatus" : @(status) };
@@ -61,8 +71,9 @@
                 @throw exception;
             }
             
-            _publicKey = SecTrustCopyPublicKey(trust);
-            if (!(NULL != _publicKey)) {
+            _SecKey = SecTrustCopyPublicKey(trust);
+
+            if (!(NULL != _SecKey)) {
                 NSString *reason = @"SecTrustCopyPublicKey returned NULL";
                 NSDictionary *userInfo = nil;
                 NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
@@ -72,8 +83,18 @@
                 self = nil;
                 @throw exception;
             }
+
+#ifdef DEBUG
+            // CFBridgingRelease transfer's ownership of the CFStringRef
+            // returned by CFCopyDescription to ARC.
+            NSString *secKeyDescription = (NSString *)CFBridgingRelease(CFCopyDescription(_SecKey));
+            NSLog(@"%s SecTrustCopyPublicKey returned %@", __PRETTY_FUNCTION__, secKeyDescription);
+#endif
         }
         @catch (NSException *exception) {
+#ifdef DEBUG
+            NSLog(@"%s caught exception %@", __PRETTY_FUNCTION__, exception);
+#endif
             // Rethrow the exception so it's handled at a higher level.
             @throw;
         }
@@ -87,8 +108,8 @@
 }
 
 - (void) dealloc {
-    if (_publicKey) {
-        CFRelease(_publicKey);
+    if (_SecKey) {
+        CFRelease(_SecKey);
     }
 }
 
@@ -97,7 +118,7 @@
         return NO;
     }
     
-    BOOL equal = CFEqual(self.publicKey, rhs.publicKey);
+    BOOL equal = CFEqual(self.SecKey, rhs.SecKey);
     return equal;
 }
 
@@ -116,7 +137,11 @@
 }
 
 - (NSUInteger)hash {
-    return CFHash(self.publicKey);
+    return CFHash(self.SecKey);
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@: %@", NSStringFromClass(self.class), self.SecKey];
 }
 
 @end

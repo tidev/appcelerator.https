@@ -7,18 +7,13 @@
 #import "X509Certificate.h"
 
 /*!
- @class PublicKey
- 
- @abstract
- 
- A PublicKey is an Objective-C wrapper around the C interface
- SecKeyRef from Apple's Security Framework.
-
  @discussion
+ An Objective-C wrapper around the C interface SecKeyRef from Apple's
+ Security Framework.
  
- The PublicKey class provides an easier to use, and more robust,
- interface to the SecKeyRef opaque type (a C interface) from Apple's
- Security Framework. The benefits this class provides are:
+ This class provides an easier to use, and more robust, interface to
+ the SecKeyRef opaque type (a C interface) from Apple's Security
+ Framework. The benefits this class provides are:
  
  1. Easier initialization by using an X509Certificate, which is itself
     an Objective-C wrapper around a DER encoded X509 certificate.
@@ -41,45 +36,40 @@
  
  NSURL *url = [[NSBundle mainBundle] URLForResource:@"www.foo.com" withExtension: @"cer"];
  X509Certificate *x509Certificate = [X509Certificate X509CertificateWithURL:url];
- PublicKey *publicKey = [PublicKey PublicKeyWithX509Certificate:x509Certificate];
+ PublicKey *publicKey = x509Certificate.publicKey;
 */
 @interface PublicKey : NSObject
 
 /*!
-  @function PublicKeyWithX509Certificate
   @abstract Convenience factory method to create PublicKey objects.
   @param x509Certificate The X509 certificate from which to extract the public key.
   @result The public key from the given X509 certificate, or nil if an exception is thrown
   @throws NSInvalidArgumentException
-  @seealso initWithX509Certificate: @/seealso
+  @seealso initWithX509Certificate:
  */
-+(instancetype)PublicKeyWithX509Certificate:(X509Certificate *)x509Certificate;
++(instancetype)publicKeyWithX509Certificate:(X509Certificate *)x509Certificate;
 
 /*!
-  @method initWithX509Certificate
-  @abstract Designated initializer.
+  @abstract Designated initializer. Initialize an instance from an X509Certificate.
   @param x509Certificate The X509 certificate from which to extract the public key.
   @throws NSInvalidArgumentException
-  @seealso X509CertificateWithURL: @/seealso
+  @seealso X509CertificateWithURL:
 */
 -(instancetype)initWithX509Certificate:(X509Certificate *)x509Certificate;
 
 /*!
- @property x509Certificate
  @abstract The X509 certificate used to instantiate this object.
  */
 @property (nonatomic, weak, readonly) X509Certificate *x509Certificate;
 
 /*!
- @property publicKey
  @abstract The SecKeyRef contained in the X509 certificate used to instantiate this object.
  */
-@property (nonatomic, strong, readonly) __attribute__((NSObject)) SecKeyRef publicKey;
+@property (nonatomic, strong, readonly) __attribute__((NSObject)) SecKeyRef SecKey;
 
 /*!
- @method isEqualToPublicKey
- @abstract Compare two PublicKey objects for value identity.
- @param rhs The PublicKey to compare with (rhs == "right hand side").
+ @abstract Compare two instances for value identity.
+ @param rhs The instance to compare with (rhs == "right hand side").
  @result TRUE if rhs is equal to this object.
  */
 - (BOOL)isEqualToPublicKey:(PublicKey *)rhs;
