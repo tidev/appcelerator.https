@@ -9,7 +9,7 @@
 
 /*!
  @discussion
- An instance of this class authenticates a currated set of HTTPS
+ An instance of this class authenticates a curated set of HTTPS
  servers. It does this by "pinning" an HTTPS server's DNS name to the
  public key contained in the X509 certificate it uses for TLS
  communication. The public key is embedded in an app by adding this
