@@ -1,10 +1,5 @@
-//
-//  AbstractBaseTest.h
-//  CertificatePinningSecurityManager
-//
-//  Created by Matt Langston on 5/19/14.
+//  Author: Matt Langston
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
-//
 
 #import <XCTest/XCTest.h>
 
