@@ -1,10 +1,5 @@
-//
-//  X509CertificatePinningSecurityManager.m
-//  appcelerator.https
-//
-//  Created by Matt Langston on 5/22/14.
+//  Author: Matt Langston
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
-//
 
 #import "X509CertificatePinningSecurityManagerProxy.h"
 #include <libkern/OSAtomic.h>
@@ -41,9 +36,9 @@ static int32_t proxyCount = 0;
     self = [super init];
     if (self) {
         _proxyId = OSAtomicIncrement32(&proxyCount);
-        _proxyName = [NSString stringWithFormat:@"X509CertificatePinningSecurityManagerProxy %d", _proxyId];
-#ifndef NDEBUG
-        NSLog(@"[%@] init", _proxyName);
+        _proxyName = [NSString stringWithFormat:@"%@ %d", NSStringFromClass(self.class), _proxyId];
+#ifdef DEBUG
+        NSLog(@"%s, proxyId = %@, proxyName = %@", __PRETTY_FUNCTION__, @(_proxyId), _proxyName);
 #endif
     }
     
@@ -52,8 +47,8 @@ static int32_t proxyCount = 0;
 
 -(id)_initWithPageContext:(id<TiEvaluator>)context_ args:(NSArray *)args
 {
-#ifndef NDEBUG
-    NSLog(@"[%@] _initWithPageContext: properties = %@", self.proxyName, args);
+#ifdef DEBUG
+    NSLog(@"%s %@", __PRETTY_FUNCTION__, args);
 #endif
     
     // Validate the arguments the Titanium developer passed to the function
@@ -161,12 +156,15 @@ static int32_t proxyCount = 0;
         // The following factory methods are self-validating and will throw
         // NSInvalidArgumentException exceptions. If construction succeeds then
         // the objects are guaranteed to be in a good state.
-        X509Certificate *x509Certificate = [X509Certificate X509CertificateWithURL:certificateURL];
-        PinnedURL       *pinnedURL       = [PinnedURL PinnedURLWithURL:url andPublicKey:x509Certificate.publicKey];
+        X509Certificate *x509Certificate = [X509Certificate x509CertificateWithURL:certificateURL];
+        PinnedURL       *pinnedURL       = [PinnedURL pinnedURLWithURL:url andPublicKey:x509Certificate.publicKey];
         [pinnedUrlSet addObject:pinnedURL];
     }
     
-    _securityManager = [SecurityManager SecurityManagerWithPinnedUrlSet:pinnedUrlSet];
+    _securityManager = [SecurityManager securityManagerWithPinnedUrlSet:pinnedUrlSet];
+#ifdef DEBUG
+    NSLog(@"%s securityManager = %@", __PRETTY_FUNCTION__, _securityManager);
+#endif
     
 	return [super _initWithPageContext:context_ args:args];
 }
@@ -175,11 +173,17 @@ static int32_t proxyCount = 0;
 
 // Delegate to the SecurityManager.
 -(BOOL) willHandleURL:(NSURL*)url {
+#ifdef DEBUG
+    NSLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
+#endif
     return [self.securityManager willHandleURL:url];
 }
 
 // Delegate to the SecurityManager.
 -(id<APSConnectionDelegate>) connectionDelegateForUrl:(NSURL*)url {
+#ifdef DEBUG
+    NSLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
+#endif
     return [self.securityManager connectionDelegateForUrl:url];
 }
 
