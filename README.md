@@ -17,35 +17,38 @@ The following example does a simple secure GET request that prevents a
  */
 
 var https = require('appcelerator.https'),
-	securityManager,
 	httpClient;
 
 /*
- * Create a Security Manager for Titanium.Network.HTTPClient that
- * authenticates a currated set of HTTPS servers. It does this by
- * "pinning" an HTTPS server's URL to it's public key which I have
- * embedded in my app. The security manager will guarantee that all
- * HTTPClient connections to this URL are to a server that holds the
- * private key corresponding to the public key embedded in my app,
- * therefore authenticating the server.
+ * Configure the native platform to prevent a "Man-in-the-Middle"
+ * attack when communicating with HTTPS servers.
  *
- * This is what prevents the "Man-in-the-Middle" attack.
- *
- * In this example I am pinning two URLs.
+ * This is done by extending the native platform's URL Loading System
+ * to allow for authenticating an HTTPS server during the TLS
+ * handshake using a technique known as "public key pinning", which
+ * closes a security hole in the TLS specification. For more
+ * information about TLS see "RFC 5246 The Transport Layer Security
+ * (TLS) Protocol Version 1.2" at http://www.ietf.org/rfc/rfc5246.txt.
+ * 
+ * The native platform's URL Loading System is extended to allow for
+ * the authentication of a curated set of HTTPS servers by "pinning"
+ * the server's DNS name to the public key contained in the X509
+ * certificate it uses for TLS communication.
+ * 
+ * In this example two URLs are pinned.
  *
  * The first URL, https://dashboard.appcelerator.com, is pinned to the
  * public key in the X.509 certificate in the file named
- * dashboard.appcelerator.com.pem in my App's Resources directory.
+ * dashboard.appcelerator.com.cer in the App's Resources directory.
  *
  * The second URL, https://www.wellsfargo.com, is pinned to the public
- * key in the X.509 certificate in the file named wellsfargo.der in my
+ * key in the X.509 certificate in the file named wellsfargo.cer in my
  * App's Resources directory.
  *
  * The X.509 certificate files can have any name and extension you
- * wish, but they must be in either the standard PEM textual format or
- * the DER binary format.
+ * wish, but they must be in the standard DER binary format.
  */
-securityManager = https.createCertificatePinningSecurityManager([
+https.authenticateServers([
 	{
 		url: "https://dashboard.appcelerator.com",
 		serverCertificate: "dashboard.appcelerator.com.pem"
@@ -58,9 +61,7 @@ securityManager = https.createCertificatePinningSecurityManager([
 
 
 /*
- * Create an HTTP client the same way you always have, but pass in an
- * (optional) Security Manager. In this example, we pass in the
- * "Certificate Pinning Security Manager " that I configured above.
+ * Create an HTTP client the same way you always have.
  */
 httpClient = Ti.Network.createHTTPClient({
 	
@@ -72,17 +73,14 @@ httpClient = Ti.Network.createHTTPClient({
         Ti.API.debug(e.error);
     },
 	
-    timeout : 5000,				// in milliseconds
-
-	// This is new.
-	securityManager: securityManager
+    timeout : 5000				// in milliseconds
 });
 
 
 /*
  * Prepare and use the HTTPS connection in the same way you always
- * have and the Security Manager will authenticate all servers for
- * which it was configured before any communication happens.
+ * have and the platform will authenticate all servers for which it
+ * was configured before any communication happens.
  *
  * In this example, the server with the DNS name
  * dashboard.appcelerator.com will be authenticated before any
