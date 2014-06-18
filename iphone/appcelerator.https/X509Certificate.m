@@ -10,16 +10,12 @@
 @synthesize publicKey = _publicKey;
 
 +(instancetype)x509CertificateWithSecCertificate:(SecCertificateRef)secCertificate {
-#ifdef DEBUG
-    NSLog(@"%s", __PRETTY_FUNCTION__);
-#endif
+    DebugLog(@"%s", __PRETTY_FUNCTION__);
     return [[X509Certificate alloc] initWithSecCertificate:secCertificate];
 }
 
 +(instancetype)x509CertificateWithURL:(NSURL *)url {
-#ifdef DEBUG
-    NSLog(@"%s", __PRETTY_FUNCTION__);
-#endif
+    DebugLog(@"%s", __PRETTY_FUNCTION__);
     return [[X509Certificate alloc] initWithURL:url];
 }
 
@@ -53,9 +49,7 @@
 }
 
 -(instancetype)initWithURL:(NSURL *)url {
-#ifdef DEBUG
-    NSLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
-#endif
+    DebugLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
     // The URL must not be nill
     if (!(nil != url)) {
         NSString *reason = @"url must not be nil";
@@ -79,9 +73,7 @@
         @throw exception;
     }
     
-#ifdef DEBUG
-    NSLog(@"%s dataWithContentsOfURL returned %@ bytes", __PRETTY_FUNCTION__, @(certificateNSData.length));
-#endif
+    DebugLog(@"%s dataWithContentsOfURL returned %@ bytes", __PRETTY_FUNCTION__, @(certificateNSData.length));
 
     // __bridge means do not transfer ownership from Objective-C ARC.
     CFDataRef certificateCFData = (__bridge CFDataRef)certificateNSData;

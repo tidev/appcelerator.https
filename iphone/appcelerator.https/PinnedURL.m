@@ -7,17 +7,13 @@
 @implementation PinnedURL
 
 +(instancetype)pinnedURLWithURL:(NSURL *)url andPublicKey:(PublicKey *)publicKey {
-#ifdef DEBUG
-    NSLog(@"%s", __PRETTY_FUNCTION__);
-#endif
+    DebugLog(@"%s", __PRETTY_FUNCTION__);
     return [[PinnedURL alloc] initWithURL:url andPublicKey:publicKey];
 }
 
 // Designated initializer.
 -(instancetype)initWithURL:(NSURL *)url andPublicKey:(PublicKey *) publicKey {
-#ifdef DEBUG
-    NSLog(@"%s url = %@, publicKey = %@", __PRETTY_FUNCTION__, url, publicKey);
-#endif
+    DebugLog(@"%s url = %@, publicKey = %@", __PRETTY_FUNCTION__, url, publicKey);
     self = [super init];
     if (self) {
         if (!(nil != url)) {

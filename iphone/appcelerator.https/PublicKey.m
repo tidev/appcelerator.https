@@ -7,17 +7,13 @@
 @implementation PublicKey
 
 +(instancetype)publicKeyWithX509Certificate:(X509Certificate *)x509Certificate {
-#ifdef DEBUG
-    NSLog(@"%s", __PRETTY_FUNCTION__);
-#endif
+    DebugLog(@"%s", __PRETTY_FUNCTION__);
     return [[PublicKey alloc] initWithX509Certificate:x509Certificate];
 }
 
 // Designated initializer.
 -(instancetype)initWithX509Certificate:(X509Certificate *)x509Certificate {
-#ifdef DEBUG
-    NSLog(@"%s x509Certificate = %@", __PRETTY_FUNCTION__, x509Certificate);
-#endif
+    DebugLog(@"%s x509Certificate = %@", __PRETTY_FUNCTION__, x509Certificate);
     self = [super init];
     if (self) {
         if (!(nil != x509Certificate)) {
@@ -37,9 +33,7 @@
             policy = SecPolicyCreateBasicX509();
             OSStatus status = SecTrustCreateWithCertificates(x509Certificate.SecCertificate, policy, &trust);
 
-#ifdef DEBUG
-            NSLog(@"%s SecTrustCreateWithCertificates returned %@ for %@", __PRETTY_FUNCTION__, @(status), x509Certificate);
-#endif
+            DebugLog(@"%s SecTrustCreateWithCertificates returned %@ for %@", __PRETTY_FUNCTION__, @(status), x509Certificate);
 
             if (!(errSecSuccess == status)) {
                 NSString *reason = [NSString stringWithFormat:@"SecTrustCreateWithCertificates returned result code %@", @(status)];
@@ -56,9 +50,7 @@
             // SecTrustCopyPublicKey.
             status = SecTrustEvaluate(trust, NULL);
 
-#ifdef DEBUG
-            NSLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
-#endif
+            DebugLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
             
             if (!(errSecSuccess == status)) {
                 NSString *reason = [NSString stringWithFormat:@"SecTrustEvaluate returned result code %@", @(status)];
@@ -92,9 +84,7 @@
 #endif
         }
         @catch (NSException *exception) {
-#ifdef DEBUG
-            NSLog(@"%s caught exception %@", __PRETTY_FUNCTION__, exception);
-#endif
+            DebugLog(@"%s caught exception %@", __PRETTY_FUNCTION__, exception);
             // Rethrow the exception so it's handled at a higher level.
             @throw;
         }

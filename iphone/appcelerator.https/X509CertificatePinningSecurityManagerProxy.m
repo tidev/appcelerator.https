@@ -37,9 +37,7 @@ static int32_t proxyCount = 0;
     if (self) {
         _proxyId = OSAtomicIncrement32(&proxyCount);
         _proxyName = [NSString stringWithFormat:@"%@ %d", NSStringFromClass(self.class), _proxyId];
-#ifdef DEBUG
-        NSLog(@"%s, proxyId = %@, proxyName = %@", __PRETTY_FUNCTION__, @(_proxyId), _proxyName);
-#endif
+        DebugLog(@"%s, proxyId = %@, proxyName = %@", __PRETTY_FUNCTION__, @(_proxyId), _proxyName);
     }
     
     return self;
@@ -47,9 +45,7 @@ static int32_t proxyCount = 0;
 
 -(id)_initWithPageContext:(id<TiEvaluator>)context_ args:(NSArray *)args
 {
-#ifdef DEBUG
-    NSLog(@"%s %@", __PRETTY_FUNCTION__, args);
-#endif
+    DebugLog(@"%s %@", __PRETTY_FUNCTION__, args);
     
     // Validate the arguments the Titanium developer passed to the function
     // createX509CertificatePinningSecurityManager (defined in
@@ -162,9 +158,7 @@ static int32_t proxyCount = 0;
     }
     
     _securityManager = [SecurityManager securityManagerWithPinnedUrlSet:pinnedUrlSet];
-#ifdef DEBUG
-    NSLog(@"%s securityManager = %@", __PRETTY_FUNCTION__, _securityManager);
-#endif
+    DebugLog(@"%s securityManager = %@", __PRETTY_FUNCTION__, _securityManager);
     
 	return [super _initWithPageContext:context_ args:args];
 }
@@ -173,17 +167,13 @@ static int32_t proxyCount = 0;
 
 // Delegate to the SecurityManager.
 -(BOOL) willHandleURL:(NSURL*)url {
-#ifdef DEBUG
-    NSLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
-#endif
+    DebugLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
     return [self.securityManager willHandleURL:url];
 }
 
 // Delegate to the SecurityManager.
 -(id<APSConnectionDelegate>) connectionDelegateForUrl:(NSURL*)url {
-#ifdef DEBUG
-    NSLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
-#endif
+    DebugLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
     return [self.securityManager connectionDelegateForUrl:url];
 }
 
