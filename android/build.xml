@@ -27,7 +27,9 @@
   <symlink link="${basedir}/example" resource="${basedir}/../example" overwrite="true"/>
   <symlink link="${basedir}/assets" resource="${basedir}/../assets" overwrite="true"/>
   <symlink link="${basedir}/LICENSE" resource="${basedir}/../LICENSE" overwrite="true"/>
-  
+  <!-- Make an empty lib directory for the build system -->
+  <mkdir dir="${basedir}/lib"/>
+
   <import file="${titanium.platform}/../module/android/build.xml"/>
   
   <!--If these next couple of lines are uncommented then you will not be able to 'ant run' the example -->
