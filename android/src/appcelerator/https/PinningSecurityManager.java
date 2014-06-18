@@ -11,6 +11,7 @@ package appcelerator.https;
 
 import java.security.PublicKey;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.net.ssl.X509KeyManager;
@@ -56,8 +57,12 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	 * @return true if SecurityManagers will define SSL Context, false otherwise.
 	 */
 	@Override
-	public boolean willHandleURL(Uri uri) {		
-		if(uri != null) {
+	public boolean willHandleURL(Uri uri) {
+		if (uri == null) {
+			return false;
+		}
+		String scheme = uri.getScheme();
+		if (scheme != null && scheme.equalsIgnoreCase("https")) {
 			return hostConfigured(uri.getHost());
 		}
 		return false;
@@ -74,7 +79,7 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 		
 		if(theHost.length() > 0 && key != null) {
 			if (!hostConfigured(theHost)) {
-				supportedHosts.put(theHost, key);
+				supportedHosts.put(theHost.toLowerCase(Locale.ENGLISH), key);
 			} else {
 				throw new Exception("Duplicate host configuration.");
 			}
@@ -89,7 +94,8 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	 * @return - True if the host is configured, false otherwise.
 	 */
 	private boolean hostConfigured(String host) {
-		return supportedHosts.keySet().contains(host);
+		String theHost = (host == null) ? "" : host;
+		return supportedHosts.keySet().contains(theHost.toLowerCase(Locale.ENGLISH));
 	}
 
 	@Override

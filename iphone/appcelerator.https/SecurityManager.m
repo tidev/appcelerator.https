@@ -107,7 +107,7 @@
     // since URL components are case-insensitive as described in RFCs 1808,
     // 1738, and 2732.
     if ([url.scheme localizedCaseInsensitiveCompare:@"https"] != NSOrderedSame) {
-        NSLog(@"[WARN] Do not handle URL scheme %@ (the scheme must be https for us to handle it)", url.scheme);
+        DebugLog(@"[WARN] Do not handle URL scheme %@ (the scheme must be https for us to handle it)", url.scheme);
         return NO;
     }
     
