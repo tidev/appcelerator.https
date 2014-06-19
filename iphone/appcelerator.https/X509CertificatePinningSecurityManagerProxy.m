@@ -2,7 +2,6 @@
 //  Copyright (c) 2014 Appcelerator. All rights reserved.
 
 #import "X509CertificatePinningSecurityManagerProxy.h"
-#include <libkern/OSAtomic.h>
 
 #import "SecurityManager.h"
 #import "PinnedURL.h"
@@ -14,12 +13,6 @@
 // X509CertificatePinningSecurityManagerProxy.
 @interface X509CertificatePinningSecurityManagerProxy ()
 
-// A unique integer that identifies this proxy.
-@property (nonatomic, readonly) int32_t proxyId;
-
-// A unique name that identifies this proxy.
-@property (nonatomic, strong, readonly) NSString *proxyName;
-
 @property (nonatomic, strong, readonly) SecurityManager *securityManager;
 
 @end
@@ -28,16 +21,25 @@
 // This counter is used to identify a particular
 // X509CertificatePinningSecurityManagerProxy in log statements.
 static int32_t proxyCount = 0;
+static dispatch_queue_t syncQueue;
+
 
 
 @implementation X509CertificatePinningSecurityManagerProxy
 
++ (void) initialize{
+    syncQueue = dispatch_queue_create("appcelerator.https.syncQueue", NULL);
+}
+
 -(id)init {
     self = [super init];
     if (self) {
-        _proxyId = OSAtomicIncrement32(&proxyCount);
-        _proxyName = [NSString stringWithFormat:@"%@ %d", NSStringFromClass(self.class), _proxyId];
-        DebugLog(@"%s, proxyId = %@, proxyName = %@", __PRETTY_FUNCTION__, @(_proxyId), _proxyName);
+        
+        dispatch_sync(syncQueue, ^{
+            ++proxyCount;
+            NSString *proxyName = [NSString stringWithFormat:@"%@ %d", NSStringFromClass(self.class), proxyCount];
+            DebugLog(@"proxyId = %@, proxyName = %@", @(proxyCount), proxyName);
+        });
     }
     
     return self;
