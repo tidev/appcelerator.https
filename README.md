@@ -42,13 +42,12 @@ var https = require('appcelerator.https'),
  * App's Resources directory.
  *
  * The X.509 certificate files can have any name and extension you
- * wish, but they must be in either the standard PEM textual format or
- * the DER binary format.
+ * wish, but they must be in the DER binary format.
  */
-securityManager = https.createCertificatePinningSecurityManager([
+securityManager = https.createX509CertificatePinningSecurityManager([
 	{
 		url: "https://dashboard.appcelerator.com",
-		serverCertificate: "dashboard.appcelerator.com.pem"
+		serverCertificate: "dashboard.appcelerator.com.der"
 	},
 	{
 		url: "https://www.wellsfargo.com",
