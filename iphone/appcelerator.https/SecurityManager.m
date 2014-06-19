@@ -150,13 +150,6 @@
 
 #pragma mark NSURLConnectionDelegate methods
 
-- (BOOL)connectionShouldUseCredentialStorage:(NSURLConnection *)connection
-{
-    //Always authenticate server trust for any url we will be handling.
-    NSURL *currentURL = connection.currentRequest.URL;
-    return ![self willHandleURL:currentURL];
-}
-
 - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
     DebugLog(@"%s connection = %@, challenge = %@", __PRETTY_FUNCTION__, connection, challenge);
