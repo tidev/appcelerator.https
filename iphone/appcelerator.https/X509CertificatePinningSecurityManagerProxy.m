@@ -8,7 +8,7 @@
 #import "PinnedURL.h"
 #import "X509Certificate.h"
 #import "PublicKey.h"
-
+#import "TiUtils.h"
 
 // Private extensions required by the implementation of
 // X509CertificatePinningSecurityManagerProxy.
@@ -109,20 +109,6 @@ static int32_t proxyCount = 0;
             @throw exception;
         }
         
-        // It is an error if there are additional entries in the object,
-        // which is an indication that the Titanium developer is creating a
-        // SecurityManager incorrectly.
-        if (!(2 == pinnedURLDict.count)) {
-            NSString *reason = [NSString stringWithFormat:@"Unknown key(s) found in object used to construct X509CertificatePinningSecurityManager (only 'url' and 'serverCertificate' are allowed): %@", pinnedURLDict.allKeys];
-            NSDictionary *userInfo = @{ @"keys": pinnedURLDict.allKeys };
-            NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                             reason:reason
-                                                           userInfo:userInfo];
-            
-            self = nil;
-            @throw exception;
-        }
-
         NSURL *url = [NSURL URLWithString:urlString];
         if (!(nil != url)) {
             NSString *reason = [NSString stringWithFormat:@"Malformed URL string %@", urlString];
@@ -135,9 +121,7 @@ static int32_t proxyCount = 0;
             @throw exception;
         }
         
-        NSString *baseName       = [serverCertificate stringByDeletingPathExtension];
-        NSString *ext            = [serverCertificate pathExtension];
-        NSURL    *certificateURL = [[NSBundle mainBundle] URLForResource:baseName withExtension:ext];
+        NSURL *certificateURL = [TiUtils toURL:serverCertificate proxy:self];
         if (!(nil != certificateURL)) {
             NSString *reason = [NSString stringWithFormat:@"Could not find X509 certificate resource with file name %@", serverCertificate];
             NSDictionary *userInfo = @{ @"serverCertificate": serverCertificate };
