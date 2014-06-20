@@ -61,11 +61,7 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 		if (uri == null) {
 			return false;
 		}
-		String scheme = uri.getScheme();
-		if (scheme != null && scheme.equalsIgnoreCase("https")) {
-			return hostConfigured(uri.getHost());
-		}
-		return false;
+		return hostConfigured(uri.getHost());
 	}
 	
 	/**

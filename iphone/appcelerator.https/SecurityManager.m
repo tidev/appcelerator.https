@@ -101,15 +101,6 @@
     if (url == nil) {
         return NO;
     }
-
-    // The scheme must be https. Note the use of
-    // localizedCaseInsensitiveCompare, which is a secure coding practice
-    // since URL components are case-insensitive as described in RFCs 1808,
-    // 1738, and 2732.
-    if ([url.scheme localizedCaseInsensitiveCompare:@"https"] != NSOrderedSame) {
-        DebugLog(@"[WARN] Do not handle URL scheme %@ (the scheme must be https for us to handle it)", url.scheme);
-        return NO;
-    }
     
     // Normalize the host to lower case.
     NSString *host = [url.host lowercaseString];
