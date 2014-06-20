@@ -127,11 +127,10 @@
 // validation (aka NSURLAuthenticationMethodServerTrust) and this security
 // manager was configured to handle the current url.
 -(BOOL)willHandleChallenge:(NSURLAuthenticationChallenge *)challenge forConnection:(NSURLConnection *)connection {
-    DebugLog(@"%s challenge = %@, connection = %@", __PRETTY_FUNCTION__, challenge, connection);
     BOOL result = NO;
     if ([challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust])
     {
-        NSURL *currentURL = connection.currentRequest.URL;
+        NSURL *currentURL = [NSURL URLWithString:challenge.protectionSpace.host];
         result = [self willHandleURL:currentURL];
     }
     
