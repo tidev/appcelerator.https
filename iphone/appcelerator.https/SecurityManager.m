@@ -106,7 +106,7 @@
     NSString *host = [url.host lowercaseString];
     BOOL containsHostName = (self.dnsNameToPublicKeyMap[host] != nil);
 
-    DebugLog(@"%s returns %@ for url = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(containsHostName), url);
+    DebugLog(@"%s returns %@ for url = %@ host = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(containsHostName), url, host);
 
     return containsHostName;
 }
@@ -131,10 +131,13 @@
     if ([challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust])
     {
         NSURL *currentURL = [NSURL URLWithString:challenge.protectionSpace.host];
+        if (currentURL.scheme == nil) {
+            currentURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@",challenge.protectionSpace.host]];
+        }
         result = [self willHandleURL:currentURL];
     }
     
-    DebugLog(@"%s returns %@, challenge = %@, connection = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(result), challenge, connection);
+    DebugLog(@"%s returns %@, challenge = %@, connection = %@ URL = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(result), challenge, connection, challenge.protectionSpace.host);
     return result;
 }
 
