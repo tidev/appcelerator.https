@@ -28,7 +28,7 @@ var https = require('appcelerator.https');
  * public key in the X.509 certificate in the file named
  * wellsfargo.cer. This is intentionally an incorrect configuration.
  * Connections to https://www.americanexpress.com must fail since the 
- * public key presented bu the host will not match the configuration of the 
+ * public key presented by the host will not match the configuration of the 
  * security manager 
  *
  * The second URL, https://www.wellsfargo.com, is pinned to the public
