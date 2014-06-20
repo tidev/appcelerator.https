@@ -15,10 +15,9 @@
 }
 
 -(id)createX509CertificatePinningSecurityManager:(id)args {
-#ifdef DEBUG
-    NSLog(@"%s args = %@", __PRETTY_FUNCTION__, args);
-#endif
-    return [[X509CertificatePinningSecurityManagerProxy alloc] _initWithPageContext:self.pageContext args:args];
+    DebugLog(@"%s args = %@", __PRETTY_FUNCTION__, args);
+    id context = ([self executionContext]==nil)?[self pageContext]:[self executionContext];
+    return [[X509CertificatePinningSecurityManagerProxy alloc] _initWithPageContext:context args:args];
 }
 
 #pragma mark Internal

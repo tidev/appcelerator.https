@@ -19,17 +19,13 @@
 @implementation SecurityManager
 
 +(instancetype)securityManagerWithPinnedUrlSet:(NSSet *)pinnedUrlSet {
-#ifdef DEBUG
-    NSLog(@"%s", __PRETTY_FUNCTION__);
-#endif
+    DebugLog(@"%s", __PRETTY_FUNCTION__);
     return [[SecurityManager alloc] initWithPinnedURLs:pinnedUrlSet];
 }
 
 // Designated initializer.
 -(instancetype)initWithPinnedURLs:(NSSet *)pinnedUrlSet {
-#ifdef DEBUG
-    NSLog(@"%s pinnedUrlSet = %@", __PRETTY_FUNCTION__, pinnedUrlSet);
-#endif
+    DebugLog(@"%s pinnedUrlSet = %@", __PRETTY_FUNCTION__, pinnedUrlSet);
     
     self = [super init];
     if (self) {
@@ -98,41 +94,26 @@
 
 #pragma mark SecurityManagerProtocol methods
 
-// Return FALSE unless this security manager was specifically configured to
+// Return NO unless this security manager was specifically configured to
 // handle this URL.
 -(BOOL) willHandleURL:(NSURL*)url {
-#ifdef DEBUG
-    NSLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
-#endif
+    DebugLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
     if (url == nil) {
-        return FALSE;
-    }
-
-    // The scheme must be https. Note the use of
-    // localizedCaseInsensitiveCompare, which is a secure coding practice
-    // since URL components are case-insensitive as described in RFCs 1808,
-    // 1738, and 2732.
-    if ([url.scheme localizedCaseInsensitiveCompare:@"https"] != NSOrderedSame) {
-        NSLog(@"[WARN] Do not handle URL scheme %@ (the scheme must be https for us to handle it)", url.scheme);
-        return FALSE;
+        return NO;
     }
     
     // Normalize the host to lower case.
     NSString *host = [url.host lowercaseString];
     BOOL containsHostName = (self.dnsNameToPublicKeyMap[host] != nil);
 
-#ifdef DEBUG
-    NSLog(@"%s returns %@ for url = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(containsHostName), url);
-#endif
+    DebugLog(@"%s returns %@ for url = %@ host = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(containsHostName), url, host);
 
     return containsHostName;
 }
 
 // If this security manager was configured to handle this url then return self.
 -(id<APSConnectionDelegate>) connectionDelegateForUrl:(NSURL*)url {
-#ifdef DEBUG
-    NSLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
-#endif
+    DebugLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
     if ([self willHandleURL:url]) {
         return self;
     } else {
@@ -146,19 +127,17 @@
 // validation (aka NSURLAuthenticationMethodServerTrust) and this security
 // manager was configured to handle the current url.
 -(BOOL)willHandleChallenge:(NSURLAuthenticationChallenge *)challenge forConnection:(NSURLConnection *)connection {
-#ifdef DEBUG
-    NSLog(@"%s challenge = %@, connection = %@", __PRETTY_FUNCTION__, challenge, connection);
-#endif
-    BOOL result = FALSE;
+    BOOL result = NO;
     if ([challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust])
     {
-        NSURL *currentURL = connection.currentRequest.URL;
+        NSURL *currentURL = [NSURL URLWithString:challenge.protectionSpace.host];
+        if (currentURL.scheme == nil) {
+            currentURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@",challenge.protectionSpace.host]];
+        }
         result = [self willHandleURL:currentURL];
     }
     
-#ifdef DEBUG
-    NSLog(@"%s returns %@, challenge = %@, connection = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(result), challenge, connection);
-#endif
+    DebugLog(@"%s returns %@, challenge = %@, connection = %@ URL = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(result), challenge, connection, challenge.protectionSpace.host);
     return result;
 }
 
@@ -166,9 +145,8 @@
 
 - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-#ifdef DEBUG
-    NSLog(@"%s connection = %@, challenge = %@", __PRETTY_FUNCTION__, connection, challenge);
-#endif
+    DebugLog(@"%s connection = %@, challenge = %@", __PRETTY_FUNCTION__, connection, challenge);
+
     if ([challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust])
     {
         // It is a logic error (i.e. a bug in Titanium) if this method is
@@ -188,9 +166,7 @@
         {
             SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
             if(!(nil != serverTrust)) {
-#ifdef DEBUG
-                NSLog(@"%s FAIL: challenge.protectionSpace.serverTrust is nil", __PRETTY_FUNCTION__);
-#endif
+                DebugLog(@"%s FAIL: challenge.protectionSpace.serverTrust is nil", __PRETTY_FUNCTION__);
                 break; /* failed */
             }
             
@@ -200,22 +176,16 @@
             // expired certifcate or self signed certifcate.
             OSStatus status = SecTrustEvaluate(serverTrust, NULL);
             if(!(errSecSuccess == status)) {
-#ifdef DEBUG
-                NSLog(@"%s FAIL: standard TLS validation failed. SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
-#endif
+                DebugLog(@"%s FAIL: standard TLS validation failed. SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
                 break; /* failed */
             }
 
-#ifdef DEBUG
-            NSLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
-#endif
+            DebugLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
 
             // Normalize the server's host name to lower case.
             NSString *host = [connection.currentRequest.URL.host lowercaseString];
             
-#ifdef DEBUG
-            NSLog(@"%s Normalized host name = %@", __PRETTY_FUNCTION__, host);
-#endif
+            DebugLog(@"%s Normalized host name = %@", __PRETTY_FUNCTION__, host);
 
             // Get the PinnedURL for this server.
             PublicKey *pinnedPublicKey = self.dnsNameToPublicKeyMap[host];
@@ -232,16 +202,12 @@
                 @throw exception;
             }
             
-#ifdef DEBUG
-            NSLog(@"%s host %@ pinned to publicKey %@", __PRETTY_FUNCTION__, host, pinnedPublicKey);
-#endif
+            DebugLog(@"%s host %@ pinned to publicKey %@", __PRETTY_FUNCTION__, host, pinnedPublicKey);
 
             // Obtain the server's X509 certificate and public key.
             SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0);
             if(!(nil != serverCertificate)) {
-#ifdef DEBUG
-                NSLog(@"%s FAIL: Could not find the server's X509 certificate in serverTrust", __PRETTY_FUNCTION__);
-#endif
+                DebugLog(@"%s FAIL: Could not find the server's X509 certificate in serverTrust", __PRETTY_FUNCTION__);
                 break;  /* failed */
             }
             
@@ -261,9 +227,7 @@
                 @throw exception;
             }
             
-#ifdef DEBUG
-            NSLog(@"%s server's X509 certificate = %@", __PRETTY_FUNCTION__, x509Certificate);
-#endif
+            DebugLog(@"%s server's X509 certificate = %@", __PRETTY_FUNCTION__, x509Certificate);
             // Get the public key from this server's X509 certificate.
             PublicKey *serverPublicKey = x509Certificate.publicKey;
             if (!(nil != serverPublicKey)) {
@@ -276,9 +240,7 @@
                 @throw exception;
             }
             
-#ifdef DEBUG
-            NSLog(@"%s server's public key = %@", __PRETTY_FUNCTION__, serverPublicKey);
-#endif
+            DebugLog(@"%s server's public key = %@", __PRETTY_FUNCTION__, serverPublicKey);
 
             // Compare the public keys. If they match, then the server is
             // authenticated.
@@ -288,9 +250,7 @@
                 break; /* failed */
             }
             
-#ifdef DEBUG
-            NSLog(@"%s publicKeysAreEqual = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(publicKeysAreEqual));
-#endif
+            DebugLog(@"%s publicKeysAreEqual = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(publicKeysAreEqual));
             // Return success since the server holds the private key
             // corresponding to the public key held bu this security manager.
             return [challenge.sender useCredential:[NSURLCredential credentialForTrust:serverTrust] forAuthenticationChallenge:challenge];
