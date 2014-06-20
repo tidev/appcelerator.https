@@ -6,6 +6,7 @@
   <guid>55f79537-7456-4785-a728-e2fda9abc585</guid>
   <modules>
     <module platform="iphone">appcelerator.https</module> 
+    <module platform="android">appcelerator.https</module>
   </modules>
   <deployment-targets>
 	<target device="android">true</target>
