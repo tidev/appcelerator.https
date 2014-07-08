@@ -31,10 +31,18 @@ description: |
     This is known as a man-in-the-middle attack.
 
     To prevent man-in-the-middle-attacks, the security manager,
-    created by this module, bypasses the certificate chain.
-    It only trusts the certificate you provide to authenticate an HTTPS server.
-    You do not need to worry about third parties to authenticate the HTTPS server.
-    This security mechanism is known as certificate pinning.
+    created by this module, ensures that the public key in the leaf certificate of the chain is the same as
+    the public key in the certificate configured with this URL. If the public keys match, the chain is
+    passed onto the underlying OS to authenticate. If they do not match, the connection is terminated.
+
+    Since we pass the chain to the underlying OS to validate, self-signed certificates will be rejected.
+    Note that the `validatesSecureCertificate` property of the `HTTPClient` is not honored for pinned URL's.
+
+    For the Security Manager to participate in the connection, the initial URL must be configured.
+
+    If a connection redirects to a different host, then public key validation on the redirected URL will
+    only be performed if that URL is also configured in the Security Manager. If the redirected URL is
+    not configured, then the default OS authentication is triggered.
 
     ### Getting Started
 
@@ -58,10 +66,9 @@ description: |
             }
         ]);
 
-    After the security manager is created, create an `HTTPClient` object.  Set the `HTTPClient`'s
+    After the security manager is created, create an `HTTPClient` object and set the
     [securityManager](Titanium.Network.HTTPClient.securityManager) property to the security manager
-    object you just created.  You must set this property before calling the `HTTPClient`'s `open()`
-    method.
+    object you just created.  You must set this property when creating the `HTTPClient` instance.
 
         var httpClient = Ti.Network.createHTTPClient({
             onload: function(e) {
@@ -71,7 +78,7 @@ description: |
                 Ti.API.error(e.error);
             },
             timeout : 5000,
-            // Set this property before calling the `open` method.
+            // You can only set this property when creating the HTTPClient
             securityManager: securityManager
         });
 
