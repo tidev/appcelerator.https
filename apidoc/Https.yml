@@ -102,8 +102,8 @@ methods:
         Creates a Security Manager object for the `HTTPClient` to authenticate a specified set of HTTPS URLs.
     description: |
         Set the object returned by this method to the <Titanium.Network.HTTPClient.securityManager>
-        property to authenticate the connection. Set the `securityManager` property before calling
-        the `HTTPClient`'s `open` method
+        property to authenticate the connection. Pass the object to the `securityManager` property when creating
+        the `HTTPClient` instance.
     parameters:
       - name: params
         summary: | 
