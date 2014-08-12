@@ -1,12 +1,9 @@
-* ti.https
+# Appcelerator HTTPS Module [![Build Status](https://magnum.travis-ci.com/appcelerator-modules/appcelerator.https.svg?token=ph6xdReX6PW2XENunBEH)](https://magnum.travis-ci.com/appcelerator-modules/appcelerator.https)
 
-This Titanium module for both iOS and Android will prevent a
-"Man-in-the-Middle" attack when used with the standard
-Ti.Network.createHTTPClient.
+This Titanium module for both iOS and Android will prevent a "Man-in-the-Middle" attack when used with the standard Ti.Network.createHTTPClient.
 
 
-The following example does a simple secure GET request that prevents a
-"Man-in-the-Middle" attack.
+The following example does a simple secure GET request that prevents a "Man-in-the-Middle" attack.
 
 ```JavaScript
 /**
@@ -96,8 +93,7 @@ httpClient.open("GET", "https://dashboard.appcelerator.com");
 httpClient.send();
 ```
 
-This module imlpements the Enterprise module portion for "TLS
-Certificate Pinning", specifically
+This module implements the Enterprise module portion for "TLS Certificate Pinning", specifically
 [MOD-1706](https://jira.appcelerator.org/browse/MOD-1706) and
 [MOD-1707](https://jira.appcelerator.org/browse/MOD-1707).
 
