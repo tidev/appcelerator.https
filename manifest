@@ -1,4 +1,4 @@
-version: 1.0.0
+version: 1.0.1
 apiversion: 2
 description: Authenticate server in HTTPS connections made by TiHTTPClient
 author: Matt Langston

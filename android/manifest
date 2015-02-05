@@ -1,5 +1,6 @@
-version: 1.0.0
+version: 1.0.1
 apiversion: 2
+architectures: armeabi armeabi-v7a x86
 description: Authenticate server in HTTPS connections made by TiHTTPClient
 author: Matt Langston
 license: Appcelerator Commercial License
