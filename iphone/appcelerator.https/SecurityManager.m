@@ -246,8 +246,14 @@
             // authenticated.
             BOOL publicKeysAreEqual = [pinnedPublicKey isEqualToPublicKey:serverPublicKey];
             if(!(YES == publicKeysAreEqual)) {
-                NSLog(@"[WARN] Potential \"Man-in-the-Middle\" attack detected since host %@ does not hold the private key corresponding to the public key %@.", host, pinnedPublicKey);
-                break; /* failed */
+                DebugLog(@"[WARN] Potential \"Man-in-the-Middle\" attack detected since host %@ does not hold the private key corresponding to the public key %@.", host, pinnedPublicKey);
+                
+                NSDictionary *userDict = @{@"pinnedPublicKey":pinnedPublicKey, @"serverPublicKey":serverPublicKey };
+                
+                NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                                 reason:@"Leaf certificate could not be verified with provided public key"
+                                                               userInfo:userDict];
+                @throw exception;
             }
             
             DebugLog(@"%s publicKeysAreEqual = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(publicKeysAreEqual));
