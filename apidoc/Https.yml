@@ -59,6 +59,8 @@ description: |
       * `url`: URL of the server to contact
       * `serverCertificate`: X.509 certificate in DER format to verify the server's identity
 
+    For example:
+
         var securityManager = https.createX509CertificatePinningSecurityManager([
             {
                 url: "https://www.yourorg.com",
@@ -88,7 +90,11 @@ description: |
         httpClient.open("GET", "https://yourorg.com");
         httpClient.send();
 
-    If the authentication fails, a security exception is thrown.
+    If the authentication fails, a security exception is thrown. The HTTP client's `onerror`
+    callback will be passed an error object with the `code` key set to `-1` and the `message` key
+    set to the following message:
+
+        Leaf certificate could not be verified with provided public key
 
     To perform another HTTPS request, you need to create another `HTTPClient` object and follow the
     same procedure to initiate an HTTPS request.  You can reuse the same security manager object.
