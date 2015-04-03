@@ -1,6 +1,8 @@
 name: Modules.Https
 summary: Prevents a man-in-the-middle attack when used with the `Titanium.Network.HTTPClient` class.
 description: |
+    <p class="note">This feature requires a Team or Enterprise subscription!</p>
+
     Use the HTTPS module to create a Security Manager for `Titanium.Network.HTTPClient`
     that authenticates a set of HTTPS servers by pinning an HTTPS server's URL to its
     public key contained in the certificate.
