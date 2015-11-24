@@ -31,6 +31,6 @@
 @interface X509CertificatePinningSecurityManagerProxy : TiProxy <SecurityManagerProtocol, NSURLSessionDelegate, NSURLSessionDataDelegate, APSHTTPRequestDelegate, APSConnectionDelegate>
 
 @property(nonatomic, retain) NSMutableArray *pinnedUrls;
-@property(nonatomic, assign) NSString *currentUrl;
+@property(nonatomic, assign) NSString *currentURL;
 
 @end

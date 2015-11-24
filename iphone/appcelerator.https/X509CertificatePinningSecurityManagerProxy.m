@@ -6,12 +6,14 @@
  */
 
 #import "X509CertificatePinningSecurityManagerProxy.h"
+#import "TiHost.h"
 
 @implementation X509CertificatePinningSecurityManagerProxy
 
 typedef NS_ENUM(NSUInteger,ServerConnectionManagerStatus) {
-    ServerConnectionManagerStatusSuccess,
+    ServerConnectionManagerStatusSuccess = 0,
     ServerConnectionManagerStatusNoConnection,
+    ServerConnectionManagerStatusNoSSLCertFound,
     ServerConnectionManagerStatusWrongSSLCert
 };
 
@@ -30,7 +32,7 @@ typedef NS_ENUM(NSUInteger,ServerConnectionManagerStatus) {
         
         [_pinnedUrls addObject:@{
             @"url" : url,
-            @"serverCertificate" : [self dataFromFileUrl:serverCert]
+            @"serverCertificate" : [self dataFromFileURL:serverCert]
         }];
     }
     
@@ -47,14 +49,11 @@ typedef NS_ENUM(NSUInteger,ServerConnectionManagerStatus) {
         
         for (NSDictionary *pinnedUrl in _pinnedUrls) {
             
-            if([pinnedUrl valueForKey:@"url"] != _currentUrl) {
+            if([[pinnedUrl valueForKey:@"url"] isEqualToString:[self currentURL]] == NO) {
                 continue;
             }
             
-            // TODO: Transform "serverCertificate" filename into NSData
-            NSData *serverCert = [NSData dataWithContentsOfFile:[[NSBundle mainBundle]
-                                                                 pathForResource:@"server"
-                                                                 ofType: @"der"]];
+            NSData *serverCert = [pinnedUrl valueForKey:@"serverCertificate"];
             
             SecCertificateRef remoteVersionOfServerCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0);
             CFDataRef remoteCertificateData = SecCertificateCopyData(remoteVersionOfServerCertificate);
@@ -66,20 +65,16 @@ typedef NS_ENUM(NSUInteger,ServerConnectionManagerStatus) {
             if (certificatesAreTheSame) {
                 completionHandler(NSURLSessionAuthChallengeUseCredential,cred);
                 
-                // TODO: Call APSHTTPClient onLoad: callback
-                // [self onLoad:ServerConnectionManagerStatusSuccess];
+                // TODO: Call APSHTTPClient onLoad here directly?
                 return;
             } else {
-                // TODO: Call APSHTTPClient onError: callback
                 completionHandler(NSURLSessionAuthChallengeRejectProtectionSpace,nil);
-                // [self onError:ServerConnectionManagerStatusWrongSSLCert];
+                @throw [self createExceptionWithStatus:ServerConnectionManagerStatusWrongSSLCert];
             }
         }
         
-        // No match found: Throw error!
-        // TODO: Call APSHTTPClient onError: callback
-        // [self onError:ServerConnectionManagerStatusWrongSSLCert];
         completionHandler(NSURLSessionAuthChallengeRejectProtectionSpace,nil);
+        @throw [self createExceptionWithStatus:ServerConnectionManagerStatusNoSSLCertFound];
     }
 }
 
@@ -87,7 +82,7 @@ typedef NS_ENUM(NSUInteger,ServerConnectionManagerStatus) {
 
 -(BOOL)willHandleURL:(NSURL *)url
 {
-    _currentUrl = [url absoluteString];
+    [self setCurrentURL:[url absoluteString]];
     return YES;
 }
 
@@ -98,20 +93,34 @@ typedef NS_ENUM(NSUInteger,ServerConnectionManagerStatus) {
 
 #pragma mark Helper
 
--(NSData*)dataFromFileUrl:(NSString*)fileUrl
+-(NSData*)dataFromFileURL:(NSString*)fileUrl
 {
-    NSURL *url = [TiUtils toURL:fileUrl proxy:self];
+    NSString *resourcesDir = [[NSURL fileURLWithPath:[TiHost resourcePath] isDirectory:YES] path];
+    TiFile *file =[[TiFile alloc] initWithPath:[NSString stringWithFormat:@"%@/%@",resourcesDir, fileUrl]];
     
-    if ([url isFileURL] == NO) {
-        NSData *data = [NSData dataWithContentsOfURL:url];
-        NSString *ext = [[[url path] lastPathComponent] pathExtension];
-        TiFile *tempFile = [TiFile createTempFile:ext];
+    return [[file blob] data];
+}
 
-        [data writeToFile:[tempFile path] atomically:YES];
-        url = [NSURL fileURLWithPath:[tempFile path]];
+-(NSException*)createExceptionWithStatus:(int)status
+{
+    NSString *message = nil;
+ 
+    switch(status) {
+        case ServerConnectionManagerStatusNoConnection:
+            message = @"No connection available";
+            break;
+        case ServerConnectionManagerStatusNoSSLCertFound:
+            message = @"No matching certificate found";
+            break;
+        case ServerConnectionManagerStatusWrongSSLCert:
+            message = @"Provided certificate does not match server key.";
+            break;
+        default:
+            message = @"Unhandled error occured.";
+            break;
     }
     
-    return [NSData dataWithContentsOfURL:url];
+    return [NSException exceptionWithName:NSInvalidArgumentException reason:message userInfo:@{}];
 }
 
 @end
