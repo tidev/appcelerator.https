@@ -1,11 +1,14 @@
-/*!
- @author Author: Matt Langston
- @copyright Copyright (c) 2014 Appcelerator. All rights reserved.
+/**
+ * Appcelerator Titanium Mobile
+ * Copyright (c) 2014-2015 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License
+ * Please see the LICENSE included with this distribution for details.
  */
 
 #import <Foundation/Foundation.h>
 #import "TiBase.h"
 #import "TiNetworkHTTPClientProxy.h"
+#import "TiUtils.h"
 
 /*!
  @discussion
@@ -25,10 +28,9 @@
  
  @seealso AppceleratorHttpsModule
  */
-@interface X509CertificatePinningSecurityManagerProxy : TiProxy <SecurityManagerProtocol>
+@interface X509CertificatePinningSecurityManagerProxy : TiProxy <SecurityManagerProtocol, NSURLSessionDelegate, NSURLSessionDataDelegate, APSHTTPRequestDelegate, APSConnectionDelegate>
 
-// This class provides no API for Objecive-C developers. All of this classes
-// functionality is accessed from JavaScript and is only meant to be used in a
-// Titanium application
+@property(nonatomic, retain) NSMutableArray *pinnedUrls;
+@property(nonatomic, assign) NSString *currentURL;
 
 @end

@@ -1,24 +1,15 @@
-//  Author: Matt Langston
-//  Copyright (c) 2014 Appcelerator. All rights reserved.
+/**
+ * Appcelerator Titanium Mobile
+ * Copyright (c) 2014-2015 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License
+ * Please see the LICENSE included with this distribution for details.
+ */
 
+#import "TiBase.h"
 #import "AppceleratorHttpsModule.h"
 #import "X509CertificatePinningSecurityManagerProxy.h"
 
 @implementation AppceleratorHttpsModule
-
--(id)init {
-    self = [super init];
-    if (self) {
-    }
-    
-    return self;
-}
-
--(id)createX509CertificatePinningSecurityManager:(id)args {
-    DebugLog(@"%s args = %@", __PRETTY_FUNCTION__, args);
-    id context = ([self executionContext]==nil)?[self pageContext]:[self executionContext];
-    return [[X509CertificatePinningSecurityManagerProxy alloc] _initWithPageContext:context args:args];
-}
 
 #pragma mark Internal
 
@@ -28,6 +19,55 @@
 
 -(NSString*)moduleId {
     return @"appcelerator.https";
+}
+
+#pragma mark Lifecycle
+
+-(void)startup
+{
+    [super startup];
+    
+    NSLog(@"[INFO] %@ loaded",self);
+}
+
+-(void)shutdown:(id)sender
+{
+    [super shutdown:sender];
+}
+
+#pragma mark Internal Memory Management
+
+-(void)didReceiveMemoryWarning:(NSNotification*)notification
+{
+    // optionally release any resources that can be dynamically
+    // reloaded once memory is available - such as caches
+    [super didReceiveMemoryWarning:notification];
+}
+
+#pragma mark Listener Notifications
+
+-(void)_listenerAdded:(NSString *)type count:(int)count
+{
+    if (count == 1 && [type isEqualToString:@"my_event"])
+    {
+        // the first (of potentially many) listener is being added
+        // for event named 'my_event'
+    }
+}
+
+-(void)_listenerRemoved:(NSString *)type count:(int)count
+{
+    if (count == 0 && [type isEqualToString:@"my_event"])
+    {
+        // the last listener called for event named 'my_event' has
+        // been removed, we can optionally clean up any resources
+        // since no body is listening at this point for that event
+    }
+}
+
+-(X509CertificatePinningSecurityManagerProxy*)createX509CertificatePinningSecurityManager:(id)args
+{
+    return [[X509CertificatePinningSecurityManagerProxy alloc] _initWithPageContext:[self pageContext] args:args];
 }
 
 @end

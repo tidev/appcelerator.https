@@ -13,23 +13,13 @@
 		C9078D19192E4E1400B7BDDE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9078D18192E4E1400B7BDDE /* UIKit.framework */; };
 		C9078D1C192E4E1400B7BDDE /* libappcelerator.https.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9078D04192E4E1400B7BDDE /* libappcelerator.https.a */; };
 		C9078D22192E4E1400B7BDDE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C9078D20192E4E1400B7BDDE /* InfoPlist.strings */; };
-		C90DD284193251AB0084E138 /* AppceleratorHttpsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = C90DD283193251AB0084E138 /* AppceleratorHttpsUtils.m */; };
-		C944826C192E825B00ECCC14 /* PinnedURL.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448263192E825B00ECCC14 /* PinnedURL.m */; };
-		C944826D192E825B00ECCC14 /* PublicKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448265192E825B00ECCC14 /* PublicKey.m */; };
-		C944826E192E825B00ECCC14 /* SecurityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448267192E825B00ECCC14 /* SecurityManager.m */; };
-		C9448270192E825B00ECCC14 /* X509Certificate.m in Sources */ = {isa = PBXBuildFile; fileRef = C944826B192E825B00ECCC14 /* X509Certificate.m */; };
 		C9448279192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-1.cer in Resources */ = {isa = PBXBuildFile; fileRef = C9448271192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-1.cer */; };
 		C944827A192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-2.cer in Resources */ = {isa = PBXBuildFile; fileRef = C9448272192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-2.cer */; };
-		C944827B192E9EE800ECCC14 /* AbstractBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448274192E9EE800ECCC14 /* AbstractBaseTest.m */; };
-		C944827C192E9EE800ECCC14 /* PublicKeyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448275192E9EE800ECCC14 /* PublicKeyTests.m */; };
 		C944827D192E9EE800ECCC14 /* random-org.der in Resources */ = {isa = PBXBuildFile; fileRef = C9448276192E9EE800ECCC14 /* random-org.der */; };
 		C944827E192E9EE800ECCC14 /* random-org2.der in Resources */ = {isa = PBXBuildFile; fileRef = C9448277192E9EE800ECCC14 /* random-org2.der */; };
-		C944827F192E9EE800ECCC14 /* X509CertificateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448278192E9EE800ECCC14 /* X509CertificateTests.m */; };
-		C9448281192E9F0A00ECCC14 /* PinnedURLTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448280192E9F0A00ECCC14 /* PinnedURLTests.m */; };
 		C9A3A15C192E530E00FC7696 /* AppceleratorHttpsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A3A159192E530E00FC7696 /* AppceleratorHttpsModule.m */; };
 		C9A3A15D192E530E00FC7696 /* AppceleratorHttpsModuleAssets.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A3A15B192E530E00FC7696 /* AppceleratorHttpsModuleAssets.m */; };
 		C9A3A161192E704400FC7696 /* X509CertificatePinningSecurityManagerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A3A160192E704400FC7696 /* X509CertificatePinningSecurityManagerProxy.m */; };
-		C9B1A2A1193026510080C7DA /* SecurityManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B1A2A0193026510080C7DA /* SecurityManagerTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,26 +53,10 @@
 		C9078D18192E4E1400B7BDDE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		C9078D1F192E4E1400B7BDDE /* appcelerator.httpsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "appcelerator.httpsTests-Info.plist"; sourceTree = "<group>"; };
 		C9078D21192E4E1400B7BDDE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		C90DD282193251AB0084E138 /* AppceleratorHttpsUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppceleratorHttpsUtils.h; sourceTree = "<group>"; };
-		C90DD283193251AB0084E138 /* AppceleratorHttpsUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppceleratorHttpsUtils.m; sourceTree = "<group>"; };
-		C92CA6B919315132004D76D9 /* AppceleratorHttps.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppceleratorHttps.h; sourceTree = "<group>"; };
-		C9448262192E825B00ECCC14 /* PinnedURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PinnedURL.h; sourceTree = "<group>"; };
-		C9448263192E825B00ECCC14 /* PinnedURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PinnedURL.m; sourceTree = "<group>"; };
-		C9448264192E825B00ECCC14 /* PublicKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PublicKey.h; sourceTree = "<group>"; };
-		C9448265192E825B00ECCC14 /* PublicKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PublicKey.m; sourceTree = "<group>"; };
-		C9448266192E825B00ECCC14 /* SecurityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecurityManager.h; sourceTree = "<group>"; };
-		C9448267192E825B00ECCC14 /* SecurityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecurityManager.m; sourceTree = "<group>"; };
-		C944826A192E825B00ECCC14 /* X509Certificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X509Certificate.h; sourceTree = "<group>"; };
-		C944826B192E825B00ECCC14 /* X509Certificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = X509Certificate.m; sourceTree = "<group>"; };
 		C9448271192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-1.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = "*.prod.ace.appcelerator.com-1.cer"; path = "appcelerator.httpsTests/*.prod.ace.appcelerator.com-1.cer"; sourceTree = "<group>"; };
 		C9448272192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-2.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = "*.prod.ace.appcelerator.com-2.cer"; path = "appcelerator.httpsTests/*.prod.ace.appcelerator.com-2.cer"; sourceTree = "<group>"; };
-		C9448273192E9EE800ECCC14 /* AbstractBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractBaseTest.h; sourceTree = "<group>"; };
-		C9448274192E9EE800ECCC14 /* AbstractBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AbstractBaseTest.m; sourceTree = "<group>"; };
-		C9448275192E9EE800ECCC14 /* PublicKeyTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PublicKeyTests.m; sourceTree = "<group>"; };
 		C9448276192E9EE800ECCC14 /* random-org.der */ = {isa = PBXFileReference; lastKnownFileType = file; name = "random-org.der"; path = "appcelerator.httpsTests/random-org.der"; sourceTree = "<group>"; };
 		C9448277192E9EE800ECCC14 /* random-org2.der */ = {isa = PBXFileReference; lastKnownFileType = file; name = "random-org2.der"; path = "appcelerator.httpsTests/random-org2.der"; sourceTree = "<group>"; };
-		C9448278192E9EE800ECCC14 /* X509CertificateTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = X509CertificateTests.m; sourceTree = "<group>"; };
-		C9448280192E9F0A00ECCC14 /* PinnedURLTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PinnedURLTests.m; sourceTree = "<group>"; };
 		C9A3A157192E529100FC7696 /* titanium.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = titanium.xcconfig; path = ../titanium.xcconfig; sourceTree = "<group>"; };
 		C9A3A158192E530E00FC7696 /* AppceleratorHttpsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppceleratorHttpsModule.h; sourceTree = "<group>"; };
 		C9A3A159192E530E00FC7696 /* AppceleratorHttpsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppceleratorHttpsModule.m; sourceTree = "<group>"; };
@@ -90,7 +64,6 @@
 		C9A3A15B192E530E00FC7696 /* AppceleratorHttpsModuleAssets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppceleratorHttpsModuleAssets.m; sourceTree = "<group>"; };
 		C9A3A15F192E704400FC7696 /* X509CertificatePinningSecurityManagerProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X509CertificatePinningSecurityManagerProxy.h; sourceTree = "<group>"; };
 		C9A3A160192E704400FC7696 /* X509CertificatePinningSecurityManagerProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = X509CertificatePinningSecurityManagerProxy.m; sourceTree = "<group>"; };
-		C9B1A2A0193026510080C7DA /* SecurityManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecurityManagerTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,21 +121,10 @@
 		C9078D09192E4E1400B7BDDE /* appcelerator.https */ = {
 			isa = PBXGroup;
 			children = (
-				C92CA6B919315132004D76D9 /* AppceleratorHttps.h */,
-				C90DD282193251AB0084E138 /* AppceleratorHttpsUtils.h */,
-				C90DD283193251AB0084E138 /* AppceleratorHttpsUtils.m */,
 				C9A3A158192E530E00FC7696 /* AppceleratorHttpsModule.h */,
 				C9A3A159192E530E00FC7696 /* AppceleratorHttpsModule.m */,
 				C9A3A15F192E704400FC7696 /* X509CertificatePinningSecurityManagerProxy.h */,
 				C9A3A160192E704400FC7696 /* X509CertificatePinningSecurityManagerProxy.m */,
-				C9448266192E825B00ECCC14 /* SecurityManager.h */,
-				C9448267192E825B00ECCC14 /* SecurityManager.m */,
-				C9448262192E825B00ECCC14 /* PinnedURL.h */,
-				C9448263192E825B00ECCC14 /* PinnedURL.m */,
-				C944826A192E825B00ECCC14 /* X509Certificate.h */,
-				C944826B192E825B00ECCC14 /* X509Certificate.m */,
-				C9448264192E825B00ECCC14 /* PublicKey.h */,
-				C9448265192E825B00ECCC14 /* PublicKey.m */,
 				C9078D0A192E4E1400B7BDDE /* Supporting Files */,
 			);
 			path = appcelerator.https;
@@ -182,12 +144,6 @@
 		C9078D1D192E4E1400B7BDDE /* appcelerator.httpsTests */ = {
 			isa = PBXGroup;
 			children = (
-				C9448273192E9EE800ECCC14 /* AbstractBaseTest.h */,
-				C9448274192E9EE800ECCC14 /* AbstractBaseTest.m */,
-				C9448278192E9EE800ECCC14 /* X509CertificateTests.m */,
-				C9448275192E9EE800ECCC14 /* PublicKeyTests.m */,
-				C9448280192E9F0A00ECCC14 /* PinnedURLTests.m */,
-				C9B1A2A0193026510080C7DA /* SecurityManagerTests.m */,
 				C9448282192E9F2E00ECCC14 /* certs */,
 				C9078D1E192E4E1400B7BDDE /* Supporting Files */,
 			);
@@ -303,11 +259,6 @@
 				C9A3A15C192E530E00FC7696 /* AppceleratorHttpsModule.m in Sources */,
 				C9A3A15D192E530E00FC7696 /* AppceleratorHttpsModuleAssets.m in Sources */,
 				C9A3A161192E704400FC7696 /* X509CertificatePinningSecurityManagerProxy.m in Sources */,
-				C944826E192E825B00ECCC14 /* SecurityManager.m in Sources */,
-				C9448270192E825B00ECCC14 /* X509Certificate.m in Sources */,
-				C944826D192E825B00ECCC14 /* PublicKey.m in Sources */,
-				C90DD284193251AB0084E138 /* AppceleratorHttpsUtils.m in Sources */,
-				C944826C192E825B00ECCC14 /* PinnedURL.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -315,11 +266,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9B1A2A1193026510080C7DA /* SecurityManagerTests.m in Sources */,
-				C944827B192E9EE800ECCC14 /* AbstractBaseTest.m in Sources */,
-				C944827F192E9EE800ECCC14 /* X509CertificateTests.m in Sources */,
-				C944827C192E9EE800ECCC14 /* PublicKeyTests.m in Sources */,
-				C9448281192E9F0A00ECCC14 /* PinnedURLTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

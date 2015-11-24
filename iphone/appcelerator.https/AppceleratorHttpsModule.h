@@ -1,6 +1,8 @@
-/*!
- @author Author: Matt Langston
- @copyright Copyright (c) 2014 Appcelerator. All rights reserved.
+/**
+ * Appcelerator Titanium Mobile
+ * Copyright (c) 2014-2015 by Appcelerator, Inc. All Rights Reserved.
+ * Licensed under the terms of the Apache Public License
+ * Please see the LICENSE included with this distribution for details.
  */
 
 #import "TiModule.h"
@@ -18,9 +20,5 @@
  X509CertificatePinningSecurityManagerProxy.
  */
 @interface AppceleratorHttpsModule : TiModule
-
-// This class provides no API for Objecive-C developers. All of this classes
-// functionality is accessed from JavaScript and is only meant to be used in a
-// Titanium application
 
 @end
