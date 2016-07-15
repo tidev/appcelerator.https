@@ -2,7 +2,7 @@
  * Appcelerator.Https Module - Authenticate server in HTTPS
  * connections made by TiHTTPClient.
  *
- * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2014-2016 by Appcelerator, Inc. All Rights Reserved.
  *
  * Licensed under the terms of the Appcelerator Commercial License.
  * Please see the LICENSE included with this distribution for details.
@@ -23,6 +23,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import ti.modules.titanium.network.HTTPClientProxy;
+
 import android.net.Uri;
 
 public class PinningTrustManager implements X509TrustManager {
@@ -30,7 +31,7 @@ public class PinningTrustManager implements X509TrustManager {
 	private Map<String, PublicKey> supportedHosts;
 	private HTTPClientProxy proxy;
 	private X509TrustManager standardTrustManager;
-	
+
 	/**
 	 * Constructor for the PinningTrustManager.
 	 * @param proxy - The HTTPClientProxy representing this network connection.
@@ -49,7 +50,7 @@ public class PinningTrustManager implements X509TrustManager {
 		this.proxy = proxy;
 		this.supportedHosts = (supportedHosts == null) ? new HashMap<String, PublicKey>() : supportedHosts;
 	}
-	
+
 	@Override
 	public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
 		this.standardTrustManager.checkClientTrusted(arg0, arg1);
@@ -58,7 +59,7 @@ public class PinningTrustManager implements X509TrustManager {
 	@Override
 	public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
 		this.standardTrustManager.checkServerTrusted(arg0, arg1);
-		
+
 		/**
 		 * If the HTTPClient proxy is currently connected to a Uri with a configured host, compare the leaf certificate
 		 * in the chain with the configured PublicKey. Throws a Certificate Exception if the keys do not match.
@@ -71,11 +72,10 @@ public class PinningTrustManager implements X509TrustManager {
 				Uri uri = Uri.parse(curLocation);
 				host = uri.getHost();
 				hostPinned = hostConfigured(host);
-				
 			} catch (Exception e) {
 				hostPinned = false;
 			}
-			
+
 			if (hostPinned) {
 				X509Certificate leaf = arg0[0];
 				PublicKey leafKey = leaf.getPublicKey();
@@ -92,7 +92,7 @@ public class PinningTrustManager implements X509TrustManager {
 	public X509Certificate[] getAcceptedIssuers() {
 		return this.standardTrustManager.getAcceptedIssuers();
 	}
-	
+
 	private boolean hostConfigured(String host) {
 		return supportedHosts.keySet().contains(host);
 	}
