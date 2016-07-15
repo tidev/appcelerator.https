@@ -9,15 +9,22 @@ android/build.properties
 iphone/appcelerator.https-iphone-*.zip
 iphone/build
 iphone/metadata.json
+android/dist
+android/libs
 
-# These four are symlinks
+# These eight are symlinks
 iphone/LICENSE
 iphone/assets
 iphone/documentation
 iphone/example
+android/LICENSE
+android/assets
+android/documentation
+android/example
 
 example/build/
 example/modules/
+
 
 
 # User-specific Xcode settings.
