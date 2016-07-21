@@ -27,15 +27,15 @@ var https = require('appcelerator.https');
  * The first URL, https://www.americanexpress.com, is pinned to the
  * public key in the X.509 certificate in the file named
  * wellsfargo.cer. This is intentionally an incorrect configuration.
- * Connections to https://www.americanexpress.com must fail since the 
- * public key presented by the host will not match the configuration of the 
- * security manager 
+ * Connections to https://www.americanexpress.com must fail since the
+ * public key presented by the host will not match the configuration of the
+ * security manager
  *
  * The second URL, https://www.wellsfargo.com, is pinned to the public
  * key in the X.509 certificate in the file named
- * wellsfargo.cer. This is configured correctly. Connections to 
+ * wellsfargo.cer. This is configured correctly. Connections to
  * https://www.wellsfargo.com must succeed. Note that these request redirect.
- * The redirected request is not handled by the security manager since it is 
+ * The redirected request is not handled by the security manager since it is
  * not configured but will succeed if the system is able to validate the
  * certificate chain presented by the redirected host.
  *
@@ -54,9 +54,9 @@ var securityManager = https.createX509CertificatePinningSecurityManager([
 ]);
 
 
-var win = Titanium.UI.createWindow({  
-    title: 'Pin Example',
-    backgroundColor: 'white'
+var win = Titanium.UI.createWindow({
+	title: 'Pin Example',
+	backgroundColor: 'white'
 });
 
 var view = Ti.UI.createView({
@@ -116,18 +116,18 @@ win.open();
 
 function getXHR(url) {
 	var xhr = Ti.Network.createHTTPClient({
-	    onload: function(e) {
-    	    label2.text = 'onload called. Request succeeded';
-    	},
-	    onerror: function(e) {
-    	    label2.text = 'onerror called. Request failed.';
-    	},
-    	timeout : 30000,
-	    securityManager: securityManager
+		onload: function(e) {
+			label2.text = 'onload called. Request succeeded';
+		},
+		onerror: function(e) {
+			label2.text = 'onerror called. Request failed.';
+		},
+		timeout : 30000,
+		securityManager: securityManager
 	});
-	
+
 	xhr.open('GET',url);
-	
+
 	return xhr;
 }
 
@@ -139,18 +139,20 @@ button1.addEventListener('click',function(e){
 	var xhr = getXHR(wf);
 	label1.text = 'SecurityManager is configured correctly for this request. Request must succeed. ';
 	label1.color = 'green';
+	label2.text = 'Desc:';
 	xhr.send();
 });
 button2.addEventListener('click',function(e){
 	var xhr = getXHR(amex);
 	label1.text = 'SecurityManager is configured incorrectly for this request. Request must fail. ';
 	label1.color = 'red';
+	label2.text = 'Desc:';
 	xhr.send();
 });
 button3.addEventListener('click',function(e){
 	var xhr = getXHR(appc);
 	label1.text = 'SecurityManager does not participate in the validation of this request.';
 	label1.color = 'blue';
+	label2.text = 'Desc:';
 	xhr.send();
 });
-
