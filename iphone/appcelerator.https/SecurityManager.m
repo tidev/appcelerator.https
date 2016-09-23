@@ -130,14 +130,19 @@
     
     NSError *error = nil;
     for (NSString *hostKey in self.dnsNameToPublicKeyMap.allKeys) {
-        if ([hostKey rangeOfString:@"*"].length == 0) {
+        if ([hostKey rangeOfString:@"*."].length == 0) {
             continue;
         }
         
         NSString *wildcardRegexPattern = [NSRegularExpression escapedPatternForString:hostKey];
         wildcardRegexPattern = [wildcardRegexPattern stringByReplacingOccurrencesOfString:@"\\*\\." withString:@"([a-z0-9\\-]+\\.)*"];
-        NSRegularExpression *hostRegex = [NSRegularExpression regularExpressionWithPattern:wildcardRegexPattern options:NSRegularExpressionCaseInsensitive error:&error];
-        NSInteger numberOfMatches = [hostRegex numberOfMatchesInString:host options:0 range:NSMakeRange(0, host.length)];
+        NSRegularExpression *wildcardRegex = [NSRegularExpression regularExpressionWithPattern:wildcardRegexPattern options:NSRegularExpressionCaseInsensitive error:&error];
+        if (error != nil) {
+            NSLog(@"[ERROR] Could not initialize RegEx with pattern %@ to match possible wildcard certificates.", wildcardRegexPattern);
+            NSLog(@"[ERROR] The error was: %@", error.localizedDescription);
+            continue;
+        }
+        NSInteger numberOfMatches = [wildcardRegex numberOfMatchesInString:host options:0 range:NSMakeRange(0, host.length)];
         if (numberOfMatches > 0) {
             return self.dnsNameToPublicKeyMap[hostKey];
         }
