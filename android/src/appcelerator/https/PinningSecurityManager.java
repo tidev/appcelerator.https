@@ -2,7 +2,7 @@
  * Appcelerator.Https Module - Authenticate server in HTTPS
  * connections made by TiHTTPClient.
  *
- * Copyright (c) 2014 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2014-2016 by Appcelerator, Inc. All Rights Reserved.
  *
  * Licensed under the terms of the Appcelerator Commercial License.
  * Please see the LICENSE included with this distribution for details.
@@ -34,7 +34,7 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 		// Always returns null. This module does server side trust only.
 		return null;
 	}
-	
+
 	/**
 	 * Returns the X509KeyManager array for the SSL Context.
 	 * @param uri - The end point of the network connection
@@ -63,17 +63,17 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 		}
 		return hostConfigured(uri.getHost());
 	}
-	
+
 	/**
-	 * Adds the <Host,PublicKey> pair to list of supported configurations. 
+	 * Adds the <Host,PublicKey> pair to list of supported configurations.
 	 * @param host - String representing the host portion of supported Uris
 	 * @param key - The PublicKey against which the server certificate will be pinned.
 	 * @throws Exception - If the arguments are invalid or if the given host is already added as a supported configuration.
 	 */
 	protected void addProfile(String host, PublicKey key) throws Exception{
 		String theHost = (host == null) ? "" : host;
-		
-		if(theHost.length() > 0 && key != null) {
+
+		if (theHost.length() > 0 && key != null) {
 			if (!hostConfigured(theHost)) {
 				supportedHosts.put(theHost.toLowerCase(Locale.ENGLISH), key);
 			} else {
@@ -83,7 +83,7 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 			throw new Exception("Invalid arguments passed to addProfile");
 		}
 	}
-	
+
 	/**
 	 * Returns if the host is part of the supported configurations.
 	 * @param host - String representing the host portion of supported Uris
@@ -97,6 +97,6 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	@Override
 	public String getApiName()
 	{
-		return "appcelerator.Https.PinningSecurityManager";
+		return "appcelerator.https.PinningSecurityManager";
 	}
 }
