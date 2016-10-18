@@ -67,8 +67,7 @@
         return NO;
     }
     
-    BOOL equal = ([self.host localizedCaseInsensitiveCompare:rhs.host] != NSOrderedSame) &&
-    [self.publicKey isEqualToPublicKey:rhs.publicKey];
+    BOOL equal = [self.host localizedCaseInsensitiveCompare:rhs.host] == NSOrderedSame && [self.publicKey isEqualToPublicKey:rhs.publicKey];
     
     return equal;
 }
