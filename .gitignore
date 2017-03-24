@@ -6,17 +6,17 @@ android/build.properties
 
 
 # Titanium module build artifacts
-iphone/appcelerator.https-iphone-*.zip
-iphone/build
-iphone/metadata.json
+ios/appcelerator.https-iphone-*.zip
+ios/build
+ios/metadata.json
 android/dist
 android/libs
 
 # These eight are symlinks
-iphone/LICENSE
-iphone/assets
-iphone/documentation
-iphone/example
+ios/LICENSE
+ios/assets
+ios/documentation
+ios/example
 android/LICENSE
 android/assets
 android/documentation
@@ -28,8 +28,8 @@ example/modules/
 
 
 # User-specific Xcode settings.
-iphone/appcelerator.https.xcodeproj/xcuserdata
-iphone/appcelerator.https.xcodeproj/project.xcworkspace/xcuserdata
+ios/appcelerator.https.xcodeproj/xcuserdata
+ios/appcelerator.https.xcodeproj/project.xcworkspace/xcuserdata
 
 # Emacs backup files
 *~
