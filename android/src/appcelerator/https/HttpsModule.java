@@ -31,7 +31,7 @@ public class HttpsModule extends KrollModule
     
 	// Proxy variables
 	private static final String PROP_URL = "url";
-    private static final String PROP_CERT = "serverCertificate";
+	private static final String PROP_CERT = "serverCertificate";
 	private static final String PROP_TRUST_CHAIN_INDEX = "trustChainIndex";
 
 	public HttpsModule()

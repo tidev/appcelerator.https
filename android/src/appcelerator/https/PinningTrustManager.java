@@ -31,7 +31,7 @@ public class PinningTrustManager implements X509TrustManager {
 	private Map<String, PublicKey> supportedHosts;
 	private HTTPClientProxy proxy;
 	private X509TrustManager standardTrustManager;
-    private int trustChainIndex;
+	private int trustChainIndex;
 
 	/**
 	 * Constructor for the PinningTrustManager.
