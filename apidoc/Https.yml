@@ -33,9 +33,10 @@ description: |
     This is known as a man-in-the-middle attack.
 
     To prevent man-in-the-middle-attacks, the security manager,
-    created by this module, ensures that the public key in the leaf certificate of the chain is the same as
-    the public key in the certificate configured with this URL. If the public keys match, the chain is
-    passed onto the underlying OS to authenticate. If they do not match, the connection is terminated.
+    created by this module, ensures that the public key in the leaf certificate (or other certificate identified
+    by the `trustChainIndex` property) of the chain is the same as the public key in the certificate configured 
+    with this URL. If the public keys match, the chain is passed onto the underlying OS to authenticate. 
+    If they do not match, the connection is terminated.
 
     Since we pass the chain to the underlying OS to validate, self-signed certificates will be rejected.
     Note that the `validatesSecureCertificate` property of the `HTTPClient` is not honored for pinned URL's.
@@ -51,7 +52,7 @@ description: |
     Once you have [installed](#!/guide/Using_a_Module) the module and added it as a depedency,
     use `require()` to access it from JavaScript:
 
-        var https = require("appcelerator.https");
+        var https = require('appcelerator.https');
 
     The `https` variable is a reference to the Module object.  Use this reference to call the 
     `createX509CertificatePinningSecurityManager()` method to authenticate the specified HTTPS URLs.
@@ -60,13 +61,14 @@ description: |
 
       * `url`: URL of the server to contact
       * `serverCertificate`: X.509 certificate in DER format to verify the server's identity
+      * `trustChainIndex`: Index of the trust-chain certificate to validate against (default: 0 - leaf certificate). 
 
     For example:
 
         var securityManager = https.createX509CertificatePinningSecurityManager([
             {
-                url: "https://www.yourorg.com",
-                serverCertificate: "yourorg.der"
+                url: 'https://www.yourorg.com',
+                serverCertificate: 'yourorg.der'
             }
         ]);
 
@@ -76,7 +78,7 @@ description: |
 
         var httpClient = Ti.Network.createHTTPClient({
             onload: function(e) {
-                Ti.API.info("Received text: " + this.responseText);
+                Ti.API.info('Received text: ' + this.responseText);
             },
             onerror: function(e) {
                 Ti.API.error(e.error);
@@ -89,14 +91,14 @@ description: |
     After the `securityManager` property is set, call the `HTTPClient`'s `open()` and `send()`
     methods to initiate the HTTPS request.
 
-        httpClient.open("GET", "https://yourorg.com");
+        httpClient.open('GET', 'https://yourorg.com');
         httpClient.send();
 
     If the authentication fails, a security exception is thrown. The HTTP client's `onerror`
     callback will be passed an error object with the `code` key set to `-1` and the `message` key
     set to the following message:
 
-        Leaf certificate could not be verified with provided public key
+        Certificate could not be verified with provided public key
 
     To perform another HTTPS request, you need to create another `HTTPClient` object and follow the
     same procedure to initiate an HTTPS request.  You can reuse the same security manager object.
@@ -120,6 +122,9 @@ methods:
 
               * `url`: HTTPS URL pinned to the public key in the server certificate
               * `serverCertificate`: X.509 certificate file in DER binary format
+              
+            Optionally, use the following key for further configuration:
+              * `trustChainIndex`: Index of the trust-chain certificate to validate against (default: 0 - leaf certificate). 
 
         type: Array<Dictionary>
     returns:
@@ -146,12 +151,12 @@ examples:
             // Use the module to create a Security Manager that authenticates the specified URLs
             securityManager = https.createX509CertificatePinningSecurityManager([
                 {
-                    url: "https://dashboard.appcelerator.com",
-                    serverCertificate: "dashboard.appcelerator.com.der"
+                    url: 'https://dashboard.appcelerator.com',
+                    serverCertificate: 'dashboard.appcelerator.com.der'
                 },
                 {
-                    url: "https://www.wellsfargo.com",
-                    serverCertificate: "wellsfargo.der"
+                    url: 'https://www.wellsfargo.com',
+                    serverCertificate: 'wellsfargo.der'
                 }
             ]);
 
@@ -159,7 +164,7 @@ examples:
             // but pass in the optional Security Manager that was created previously.
             httpClient = Ti.Network.createHTTPClient({
                 onload: function(e) {
-                    Ti.API.info("Received text: " + this.responseText);
+                    Ti.API.info('Received text: ' + this.responseText);
                 },
                 onerror: function(e) {
                     Ti.API.error(e.error);
@@ -172,7 +177,7 @@ examples:
             // Prepare the HTTPS connection in the same way you always have
             // and the Security Manager will authenticate all servers for
             // which it was configured before any communication happens.
-            httpClient.open("GET", "https://dashboard.appcelerator.com");
+            httpClient.open('GET', 'https://dashboard.appcelerator.com');
 
             // Send the request in the same way you always have.
             // Throws a Security Exception if authentication fails.

@@ -9,18 +9,18 @@
 
 @synthesize publicKey = _publicKey;
 
-+(instancetype)x509CertificateWithSecCertificate:(SecCertificateRef)secCertificate {
++(instancetype)x509CertificateWithSecCertificate:(SecCertificateRef)secCertificate andTrustChainIndex:(NSInteger)trustChainIndex {
     DebugLog(@"%s", __PRETTY_FUNCTION__);
-    return [[X509Certificate alloc] initWithSecCertificate:secCertificate];
+    return [[X509Certificate alloc] initWithSecCertificate:secCertificate andTrustChainIndex:trustChainIndex];
 }
 
-+(instancetype)x509CertificateWithURL:(NSURL *)url {
++(instancetype)x509CertificateWithURL:(NSURL *)url andTrustChainIndex:(NSInteger)trustChainIndex {
     DebugLog(@"%s", __PRETTY_FUNCTION__);
-    return [[X509Certificate alloc] initWithURL:url];
+    return [[X509Certificate alloc] initWithURL:url andTrustChainIndex:trustChainIndex];
 }
 
 // Designated initializer.
--(instancetype)initWithSecCertificate:(SecCertificateRef)secCertificate {
+-(instancetype)initWithSecCertificate:(SecCertificateRef)secCertificate andTrustChainIndex:(NSInteger)trustChainIndex {
     self = [super init];
     if (self) {
         // The certificate must not be NULL.
@@ -43,12 +43,13 @@
 #endif
         
         _SecCertificate = (SecCertificateRef)CFRetain(secCertificate);
+        _trustChainIndex = trustChainIndex;
     }
     
     return self;
 }
 
--(instancetype)initWithURL:(NSURL *)url {
+-(instancetype)initWithURL:(NSURL *)url andTrustChainIndex:(NSInteger)trustChainIndex {
     DebugLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
     // The URL must not be nill
     if (!(nil != url)) {
@@ -82,7 +83,7 @@
     SecCertificateRef certificate;
     @try {
         certificate = SecCertificateCreateWithData(NULL, certificateCFData);
-        self = [self initWithSecCertificate:certificate];
+        self = [self initWithSecCertificate:certificate andTrustChainIndex:trustChainIndex];
     }
     @finally {
         CFRelease(certificate);
