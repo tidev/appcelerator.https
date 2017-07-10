@@ -137,7 +137,7 @@ static dispatch_queue_t syncQueue;
                 @throw exception;
             }
             
-            NSInteger certificateIndex = [TiUtils intValue:pinnedURLDict[@"serverCertificateIndex"] def:0];
+            NSInteger certificateIndex = [TiUtils intValue:pinnedURLDict[@"trustChainIndex"] def:0];
             if (certificateIndex < 0) {
                 NSString *reason = [NSString stringWithFormat:@"Cannot use negative trust-chain certificate-index %li", (long)certificateIndex];
                 NSDictionary *userInfo = @{ @"certificateIndex": NUMINTEGER(certificateIndex) };
