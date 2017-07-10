@@ -80,7 +80,7 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 		if (theHost.length() > 0 && publicKey != null) {
 			if (!hostConfigured(theHost)) {
 				supportedHosts.put(theHost.toLowerCase(Locale.ENGLISH), publicKey);
-	            trustChainIndex = index;
+				trustChainIndex = index;
 			} else {
 				throw new Exception("Duplicate host configuration.");
 			}
