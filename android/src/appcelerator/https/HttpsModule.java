@@ -80,7 +80,7 @@ public class HttpsModule extends KrollModule
 				try {
 					String host = TiConvert.toString(map.get(PROP_URL));
 					String certPath = TiConvert.toString(map.get(PROP_CERT));
-	                int trustChainIndex = TiConvert.toInt(map.get(PROP_TRUST_CHAIN_INDEX), 0);
+					int trustChainIndex = TiConvert.toInt(map.get(PROP_TRUST_CHAIN_INDEX), 0);
 
 					Uri hostUri = Uri.parse(host);
 					TiUrl certUrl = new TiUrl(certPath);
