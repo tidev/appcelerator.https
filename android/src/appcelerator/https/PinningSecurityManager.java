@@ -76,7 +76,7 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	 */
 	protected void addProfile(String host, PublicKey publicKey, int index) throws Exception {
 		String theHost = (host == null) ? "" : host;
-        
+		
 		if (theHost.length() > 0 && publicKey != null) {
 			if (!hostConfigured(theHost)) {
 				supportedHosts.put(theHost.toLowerCase(Locale.ENGLISH), publicKey);

@@ -50,7 +50,7 @@ public class PinningTrustManager implements X509TrustManager {
 		this.standardTrustManager = (X509TrustManager) trustmanagers[0];
 		this.proxy = proxy;
 		this.supportedHosts = (supportedHosts == null) ? new HashMap<String, PublicKey>() : supportedHosts;
-	    this.trustChainIndex = trustChainIndex;
+		this.trustChainIndex = trustChainIndex;
 	}
 
 	@Override
