@@ -53,38 +53,42 @@
 /*!
  @abstract Convenience factory method to create X509Certificate objects.
  @param secCertificate A SecCertificateRef object.
+ @param trustChainIndex An index describing the position of the trust-chain certificate to use.
  @result The X509 certificate wrapper around the SecCertificateRef object
  @throws NSInvalidArgumentException
  @seealso initWithSecCertificate:
  */
-+(instancetype)x509CertificateWithSecCertificate:(SecCertificateRef)secCertificate;
++(instancetype)x509CertificateWithSecCertificate:(SecCertificateRef)secCertificate andTrustChainIndex:(NSInteger)trustChainIndex;
 
 /*!
  @abstract Convenience factory method to create X509Certificate objects.
  @param url A URL to a local resource containing a DER encoded X509 certificate.
+ @param trustChainIndex An index describing the position of the trust-chain certificate to use.
  @result The X509 certificate contained in the url.
  @throws NSInvalidArgumentException
  @seealso initWithURL:
  */
-+(instancetype)x509CertificateWithURL:(NSURL *)url;
++(instancetype)x509CertificateWithURL:(NSURL *)url andTrustChainIndex:(NSInteger)trustChainIndex;
 
 /*!
  @abstract Designated initializer. Initialize an instance from a SecCertificateRef.
  @param secCertificate A SecCertificateRef object.
+ @param trustChainIndex An index describing the position of the trust-chain certificate to use.
  @result The X509 certificate wrapper around the SecCertificateRef object
  @throws NSInvalidArgumentException
  @seealso X509CertificateWithSecCertificate:
  */
--(instancetype)initWithSecCertificate:(SecCertificateRef)secCertificate;
+-(instancetype)initWithSecCertificate:(SecCertificateRef)secCertificate andTrustChainIndex:(NSInteger)trustChainIndex;
 
 /*!
  @abstract Initialize an instance from a URL pointing to a DER encoded X509 certificate.
  @param url A URL for a local resource containing a DER encoded X509 certificate.
+ @param trustChainIndex An index describing the position of the trust-chain certificate to use.
  @result The X509 certificate contained in the url.
  @throws NSInvalidArgumentException
  @seealso X509CertificateWithURL:
 */
--(instancetype)initWithURL:(NSURL *)url;
+-(instancetype)initWithURL:(NSURL *)url andTrustChainIndex:(NSInteger)trustChainIndex;
 
 /*!
  @abstract The PublicKey contained in the DER encoded X509 certificate.
@@ -95,6 +99,11 @@
  @abstract The SecCertificateRef contained in the DER encoded X509 certificate used to instantiate this object.
  */
 @property (nonatomic, strong, readonly) __attribute__((NSObject)) SecCertificateRef SecCertificate;
+
+/*!
+ @abstract The index describing the position of the trust-chain certificate to use.
+ */
+@property (nonatomic, assign, readonly) NSInteger trustChainIndex;
 
 /*!
  @abstract Compare two instances for value identity.

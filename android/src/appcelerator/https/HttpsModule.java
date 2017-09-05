@@ -2,7 +2,7 @@
  * Appcelerator.Https Module - Authenticate server in HTTPS
  * connections made by TiHTTPClient.
  *
- * Copyright (c) 2014-2016 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2014-2017 by Appcelerator, Inc. All Rights Reserved.
  *
  * Licensed under the terms of the Appcelerator Commercial License.
  * Please see the LICENSE included with this distribution for details.
@@ -28,9 +28,11 @@ public class HttpsModule extends KrollModule
 {
 	// Standard Debugging variables
 	protected static final String TAG = "HttpsModule";
+    
+	// Proxy variables
 	private static final String PROP_URL = "url";
 	private static final String PROP_CERT = "serverCertificate";
-
+	private static final String PROP_TRUST_CHAIN_INDEX = "trustChainIndex";
 
 	public HttpsModule()
 	{
@@ -40,7 +42,7 @@ public class HttpsModule extends KrollModule
 	@Kroll.onAppCreate
 	public static void onAppCreate(TiApplication app)
 	{
-		//Nothing
+		// Nothing
 	}
 
 	/**
@@ -78,13 +80,14 @@ public class HttpsModule extends KrollModule
 				try {
 					String host = TiConvert.toString(map.get(PROP_URL));
 					String certPath = TiConvert.toString(map.get(PROP_CERT));
+					int trustChainIndex = TiConvert.toInt(map.get(PROP_TRUST_CHAIN_INDEX), 0);
 
 					Uri hostUri = Uri.parse(host);
 					TiUrl certUrl = new TiUrl(certPath);
 
 					is = tfh.openInputStream(certUrl.resolve(), false);
 					Certificate cert = factory.generateCertificate(is);
-					theManager.addProfile(hostUri.getHost(), cert.getPublicKey());
+					theManager.addProfile(hostUri.getHost(), cert.getPublicKey(), trustChainIndex);
 				}
 				catch (Exception e) {
 					caughtException = e;
