@@ -2,7 +2,7 @@
  * Appcelerator.Https Module - Authenticate server in HTTPS
  * connections made by TiHTTPClient.
  *
- * Copyright (c) 2014-2016 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2014-2017 by Appcelerator, Inc. All Rights Reserved.
  *
  * Licensed under the terms of the Appcelerator Commercial License.
  * Please see the LICENSE included with this distribution for details.
@@ -29,6 +29,9 @@ import ti.modules.titanium.network.SecurityManagerProtocol;
 public class PinningSecurityManager extends KrollProxy implements SecurityManagerProtocol {
 
 	private Map<String, PublicKey> supportedHosts = new HashMap<String, PublicKey>();
+    
+	private int trustChainIndex = 0;
+    
 	@Override
 	public X509KeyManager[] getKeyManagers(HTTPClientProxy proxy) {
 		// Always returns null. This module does server side trust only.
@@ -43,7 +46,7 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	@Override
 	public X509TrustManager[] getTrustManagers(HTTPClientProxy proxy) {
 		try {
-			PinningTrustManager tm = new PinningTrustManager(proxy, supportedHosts);
+			PinningTrustManager tm = new PinningTrustManager(proxy, supportedHosts, trustChainIndex);
 			return new X509TrustManager[]{tm};
 		} catch (Exception e) {
 			Log.e(HttpsModule.TAG, "Unable to create PinningTrustManager. Returning null.", e);
@@ -67,15 +70,17 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	/**
 	 * Adds the <Host,PublicKey> pair to list of supported configurations.
 	 * @param host - String representing the host portion of supported Uris
-	 * @param key - The PublicKey against which the server certificate will be pinned.
+	 * @param publicKey - The PublicKey against which the server certificate will be pinned.
+	 * @param trustChainIndex - The index of the trust-chain certificate to validate against.
 	 * @throws Exception - If the arguments are invalid or if the given host is already added as a supported configuration.
 	 */
-	protected void addProfile(String host, PublicKey key) throws Exception{
+	protected void addProfile(String host, PublicKey publicKey, int index) throws Exception {
 		String theHost = (host == null) ? "" : host;
-
-		if (theHost.length() > 0 && key != null) {
+		
+		if (theHost.length() > 0 && publicKey != null) {
 			if (!hostConfigured(theHost)) {
-				supportedHosts.put(theHost.toLowerCase(Locale.ENGLISH), key);
+				supportedHosts.put(theHost.toLowerCase(Locale.ENGLISH), publicKey);
+				trustChainIndex = index;
 			} else {
 				throw new Exception("Duplicate host configuration.");
 			}
@@ -93,10 +98,17 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 		String theHost = (host == null) ? "" : host;
 		return supportedHosts.keySet().contains(theHost.toLowerCase(Locale.ENGLISH));
 	}
+    
+	/**
+	 * Returns the trust-chain index.
+	 * @return - The index representing the trust-chain index-position.
+	 */
+	public int getTrustChainIndex() {
+	    return trustChainIndex;
+	}
 
 	@Override
-	public String getApiName()
-	{
+	public String getApiName() {
 		return "appcelerator.https.PinningSecurityManager";
 	}
 }

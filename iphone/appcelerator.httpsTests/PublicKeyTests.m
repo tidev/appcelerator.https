@@ -27,7 +27,7 @@
     NSURL *certificateURL = self.certificateURLDict[@"*.prod.ace.appcelerator.com-1"];
     XCTAssertNotNil(certificateURL);
     
-    X509Certificate *certificate = [X509Certificate x509CertificateWithURL:certificateURL];
+    X509Certificate *certificate = [X509Certificate x509CertificateWithURL:certificateURL andTrustChainIndex:0];
     XCTAssertNotNil(certificate);
 
     PublicKey *publicKey = [PublicKey publicKeyWithX509Certificate:certificate];
@@ -42,8 +42,8 @@
     XCTAssertNotNil(certificateURL1);
     XCTAssertNotNil(certificateURL2);
     
-    X509Certificate *certificate1 = [X509Certificate x509CertificateWithURL:certificateURL1];
-    X509Certificate *certificate2 = [X509Certificate x509CertificateWithURL:certificateURL2];
+    X509Certificate *certificate1 = [X509Certificate x509CertificateWithURL:certificateURL1 andTrustChainIndex:0];
+    X509Certificate *certificate2 = [X509Certificate x509CertificateWithURL:certificateURL2 andTrustChainIndex:0];
     
     XCTAssertNotNil(certificate1);
     XCTAssertNotNil(certificate2);

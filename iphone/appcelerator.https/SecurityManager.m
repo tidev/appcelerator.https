@@ -391,7 +391,7 @@
     DebugLog(@"%s host %@ pinned to publicKey %@", __PRETTY_FUNCTION__, host, pinnedPublicKey);
 
     // Obtain the server's X509 certificate and public key.
-    SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, 0);
+    SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, pinnedPublicKey.x509Certificate.trustChainIndex);
     if(serverCertificate == nil) {
         DebugLog(@"%s FAIL: Could not find the server's X509 certificate in serverTrust", __PRETTY_FUNCTION__);
         return [challenge.sender cancelAuthenticationChallenge:challenge];
@@ -399,7 +399,7 @@
     
     // Create a friendlier Objective-C wrapper around this server's X509
     // certificate.
-    X509Certificate *x509Certificate = [X509Certificate x509CertificateWithSecCertificate:serverCertificate];
+    X509Certificate *x509Certificate = [X509Certificate x509CertificateWithSecCertificate:serverCertificate andTrustChainIndex:pinnedPublicKey.x509Certificate.trustChainIndex];
     if (x509Certificate == nil) {
         // CFBridgingRelease transfer's ownership of the CFStringRef
         // returned by CFCopyDescription to ARC.
@@ -437,7 +437,7 @@
         NSDictionary *userDict = @{@"pinnedPublicKey":pinnedPublicKey, @"serverPublicKey":serverPublicKey };
         
         NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                         reason:@"Leaf certificate could not be verified with provided public key"
+                                                         reason:@"Certificate could not be verified with provided public key"
                                                        userInfo:userDict];
         @throw exception;
     }

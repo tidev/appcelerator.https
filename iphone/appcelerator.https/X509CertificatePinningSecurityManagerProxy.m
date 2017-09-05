@@ -137,10 +137,22 @@ static dispatch_queue_t syncQueue;
                 @throw exception;
             }
             
+            NSInteger certificateIndex = [TiUtils intValue:pinnedURLDict[@"trustChainIndex"] def:0];
+            if (certificateIndex < 0) {
+                NSString *reason = [NSString stringWithFormat:@"Cannot use negative trust-chain certificate-index %li", (long)certificateIndex];
+                NSDictionary *userInfo = @{ @"certificateIndex": NUMINTEGER(certificateIndex) };
+                NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                                 reason:reason
+                                                               userInfo:userInfo];
+                
+                self = nil;
+                @throw exception;
+            }
+            
             // The following factory methods are self-validating and will throw
             // NSInvalidArgumentException exceptions. If construction succeeds then
             // the objects are guaranteed to be in a good state.
-            X509Certificate *x509Certificate = [X509Certificate x509CertificateWithURL:certificateURL];
+            X509Certificate *x509Certificate = [X509Certificate x509CertificateWithURL:certificateURL andTrustChainIndex:certificateIndex];
             PinnedURL       *pinnedURL       = [PinnedURL pinnedURLWithURL:url andPublicKey:x509Certificate.publicKey];
             [pinnedUrlSet addObject:pinnedURL];
         }
