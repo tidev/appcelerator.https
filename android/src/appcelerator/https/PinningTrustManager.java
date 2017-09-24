@@ -15,8 +15,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
@@ -28,19 +28,18 @@ import android.net.Uri;
 
 public class PinningTrustManager implements X509TrustManager {
 
-	private Map<String, PublicKey> supportedHosts;
+	private List<PinnedHost> supportedHosts;
 	private HTTPClientProxy proxy;
 	private X509TrustManager standardTrustManager;
-	private int trustChainIndex;
+	private boolean requireCertificate = false;
 
 	/**
 	 * Constructor for the PinningTrustManager.
 	 * @param proxy - The HTTPClientProxy representing this network connection.
 	 * @param supportedHosts - The supported configurations for which PublicKey Pinning must be performed.
-	 * @param trustChainIndex - The index of the trust-chain certificate to validate against.
 	 * @throws Exception - If a standard Trustmanager could not be instantiated.
 	 */
-	protected PinningTrustManager(HTTPClientProxy proxy, Map<String, PublicKey> supportedHosts, int trustChainIndex) throws Exception {
+	protected PinningTrustManager(HTTPClientProxy proxy, List<PinnedHost> supportedHosts, boolean requireCertificate) throws Exception {
 		TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 		factory.init((KeyStore) null);
 		TrustManager[] trustmanagers = factory.getTrustManagers();
@@ -49,8 +48,8 @@ public class PinningTrustManager implements X509TrustManager {
 		}
 		this.standardTrustManager = (X509TrustManager) trustmanagers[0];
 		this.proxy = proxy;
-		this.supportedHosts = (supportedHosts == null) ? new HashMap<String, PublicKey>() : supportedHosts;
-		this.trustChainIndex = trustChainIndex;
+		this.supportedHosts = (supportedHosts == null) ? new ArrayList<PinnedHost>() : supportedHosts;
+		this.requireCertificate = requireCertificate;
 	}
 
 	@Override
@@ -60,8 +59,7 @@ public class PinningTrustManager implements X509TrustManager {
 
 	@Override
 	public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-		this.standardTrustManager.checkServerTrusted(chain, authType);
-
+		this.standardTrustManager.checkServerTrusted(chain, authType);		
 		/**
 		 * If the HTTPClient proxy is currently connected to a Uri with a configured host, compare the certificate
 		 * in the chain with the configured PublicKey. Throws a Certificate Exception if the keys do not match.
@@ -73,16 +71,24 @@ public class PinningTrustManager implements X509TrustManager {
 			try {
 				Uri uri = Uri.parse(curLocation);
 				host = uri.getHost();
-				hostPinned = hostConfigured(host);
+				hostPinned = PinningUtils.hasMatchingHost(host, supportedHosts);
 			} catch (Exception e) {
 				hostPinned = false;
 			}
 
-			if (hostPinned) {
-				X509Certificate leaf = chain[this.trustChainIndex];
-				PublicKey leafKey = leaf.getPublicKey();
-				PublicKey compareKey = supportedHosts.get(host);
-				if (!leafKey.equals(compareKey)) {
+			if (hostPinned || requireCertificate) {
+				boolean certificateMatches = false;				
+				List<PinnedHost> matchingEntries = PinningUtils.getMatchingPinnedHosts(host, supportedHosts);			
+				for(PinnedHost entry : matchingEntries) {
+					X509Certificate leaf = chain[entry.trustChainIndex];
+					PublicKey leafKey = leaf.getPublicKey();
+					PublicKey compareKey = entry.publicKey;
+					if (leafKey.equals(compareKey)) {
+						certificateMatches = true;
+					}					
+				}
+								
+				if(!certificateMatches) {
 					throw new CertificateException("Certificate could not be verified with provided public key");
 				}
 			}
@@ -93,9 +99,5 @@ public class PinningTrustManager implements X509TrustManager {
 	@Override
 	public X509Certificate[] getAcceptedIssuers() {
 		return this.standardTrustManager.getAcceptedIssuers();
-	}
-
-	private boolean hostConfigured(String host) {
-		return supportedHosts.keySet().contains(host);
 	}
 }

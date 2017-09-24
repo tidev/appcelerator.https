@@ -10,9 +10,9 @@
 package appcelerator.https;
 
 import java.security.PublicKey;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.net.ssl.X509KeyManager;
 import javax.net.ssl.X509TrustManager;
@@ -28,9 +28,8 @@ import ti.modules.titanium.network.SecurityManagerProtocol;
 @Kroll.proxy
 public class PinningSecurityManager extends KrollProxy implements SecurityManagerProtocol {
 
-	private Map<String, PublicKey> supportedHosts = new HashMap<String, PublicKey>();
-    
-	private int trustChainIndex = 0;
+	private List<PinnedHost> supportedHosts = new ArrayList<PinnedHost>();
+    private boolean requireCertificate = false;
     
 	@Override
 	public X509KeyManager[] getKeyManagers(HTTPClientProxy proxy) {
@@ -46,7 +45,7 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	@Override
 	public X509TrustManager[] getTrustManagers(HTTPClientProxy proxy) {
 		try {
-			PinningTrustManager tm = new PinningTrustManager(proxy, supportedHosts, trustChainIndex);
+			PinningTrustManager tm = new PinningTrustManager(proxy, supportedHosts, requireCertificate);
 			return new X509TrustManager[]{tm};
 		} catch (Exception e) {
 			Log.e(HttpsModule.TAG, "Unable to create PinningTrustManager. Returning null.", e);
@@ -62,11 +61,17 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	@Override
 	public boolean willHandleURL(Uri uri) {
 		if (uri == null) {
-			return false;
+			return requireCertificate;
+		}		
+		if(PinningUtils.hasMatchingHost(uri.getHost(), supportedHosts)) {
+			return true;
 		}
-		return hostConfigured(uri.getHost());
+		return requireCertificate;
 	}
 
+	protected void requireCertificatePinning(boolean requireCertificate) {
+		this.requireCertificate = requireCertificate;
+	}
 	/**
 	 * Adds the <Host,PublicKey> pair to list of supported configurations.
 	 * @param host - String representing the host portion of supported Uris
@@ -78,35 +83,12 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 		String theHost = (host == null) ? "" : host;
 		
 		if (theHost.length() > 0 && publicKey != null) {
-			if (!hostConfigured(theHost)) {
-				supportedHosts.put(theHost.toLowerCase(Locale.ENGLISH), publicKey);
-				trustChainIndex = index;
-			} else {
-				throw new Exception("Duplicate host configuration.");
-			}
+			supportedHosts.add(new PinnedHost(theHost.toLowerCase(Locale.ENGLISH), publicKey, index));
 		} else {
 			throw new Exception("Invalid arguments passed to addProfile");
 		}
 	}
-
-	/**
-	 * Returns if the host is part of the supported configurations.
-	 * @param host - String representing the host portion of supported Uris
-	 * @return - True if the host is configured, false otherwise.
-	 */
-	private boolean hostConfigured(String host) {
-		String theHost = (host == null) ? "" : host;
-		return supportedHosts.keySet().contains(theHost.toLowerCase(Locale.ENGLISH));
-	}
     
-	/**
-	 * Returns the trust-chain index.
-	 * @return - The index representing the trust-chain index-position.
-	 */
-	public int getTrustChainIndex() {
-	    return trustChainIndex;
-	}
-
 	@Override
 	public String getApiName() {
 		return "appcelerator.https.PinningSecurityManager";

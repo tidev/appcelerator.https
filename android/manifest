@@ -1,4 +1,4 @@
-version: 2.1.0
+version: 2.1.1
 apiversion: 3
 architectures: armeabi-v7a x86
 description: Authenticate server in HTTPS connections made by TiHTTPClient

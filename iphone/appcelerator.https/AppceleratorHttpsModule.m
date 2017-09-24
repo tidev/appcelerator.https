@@ -6,12 +6,29 @@
 
 @implementation AppceleratorHttpsModule
 
+static BOOL _requiredCertPinng = NO;
+
 -(id)init {
     self = [super init];
     if (self) {
     }
     
     return self;
+}
+
+// The requiredCertPinng method provides a static way other
+// classes can access this property. Given on whe proxy is arranged
+// this seemed the best way to access without changing the interface
++ (BOOL)requiredCertPinng {
+    return _requiredCertPinng;
+}
+
+// The requireCertificatePinning methid is used to set the
+// option on how fall through urls are handled.
+// if set to false when a url is not found it will continue to execute
+// if set to true, the module will block execution
+-(void)requireCertificatePinning:(NSNumber *)value {
+    _requiredCertPinng = [TiUtils boolValue:value];
 }
 
 -(id)createX509CertificatePinningSecurityManager:(id)args {

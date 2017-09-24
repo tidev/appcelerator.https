@@ -16,6 +16,7 @@ import java.util.HashMap;
 
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.TiApplication;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.util.TiFileHelper;
@@ -33,7 +34,8 @@ public class HttpsModule extends KrollModule
 	private static final String PROP_URL = "url";
 	private static final String PROP_CERT = "serverCertificate";
 	private static final String PROP_TRUST_CHAIN_INDEX = "trustChainIndex";
-
+	private boolean requireCertificate = false;
+	
 	public HttpsModule()
 	{
 		super();
@@ -45,6 +47,15 @@ public class HttpsModule extends KrollModule
 		// Nothing
 	}
 
+	/**
+	 * Set flag if certificate pinning is required for all urls
+	 * @param requireCertificate - Boolean if certificate pinning is required 
+	 */
+	@Kroll.method
+	public void requireCertificatePinning(boolean requireCertificate) 
+	{
+		this.requireCertificate = requireCertificate;
+	}
 	/**
 	 * Create an instance of PinningSecurityManager which implements the SecurityManagerProtocol
 	 * @param args - An array of dictionaries specifying the Pinning Parameters.
@@ -81,7 +92,7 @@ public class HttpsModule extends KrollModule
 					String host = TiConvert.toString(map.get(PROP_URL));
 					String certPath = TiConvert.toString(map.get(PROP_CERT));
 					int trustChainIndex = TiConvert.toInt(map.get(PROP_TRUST_CHAIN_INDEX), 0);
-
+					
 					Uri hostUri = Uri.parse(host);
 					TiUrl certUrl = new TiUrl(certPath);
 
@@ -111,7 +122,9 @@ public class HttpsModule extends KrollModule
 
 		factory = null;
 		tfh = null;
-
+		
+		//set flag to configure if certificate pinning is required for all urls
+		theManager.requireCertificatePinning(requireCertificate);
 		return theManager;
 	}
 

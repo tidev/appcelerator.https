@@ -23,4 +23,7 @@
 // functionality is accessed from JavaScript and is only meant to be used in a
 // Titanium application
 
+
++ (BOOL)requiredCertPinng;
+
 @end
