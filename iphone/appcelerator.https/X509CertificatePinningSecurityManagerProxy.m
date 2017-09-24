@@ -154,7 +154,12 @@ static dispatch_queue_t syncQueue;
             // the objects are guaranteed to be in a good state.
             X509Certificate *x509Certificate = [X509Certificate x509CertificateWithURL:certificateURL andTrustChainIndex:certificateIndex];
             PinnedURL       *pinnedURL       = [PinnedURL pinnedURLWithURL:url andPublicKey:x509Certificate.publicKey];
-            [pinnedUrlSet addObject:pinnedURL];
+         
+            if([pinnedUrlSet containsObject: pinnedURL]) {
+                NSLog(@"[WARNING] Skipping entry. Duplicate url (%@) with certificate (%@) provided.", urlString, serverCertificate);
+            } else {
+                [pinnedUrlSet addObject:pinnedURL];
+            }
         }
         
         _securityManager = [SecurityManager securityManagerWithPinnedUrlSet:pinnedUrlSet];

@@ -83,7 +83,13 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 		String theHost = (host == null) ? "" : host;
 		
 		if (theHost.length() > 0 && publicKey != null) {
-			supportedHosts.add(new PinnedHost(theHost.toLowerCase(Locale.ENGLISH), publicKey, index));
+			PinnedHost entry = new PinnedHost(theHost.toLowerCase(Locale.ENGLISH), publicKey, index);
+			if(PinningUtils.hasMatchingEntry(entry, supportedHosts)) {
+				Log.i(HttpsModule.TAG, "Skipping entry. Duplicate certificate entry for " + theHost + " provided.");
+			} else {
+				supportedHosts.add(entry);
+			}
+			
 		} else {
 			throw new Exception("Invalid arguments passed to addProfile");
 		}
