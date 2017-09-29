@@ -168,8 +168,8 @@
 // manager was configured to handle the current url.
 -(BOOL)willHandleChallenge:(NSURLAuthenticationChallenge *)challenge forConnection:(NSURLConnection *)connection {
     BOOL result = NO;
-    if ([challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust])
-    {
+    if ([challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust] ||
+        [challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodClientCertificate]) {
         NSURL *currentURL = [NSURL URLWithString:challenge.protectionSpace.host];
         if (currentURL.scheme == nil) {
             currentURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@",challenge.protectionSpace.host]];
@@ -187,6 +187,49 @@
 {
     DebugLog(@"%s connection = %@, challenge = %@", __PRETTY_FUNCTION__, connection, challenge);
 
+    // Handle Two-phase mutual client-authentification
+    if ([[[challenge protectionSpace] authenticationMethod] isEqualToString:NSURLAuthenticationMethodClientCertificate]) {
+      
+      // TODO: How to get private-cert (p12) from proxy to here?
+      NSData *p12Data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"shockoe-traxi" ofType:@"p12"]];
+      
+      // Set pass-phrase
+      // TODO: How to get cert-passphrase from proxy to here?
+      CFStringRef password = (__bridge CFStringRef) [NSString stringWithFormat:@"shocko3d3v"];
+      
+      const void *keys[] = { kSecImportExportPassphrase };
+      const void *values[] = { password };
+      CFDictionaryRef optionsDictionary = CFDictionaryCreate(NULL, keys, values, 1, NULL, NULL);
+      CFArrayRef p12Items;
+      
+      // Import PKCS#12
+      OSStatus result = SecPKCS12Import((__bridge CFDataRef)p12Data, optionsDictionary, &p12Items);
+      
+      // If import succeeds, return identity used to authenticate
+      if (result == noErr) {
+        CFDictionaryRef identityDict = CFArrayGetValueAtIndex(p12Items, 0);
+        SecIdentityRef identityApp = (SecIdentityRef)CFDictionaryGetValue(identityDict, kSecImportItemIdentity);
+        
+        SecCertificateRef certRef;
+        SecIdentityCopyCertificate(identityApp, &certRef);
+        
+        SecCertificateRef certArray[1] = { certRef };
+        CFArrayRef myCerts = CFArrayCreate(NULL, (void *)certArray, 1, NULL);
+        CFRelease(certRef);
+        
+        // Create credentials from identity and use those to authenticate
+        NSURLCredential *credential = [NSURLCredential credentialWithIdentity:identityApp certificates:(__bridge NSArray *)myCerts persistence:NSURLCredentialPersistencePermanent];
+        CFRelease(myCerts);
+        
+        [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+      } else {
+        // If no success, cancel the authentication-challenge
+        [[challenge sender] cancelAuthenticationChallenge:challenge];
+      }
+      
+      return;
+    }
+  
     if (![challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust]) {
         return [challenge.sender cancelAuthenticationChallenge:challenge];
     }
