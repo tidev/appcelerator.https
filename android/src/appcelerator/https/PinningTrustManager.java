@@ -60,7 +60,9 @@ public class PinningTrustManager implements X509TrustManager {
 
 	@Override
 	public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-		this.standardTrustManager.checkServerTrusted(chain, authType);
+		if (this.proxy == null || this.proxy.getValidatesSecureCertificate()) {
+			this.standardTrustManager.checkServerTrusted(chain, authType);
+		}
 
 		/**
 		 * If the HTTPClient proxy is currently connected to a Uri with a configured host, compare the certificate

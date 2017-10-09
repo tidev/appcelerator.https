@@ -2,7 +2,7 @@
  * Appcelerator.Https Module - Authenticate server in HTTPS
  * connections made by TiHTTPClient.
  *
- * Copyright (c) 2014-2017 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2014-2017 by Axway, Inc. All Rights Reserved.
  *
  * Licensed under the terms of the Appcelerator Commercial License.
  * Please see the LICENSE included with this distribution for details.
@@ -10,6 +10,7 @@
 package appcelerator.https;
 
 import java.io.InputStream;
+import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.util.HashMap;
@@ -31,8 +32,10 @@ public class HttpsModule extends KrollModule
     
 	// Proxy variables
 	private static final String PROP_URL = "url";
-	private static final String PROP_CERT = "serverCertificate";
 	private static final String PROP_TRUST_CHAIN_INDEX = "trustChainIndex";
+	private static final String PROP_SERVER_CERT = "serverCertificate";
+	private static final String PROP_CLIENT_CERT = "clientCertificate";
+	private static final String PROP_CLIENT_PASSWORD = "clientPassword";
 
 	public HttpsModule()
 	{
@@ -59,7 +62,7 @@ public class HttpsModule extends KrollModule
 	@Kroll.method
 	public PinningSecurityManager createX509CertificatePinningSecurityManager(Object[] args) throws Exception
 	{
-		PinningSecurityManager theManager = new PinningSecurityManager();
+		PinningSecurityManager manager = new PinningSecurityManager();
 		CertificateFactory factory = CertificateFactory.getInstance("X.509");
 		TiFileHelper tfh = new TiFileHelper(TiApplication.getInstance());
 
@@ -79,21 +82,32 @@ public class HttpsModule extends KrollModule
 
 				try {
 					String host = TiConvert.toString(map.get(PROP_URL));
-					String certPath = TiConvert.toString(map.get(PROP_CERT));
+
 					int trustChainIndex = TiConvert.toInt(map.get(PROP_TRUST_CHAIN_INDEX), 0);
+					String serverCertPath = TiConvert.toString(map.get(PROP_SERVER_CERT));
+					String clientCertPath = TiConvert.toString(map.get(PROP_CLIENT_CERT));
+					String clientCertPassword = TiConvert.toString(map.get(PROP_CLIENT_PASSWORD));
 
 					Uri hostUri = Uri.parse(host);
-					TiUrl certUrl = new TiUrl(certPath);
 
-					is = tfh.openInputStream(certUrl.resolve(), false);
-					Certificate cert = factory.generateCertificate(is);
-					theManager.addProfile(hostUri.getHost(), cert.getPublicKey(), trustChainIndex);
-				}
-				catch (Exception e) {
+					TiUrl serverCertUri = new TiUrl(serverCertPath);
+					is = tfh.openInputStream(serverCertUri.resolve(), false);
+					Certificate serverCert = factory.generateCertificate(is);
+					manager.addProfile(hostUri.getHost(), serverCert.getPublicKey(), trustChainIndex);
+					
+					if (clientCertPath != null) {
+						if (is != null) {
+							is.close();
+						}
+						TiUrl clientCertUrl = new TiUrl(clientCertPath);
+						is = tfh.openInputStream(clientCertUrl.resolve(), false);
+						KeyStore keyStore = KeyStore.getInstance("pkcs12");
+						keyStore.load(is, clientCertPassword.toCharArray());
+						manager.addKeyStore(keyStore, clientCertPassword);
+					}
+				} catch (Exception e) {
 					caughtException = e;
-				}
-				finally
-				{
+				} finally {
 					if (is != null) {
 						try {
 							is.close();
@@ -112,7 +126,7 @@ public class HttpsModule extends KrollModule
 		factory = null;
 		tfh = null;
 
-		return theManager;
+		return manager;
 	}
 
 	@Override
