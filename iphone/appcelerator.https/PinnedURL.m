@@ -6,13 +6,13 @@
 
 @implementation PinnedURL
 
-+(instancetype)pinnedURLWithURL:(NSURL *)url andPublicKey:(PublicKey *)publicKey {
++(instancetype)pinnedURLWithURL:(NSURL *)url andPublicKey:(PublicKey *)publicKey clientCertificate:(ClientCertificate *)clientCertificate {
     DebugLog(@"%s", __PRETTY_FUNCTION__);
-    return [[PinnedURL alloc] initWithURL:url andPublicKey:publicKey];
+    return [[PinnedURL alloc] initWithURL:url andPublicKey:publicKey clientCertificate:clientCertificate];
 }
 
 // Designated initializer.
--(instancetype)initWithURL:(NSURL *)url andPublicKey:(PublicKey *) publicKey {
+-(instancetype)initWithURL:(NSURL *)url andPublicKey:(PublicKey *) publicKey clientCertificate:(ClientCertificate *)clientCertificate {
     DebugLog(@"%s url = %@, publicKey = %@", __PRETTY_FUNCTION__, url, publicKey);
     self = [super init];
     if (self) {
@@ -36,6 +36,10 @@
             
             self = nil;
             @throw exception;
+        }
+      
+        if (clientCertificate != nil) {
+            _clientCertificate = clientCertificate;
         }
 
         _url = [url copy];
