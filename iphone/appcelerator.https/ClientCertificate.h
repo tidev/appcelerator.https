@@ -11,13 +11,13 @@
 @interface ClientCertificate : NSObject {
 @private
   NSURL *_url;
-  NSString *_passphrase;
+  NSString *_password;
 }
 
-- (instancetype)initWithURL:(NSURL *)url andPassphrase:(NSString *)passphrase;
+- (instancetype)initWithURL:(NSURL *)url andPassword:(NSString *)password;
 
 @property (nonatomic, strong, readonly) NSURL *url;
 
-@property (nonatomic, copy, readonly) NSString *passphrase;
+@property (nonatomic, copy, readonly) NSString *password;
 
 @end

@@ -163,9 +163,9 @@ static dispatch_queue_t syncQueue;
                 @throw exception;
             }
           
-            NSString *clientPassphrase = [TiUtils stringValue:@"clientPassphrase" properties:pinnedURLDict];
-            if (clientCertificateURL != nil && clientPassphrase == nil) {
-                NSString *reason = [NSString stringWithFormat:@"Could not find X509 client-certificate passphrase"];
+            NSString *clientPassword = [TiUtils stringValue:@"clientPassword" properties:pinnedURLDict];
+            if (clientCertificateURL != nil && clientPassword == nil) {
+                NSString *reason = [NSString stringWithFormat:@"Could not find X509 client-certificate password"];
                 NSDictionary *userInfo = @{ @"clientCertificate": clientCertificate };
                 NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                                  reason:reason
@@ -195,7 +195,7 @@ static dispatch_queue_t syncQueue;
           
             if (clientCertificateURL != nil) {
                 clientX509Certificate = [[ClientCertificate alloc] initWithURL:clientCertificateURL
-                                                                 andPassphrase:clientPassphrase];
+                                                                 andPassword:clientPassword];
             }
           
             PinnedURL *pinnedURL = [PinnedURL pinnedURLWithURL:url andPublicKey:serverX509Certificate.publicKey clientCertificate:clientX509Certificate];

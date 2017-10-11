@@ -259,7 +259,7 @@
         }
         
         // Set pass-phrase
-        CFStringRef password = (__bridge CFStringRef) pinnedClientCertificate.passphrase;
+        CFStringRef password = (__bridge CFStringRef) pinnedClientCertificate.password;
         
         const void *keys[] = { kSecImportExportPassphrase };
         const void *values[] = { password };
