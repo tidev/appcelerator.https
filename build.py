@@ -62,9 +62,9 @@ def main(args):
 
     if cmd == 'build':
         packages = []
-        if os.path.exists('iphone'):
-            create_module('iphone', 'appc ti build -p ios')
-            packages.append('iphone')
+        if os.path.exists('ios'):
+            create_module('ios', 'appc ti build -p ios')
+            packages.append('ios')
 
         if os.path.exists('android'):
             create_module('android', 'appc ti build -p android')
@@ -74,8 +74,8 @@ def main(args):
         fork('.', packages_cmd, False)
 
     elif cmd == 'clean':
-        if os.path.exists('iphone'):
-            clean_build_module('iphone')
+        if os.path.exists('ios'):
+            clean_build_module('ios')
 
         if os.path.exists('android'):
             clean_ant_module('android')

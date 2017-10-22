@@ -1,8 +1,5 @@
 /**
  * This is an example of how to use the appcelerator.https module.
- *
- * Author: Matt Langston
- * Created: 2014.04.29
  */
 
 var https = require('appcelerator.https');
@@ -10,17 +7,17 @@ var https = require('appcelerator.https');
 /*
  * Create a Security Manager for Titanium.Network.HTTPClient that
  * authenticates a currated set of HTTPS servers. It does this by
- * "pinning" an HTTPS server's DNS name to the public key contained in
+ * 'pinning' an HTTPS server's DNS name to the public key contained in
  * the X509 certificate it uses for TLS communication. The public key
  * is embedded in an app by adding this X509 certificate to the app's
  * Resources directory.
  *
- * With such a "pin" in place, the security manager will guarantee
+ * With such a 'pin' in place, the security manager will guarantee
  * that all HTTPClient connections to this HTTPS server are to a
  * server that holds the private key corresponding to the public key
  * embedded in the app, therefore authenticating the server.
  *
- * This is what prevents "Man-in-the-Middle" attack.
+ * This is what prevents 'Man-in-the-Middle' attack.
  *
  * This example pins two URLs.
  *
@@ -42,16 +39,16 @@ var https = require('appcelerator.https');
  * The X.509 certificate files can have any name and extension you
  * wish, but they must be in the standard DER binary format.
  */
-var securityManager = https.createX509CertificatePinningSecurityManager([
-	{
-		url: "https://www.americanexpress.com",
-		serverCertificate: "wellsfargo.cer"
-	},
-	{
-		url: "https://www.wellsfargo.com",
-		serverCertificate: "wellsfargo.cer"
-	}
-]);
+var securityManager = https.createX509CertificatePinningSecurityManager([{
+	url: 'https://www.americanexpress.com',
+	serverCertificate: 'wellsfargo.cer'
+},
+{
+	url: 'https://www.wellsfargo.com',
+  serverCertificate: 'wellsfargo.cer',
+	// Optional: Pass the trust-chain index to select a certificate different to the leaf
+	// trustChainIndex: 1
+}]);
 
 
 var win = Titanium.UI.createWindow({
@@ -111,7 +108,7 @@ win.open();
 /*
  * Create an HTTP client the same way you always have, but pass in an
  * (optional) Security Manager. In this example, we pass in the
- * "Certificate Pinning Security Manager " that I configured above.
+ * 'Certificate Pinning Security Manager ' that I configured above.
  */
 
 function getXHR(url) {
@@ -131,9 +128,9 @@ function getXHR(url) {
 	return xhr;
 }
 
-var wf = "https://www.wellsfargo.com";
-var amex = "https://www.americanexpress.com";
-var appc = "https://dashboard.appcelerator.com";
+var wf = 'https://www.wellsfargo.com';
+var amex = 'https://www.americanexpress.com';
+var appc = 'https://dashboard.appcelerator.com';
 
 button1.addEventListener('click',function(e){
 	var xhr = getXHR(wf);

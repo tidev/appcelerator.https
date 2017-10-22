@@ -1,7 +1,7 @@
 name: Modules.Https
 summary: Prevents a man-in-the-middle attack when used with the `Titanium.Network.HTTPClient` class.
 description: |
-    <p class="note">Note: This feature requires a Pro, Team, or Enterprise subscription.</p>
+    <p class="note">Note: This feature requires a Pro or Enterprise subscription.</p>
 
     Use the HTTPS module to create a Security Manager for `Titanium.Network.HTTPClient`
     that authenticates a set of HTTPS servers by pinning an HTTPS server's URL to its
@@ -65,12 +65,10 @@ description: |
 
     For example:
 
-        var securityManager = https.createX509CertificatePinningSecurityManager([
-            {
-                url: 'https://www.yourorg.com',
-                serverCertificate: 'yourorg.der'
-            }
-        ]);
+        var securityManager = https.createX509CertificatePinningSecurityManager([{
+            url: 'https://www.yourorg.com',
+            serverCertificate: 'yourorg.der'
+        }]);
 
     After the security manager is created, create an `HTTPClient` object and set the
     [securityManager](Titanium.Network.HTTPClient.securityManager) property to the security manager
@@ -93,6 +91,18 @@ description: |
 
         httpClient.open('GET', 'https://yourorg.com');
         httpClient.send();
+        
+    ### Wildcard Support
+    
+    Additionally to the above API, you can also pass wildcard-certificates to your
+    security-manager. Example:
+        
+        var securityManager = https.createX509CertificatePinningSecurityManager([{
+            url: '*.example.com',
+            serverCertificate: 'example.der'
+        }]);
+        
+    ### Error Responses
 
     If the authentication fails, a security exception is thrown. The HTTP client's `onerror`
     callback will be passed an error object with the `code` key set to `-1` and the `message` key
@@ -144,28 +154,23 @@ examples:
         `Resources` directory or `app/assets/` directory for Alloy projects.
 
             // Require in the module
-            var https = require('appcelerator.https'),
-                securityManager,
-                httpClient;
+            var https = require('appcelerator.https');
 
             // Use the module to create a Security Manager that authenticates the specified URLs
-            securityManager = https.createX509CertificatePinningSecurityManager([
-                {
-                    url: 'https://dashboard.appcelerator.com',
-                    serverCertificate: 'dashboard.appcelerator.com.der'
-                },
-                {
-                    url: 'https://www.wellsfargo.com',
-                    serverCertificate: 'wellsfargo.der'
-                }
-            ]);
+            var securityManager = https.createX509CertificatePinningSecurityManager([{
+                url: 'https://dashboard.appcelerator.com',
+                serverCertificate: 'dashboard.appcelerator.com.der'
+            }, {
+                url: 'https://www.wellsfargo.com',
+                serverCertificate: 'wellsfargo.der'
+            }]);
 
             // Create an HTTP client the same way you always have
             // but pass in the optional Security Manager that was created previously.
-            httpClient = Ti.Network.createHTTPClient({
+            var httpClient = Ti.Network.createHTTPClient({
                 onload: function(e) {
                     Ti.API.info('Received text: ' + this.responseText);
-                },
+                }, 
                 onerror: function(e) {
                     Ti.API.error(e.error);
                 },
