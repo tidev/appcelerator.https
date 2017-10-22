@@ -245,6 +245,19 @@
     
     DebugLog(@"%s host %@ pinned to publicKey %@", __PRETTY_FUNCTION__, host, pinnedPublicKey);
 
+    CFIndex count = SecTrustGetCertificateCount(serverTrust);
+    CFIndex i = 0;
+  
+    DebugLog(@"Number of certificates: %ld", count);
+  
+    for (i = 0; i < count; i++) {
+        SecCertificateRef item = SecTrustGetCertificateAtIndex(serverTrust, i);
+        NSString *desc = (NSString *)CFBridgingRelease(CFCopyDescription(item));
+
+        DebugLog(@"%ld: %@", i, desc);
+    }
+  
+  
     // Obtain the server's X509 certificate and public key.
     SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, pinnedPublicKey.x509Certificate.trustChainIndex);
     if(serverCertificate == nil) {
@@ -260,7 +273,7 @@
         // returned by CFCopyDescription to ARC.
         NSString *serverCertificateDescription = (NSString *)CFBridgingRelease(CFCopyDescription(serverCertificate));
         NSString *reason = [NSString stringWithFormat:@"LOGIC ERROR: appcelerator.https module bug: SecurityManager could not create an X509Certificate for host \"%@\" using the SecCertificateRef \"%@\". Please report this issue to us at https://jira.appcelerator.org/browse/MOD-1706", connection.currentRequest.URL.host, serverCertificateDescription];
-        NSDictionary *userInfo = @{ @"x509Certificate" : x509Certificate };
+        NSDictionary *userInfo = @{ @"x509Certificate" : [NSNull null] };
         NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                          reason:reason
                                                        userInfo:userInfo];

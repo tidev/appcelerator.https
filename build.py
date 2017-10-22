@@ -63,15 +63,11 @@ def main(args):
     if cmd == 'build':
         packages = []
         if os.path.exists('iphone'):
-            create_module('iphone', './build.py')
+            create_module('iphone', 'appc ti build -p ios')
             packages.append('iphone')
 
-        if os.path.exists('mobileweb'):
-            create_module('mobileweb', './build.py')
-            packages.append('mobileweb')
-
         if os.path.exists('android'):
-            create_module('android', 'ant')
+            create_module('android', 'appc ti build -p android')
             packages.append('android')
 
         packages_cmd = './package.py --platform=' + string.join(packages, ',')
@@ -80,9 +76,6 @@ def main(args):
     elif cmd == 'clean':
         if os.path.exists('iphone'):
             clean_build_module('iphone')
-
-        if os.path.exists('mobileweb'):
-            clean_build_module('mobileweb')
 
         if os.path.exists('android'):
             clean_ant_module('android')
