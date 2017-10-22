@@ -25,8 +25,8 @@ example/build/
 example/modules/
 
 # User-specific Xcode settings.
-ios/appcelerator.https.xcodeproj/xcuserdata
-ios/appcelerator.https.xcodeproj/project.xcworkspace/xcuserdata
+ios/appcelerator.https.xcodeproj/xcuserdata/*
+ios/appcelerator.https.xcodeproj/project.xcworkspace/xcuserdata/*
 
 # Emacs backup files
 *~
