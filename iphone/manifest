@@ -10,4 +10,4 @@ name: https
 moduleid: appcelerator.https
 guid: 2163621d-1a78-4215-8244-bda08724ffed
 platform: iphone
-minsdk: 5.5.0.GA
+minsdk: 5.4.0.GA
