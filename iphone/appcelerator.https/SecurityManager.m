@@ -257,42 +257,30 @@
           
           @throw exception;
         }
-        
-        // Set pass-phrase
-        CFStringRef password = (__bridge CFStringRef) pinnedClientCertificate.password;
-        
-        const void *keys[] = { kSecImportExportPassphrase };
-        const void *values[] = { password };
-        CFDictionaryRef optionsDictionary = CFDictionaryCreate(NULL, keys, values, 1, NULL, NULL);
-        CFArrayRef p12Items;
-        
-        // Import PKCS#12
-        OSStatus result = SecPKCS12Import((__bridge CFDataRef)p12Data, optionsDictionary, &p12Items);
-        
-        // If import succeeds, return identity used to authenticate
-        if (result == noErr) {
-            CFDictionaryRef identityDict = CFArrayGetValueAtIndex(p12Items, 0);
-            SecIdentityRef identityApp = (SecIdentityRef)CFDictionaryGetValue(identityDict, kSecImportItemIdentity);
-          
-            SecCertificateRef certRef;
-            SecIdentityCopyCertificate(identityApp, &certRef);
-          
-            SecCertificateRef certArray[1] = { certRef };
-            CFArrayRef certs = CFArrayCreate(NULL, (void *)certArray, 1, NULL);
-            CFRelease(certRef);
-          
-            // Create credentials from identity and use those to authenticate
-            NSURLCredential *credential = [NSURLCredential credentialWithIdentity:identityApp
-                                                                     certificates:(__bridge NSArray *)certs
-                                                                      persistence:NSURLCredentialPersistencePermanent];
-            CFRelease(certs);
-          
-            [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
-        } else {
-            // If no success, cancel the authentication-challenge
-            [[challenge sender] cancelAuthenticationChallenge:challenge];
+      
+        CFDataRef inPKCS12Data = (__bridge CFDataRef)p12Data;
+        SecIdentityRef identity;
+      
+        OSStatus result = [self extractIdentity:&identity from:inPKCS12Data with:pinnedClientCertificate.password];
+      
+        if (result != noErr) {
+            [challenge.sender cancelAuthenticationChallenge:challenge];
+            return;
         }
-        
+      
+        SecCertificateRef certificate = NULL;
+        SecIdentityCopyCertificate (identity, &certificate);
+      
+        const void *certificates[] = { certificate };
+        CFArrayRef certificatesArray = CFArrayCreate(kCFAllocatorDefault, certificates, 1, NULL);
+      
+        // create a credential from the certificate and ideneity, then reply to the challenge with the credential
+        NSURLCredential *credential = [NSURLCredential credentialWithIdentity:identity
+                                                                 certificates:(__bridge NSArray*)certificatesArray
+                                                                  persistence:NSURLCredentialPersistencePermanent];
+      
+        [challenge.sender useCredential:credential forAuthenticationChallenge:challenge];
+
         return;
     }
   
@@ -440,6 +428,34 @@
 
 - (NSString *)description {
     return [NSString stringWithFormat:@"%@: %@", NSStringFromClass(self.class), self.pinnedUrlSet];
+}
+
+#pragma mark - Utilities
+
+- (OSStatus)extractIdentity:(SecIdentityRef*)identity from:(CFDataRef)p12Data with:(NSString *)password {
+    OSStatus result = errSecSuccess;
+  
+    CFStringRef _password = (__bridge CFStringRef)password;
+    const void *keys[] = { kSecImportExportPassphrase };
+    const void *values[] = { _password };
+  
+    CFDictionaryRef options = CFDictionaryCreate(NULL, keys, values, 1, NULL, NULL);
+  
+    CFArrayRef items = CFArrayCreate(NULL, 0, 0, NULL);
+    result = SecPKCS12Import(p12Data, options, &items);
+  
+    if (result == 0) {
+        CFDictionaryRef ident = CFArrayGetValueAtIndex(items,0);
+        const void *tempIdentity = NULL;
+        tempIdentity = CFDictionaryGetValue(ident, kSecImportItemIdentity);
+        *identity = (SecIdentityRef)tempIdentity;
+    }
+  
+    if (options) {
+        CFRelease(options);
+    }
+  
+    return result;
 }
 
 @end
