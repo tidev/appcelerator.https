@@ -198,7 +198,7 @@ we check if any wildcard entries are defined and do a regex compare against thos
 - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
     DebugLog(@"%s connection = %@, challenge = %@", __PRETTY_FUNCTION__, connection, challenge);
-
+    
     if (![challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust]) {
         return [challenge.sender cancelAuthenticationChallenge:challenge];
     }
@@ -215,8 +215,8 @@ we check if any wildcard entries are defined and do a regex compare against thos
         
         @throw exception;
     }
-
-        
+    
+    
     SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
     if(serverTrust == nil) {
         NSLog(@"%s FAIL: challenge.protectionSpace.serverTrust is nil", __PRETTY_FUNCTION__);
@@ -232,20 +232,22 @@ we check if any wildcard entries are defined and do a regex compare against thos
         DebugLog(@"%s FAIL: standard TLS validation failed. SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
         return [challenge.sender cancelAuthenticationChallenge:challenge];
     }
-
+    
     
     BOOL ableToFindMatchingCertificate = NO;
     
     DebugLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
-
+    
     // Normalize the server's host name to lower case.
     NSString *host = [connection.currentRequest.URL.host lowercaseString];
     
     DebugLog(@"%s Normalized host name = %@", __PRETTY_FUNCTION__, host);
-
+    
     // Get the PinnedURL for this server.
     NSArray *pinnedKeys = [self publicKeysForHost:host];
-
+    
+     DebugLog(@"Number of certificates: %ld", [pinnedKeys count]);
+    
     // It is a logic error (a bug in this SecurityManager class) if this
     // security manager does not have a PinnedURL for this server.
     if (pinnedKeys.count == 0) {
@@ -268,7 +270,10 @@ we check if any wildcard entries are defined and do a regex compare against thos
             NSLog(@"%s FAIL: Could not find the server's X509 certificate in serverTrust", __PRETTY_FUNCTION__);
             return [challenge.sender cancelAuthenticationChallenge:challenge];
         }
-
+        
+        NSString *desc = (NSString *)CFBridgingRelease(CFCopyDescription(serverCertificate));
+        DebugLog(@"Inspecting certificate: %@", desc);
+        
         // Create a friendlier Objective-C wrapper around this server's X509
         // certificate.
         X509Certificate *x509Certificate = [X509Certificate x509CertificateWithSecCertificate:serverCertificate andTrustChainIndex:pinnedPublicKey.x509Certificate.trustChainIndex];
@@ -278,7 +283,7 @@ we check if any wildcard entries are defined and do a regex compare against thos
             NSString *serverCertificateDescription = (NSString *)CFBridgingRelease(CFCopyDescription(serverCertificate));
             NSString *reason = [NSString stringWithFormat:@"LOGIC ERROR: appcelerator.https module bug: SecurityManager could not create an X509Certificate for host \"%@\" using the SecCertificateRef \"%@\". Please report this issue to us at https://jira.appcelerator.org/browse/MOD-1706", connection.currentRequest.URL.host, serverCertificateDescription];
             NSLog(@"[ERROR] %@", reason);
-            NSDictionary *userInfo = @{ @"x509Certificate" : x509Certificate };
+            NSDictionary *userInfo = @{ @"x509Certificate" : [NSNull null] };
             NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                              reason:reason
                                                            userInfo:userInfo];
@@ -286,7 +291,7 @@ we check if any wildcard entries are defined and do a regex compare against thos
             @throw exception;
         }
         
-
+        
         DebugLog(@"%s server's X509 certificate = %@", __PRETTY_FUNCTION__, x509Certificate);
         // Get the public key from this server's X509 certificate.
         PublicKey *serverPublicKey = x509Certificate.publicKey;
@@ -302,7 +307,7 @@ we check if any wildcard entries are defined and do a regex compare against thos
         }
         
         DebugLog(@"%s server's public key = %@", __PRETTY_FUNCTION__, serverPublicKey);
-
+        
         // Compare the public keys. If they match, then the server is
         // authenticated.
         BOOL publicKeysAreEqual = [pinnedPublicKey isEqualToPublicKey:serverPublicKey];
@@ -325,7 +330,7 @@ we check if any wildcard entries are defined and do a regex compare against thos
         @throw exception;
     }
     
-
+    
     // Return success since the server holds the private key
     // corresponding to the public key held bu this security manager.
     return [challenge.sender useCredential:[NSURLCredential credentialForTrust:serverTrust] forAuthenticationChallenge:challenge];
