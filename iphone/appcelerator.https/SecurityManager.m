@@ -88,7 +88,7 @@
     NSString *host = [url.host lowercaseString];
     BOOL containsHostName = [self hasRegisteredHost: host];
     DebugLog(@"%s returns %@ for url = %@ host = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(containsHostName), url, host);
-    if(containsHostName) {
+    if (containsHostName) {
         return YES;
     }
     return requiredPinning;
@@ -97,13 +97,13 @@
 /**
  Returns a boolean if the provided host matches the pinned value
  @param host Host to get the public key for
-@param pinnedHost url associated with the pinned configuration
-This first performs a quick lookup by comparing hostnames. If none matched
-we check if any wildcard entries are defined and do a regex compare against those.
+ @param pinnedHost url associated with the pinned configuration
+ This first performs a quick lookup by comparing hostnames. If none matched
+ we check if any wildcard entries are defined and do a regex compare against those.
  @return true if a match is found or false if no match found
  */
 
--(BOOL) hostMatches:(NSString *)host forComparison:(NSString *)pinnedHost {
+-(BOOL)hostMatches:(NSString *)host forComparison:(NSString *)pinnedHost {
     host = host.lowercaseString;
     pinnedHost = pinnedHost.lowercaseString;
     
@@ -136,7 +136,7 @@ we check if any wildcard entries are defined and do a regex compare against thos
  
  @return true if a match is found or false if no match found
  */
--(BOOL) hasRegisteredHost:(NSString *)host {
+-(BOOL)hasRegisteredHost:(NSString *)host {
     for(PinnedURL* pinnedURL in _certificateDetails) {
         if([self hostMatches: host forComparison: pinnedURL.host]) {
             return YES;
