@@ -124,7 +124,9 @@ methods:
               * `serverCertificate`: X.509 certificate file in DER binary format
               
             Optionally, use the following key for further configuration:
-              * `trustChainIndex`: Index of the trust-chain certificate to validate against (default: 0 - leaf certificate). 
+              * `trustChainIndex`: Index of the trust-chain certificate to validate against (default: 0 - leaf certificate).
+              * `clientCertificate`: Client certificate for two-way authentication in PKCS12 format (*.p12)
+              * `clientPassword`: Client certificate password.
 
         type: Array<Dictionary>
     returns:
