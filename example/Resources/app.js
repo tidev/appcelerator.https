@@ -38,13 +38,15 @@ var https = require('appcelerator.https');
  * The X.509 certificate files can have any name and extension you
  * wish, but they must be in the standard DER binary format.
  */
-var securityManager = https.createX509CertificatePinningSecurityManager([{
+var securityManager = https.createX509CertificatePinningSecurityManager([
+  {
     url: 'https://www.americanexpress.com',
     serverCertificate: 'wellsfargo.cer'
   },
   {
     url: 'https://www.wellsfargo.com',
-    serverCertificate: 'wellsfargo.cer'
+    serverCertificate: 'SC3.der',
+    trustChainIndex: 1
   }
 ]);
 
@@ -62,31 +64,31 @@ var view = Ti.UI.createView({
 var button1 = Titanium.UI.createButton({
   title: 'Load wellsfargo',
   color: 'green',
-  top: 20,
+  top: 20
 });
 
 var button2 = Titanium.UI.createButton({
   title: 'Load americanexpress',
   color: 'red',
-  top: 20,
+  top: 20
 });
 
 var button3 = Titanium.UI.createButton({
   title: 'Load appcelerator',
   color: 'blue',
-  top: 20,
+  top: 20
 });
 
 var label1 = Titanium.UI.createLabel({
   text: 'Desc:',
   color: 'black',
-  top: 20,
+  top: 20
 });
 
 var label2 = Titanium.UI.createLabel({
   text: 'Status:',
   color: 'black',
-  top: 20,
+  top: 20
 });
 
 view.add(button1);
@@ -127,7 +129,8 @@ var appc = 'https://dashboard.appcelerator.com';
 
 button1.addEventListener('click', function(e) {
   var xhr = getXHR(wf);
-  label1.text = 'SecurityManager is configured correctly for this request. Request must succeed. ';
+  label1.text =
+    'SecurityManager is configured correctly for this request. Request must succeed. ';
   label1.color = 'green';
   label2.text = 'Desc:';
   xhr.send();
@@ -135,7 +138,8 @@ button1.addEventListener('click', function(e) {
 
 button2.addEventListener('click', function(e) {
   var xhr = getXHR(amex);
-  label1.text = 'SecurityManager is configured incorrectly for this request. Request must fail. ';
+  label1.text =
+    'SecurityManager is configured incorrectly for this request. Request must fail. ';
   label1.color = 'red';
   label2.text = 'Desc:';
   xhr.send();
@@ -143,7 +147,8 @@ button2.addEventListener('click', function(e) {
 
 button3.addEventListener('click', function(e) {
   var xhr = getXHR(appc);
-  label1.text = 'SecurityManager does not participate in the validation of this request. Request should succeed. ';
+  label1.text =
+    'SecurityManager does not participate in the validation of this request. Request should succeed. ';
   label1.color = 'blue';
   label2.text = 'Desc:';
   xhr.send();
