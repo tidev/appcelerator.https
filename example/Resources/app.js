@@ -46,7 +46,7 @@ var securityManager = https.createX509CertificatePinningSecurityManager([
   {
     url: 'https://www.wellsfargo.com',
     serverCertificate: 'SC3.der',
-    trustChainIndex: 0
+    trustChainIndex: 1
   }
 ]);
 
