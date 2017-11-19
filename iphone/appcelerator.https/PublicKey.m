@@ -22,11 +22,11 @@
             NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                              reason:reason
                                                            userInfo:userInfo];
-            
+
             self = nil;
             @throw exception;
         }
-        
+
         SecPolicyRef policy = NULL;
         SecTrustRef  trust  = NULL;
         @try {
@@ -41,29 +41,30 @@
                 NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                                  reason:reason
                                                                userInfo:userInfo];
-                
+
                 self = nil;
                 @throw exception;
             }
-            
+
             // We need to call SecTrustEvaluate before calling
             // SecTrustCopyPublicKey.
             status = SecTrustEvaluate(trust, NULL);
 
             DebugLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
-            
+
             if (!(errSecSuccess == status)) {
                 NSString *reason = [NSString stringWithFormat:@"SecTrustEvaluate returned result code %@", @(status)];
                 NSDictionary *userInfo = @{ @"OSStatus" : @(status) };
                 NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                                  reason:reason
                                                                userInfo:userInfo];
-                
+
                 self = nil;
                 @throw exception;
             }
-            
+
             _SecKey = SecTrustCopyPublicKey(trust);
+            _trustChainIndex = x509Certificate.trustChainIndex;
 
             if (!(NULL != _SecKey)) {
                 NSString *reason = @"SecTrustCopyPublicKey returned NULL";
@@ -71,7 +72,7 @@
                 NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                                  reason:reason
                                                                userInfo:userInfo];
-                
+
                 self = nil;
                 @throw exception;
             }
@@ -107,7 +108,7 @@
     if (!rhs) {
         return NO;
     }
-    
+
     BOOL equal = CFEqual(self.SecKey, rhs.SecKey);
     return equal;
 }
@@ -118,11 +119,11 @@
     if (self == rhs) {
         return YES;
     }
-    
+
     if (![rhs isKindOfClass:[PublicKey class]]) {
         return NO;
     }
-    
+
     return [self isEqualToPublicKey:(PublicKey *)rhs];
 }
 
