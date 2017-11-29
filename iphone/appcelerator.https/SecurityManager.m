@@ -14,6 +14,9 @@
 // the values are instances of PublicKey.
 @property (nonatomic, strong, readonly) NSDictionary *dnsNameToPublicKeyMap;
 
+// Try the same for client-certificates
+@property (nonatomic, strong, readonly) NSDictionary<NSString *, ClientCertificate *> *dnsNameToClientCertificateMap;
+
 @end
 
 @implementation SecurityManager
@@ -58,7 +61,9 @@
         // the URL (they keys) to the PublicKey instances (the values) for the
         // given set of PinnedURL instances.
         NSMutableDictionary *dnsNameToPublicKeyMap = [NSMutableDictionary dictionaryWithCapacity:_pinnedUrlSet.count];
-        for(PinnedURL* pinnedURL in _pinnedUrlSet) {
+        NSMutableDictionary *dnsNameToClientCertificateMap = [NSMutableDictionary dictionaryWithCapacity:_pinnedUrlSet.count];
+      
+        for (PinnedURL* pinnedURL in _pinnedUrlSet) {
             // It is an error to pin the same URL more than once.
             if (dnsNameToPublicKeyMap[pinnedURL.host] != nil) {
                 NSString *reason = [NSString stringWithFormat:@"A host name can only be pinned to one public key: %@", pinnedURL.host];
@@ -74,10 +79,15 @@
             // Normalize the host to lower case.
             NSString *host = [pinnedURL.host lowercaseString];
             dnsNameToPublicKeyMap[host] = pinnedURL.publicKey;
+          
+            if (pinnedURL.clientCertificate != nil) {
+                dnsNameToClientCertificateMap[host] = pinnedURL.clientCertificate;
+            }
         }
 
         // Make an immutable copy of the dictionary.
         _dnsNameToPublicKeyMap = [NSDictionary dictionaryWithDictionary:dnsNameToPublicKeyMap];
+        _dnsNameToClientCertificateMap = [NSDictionary dictionaryWithDictionary:dnsNameToClientCertificateMap];
     }
 
     return self;
@@ -110,7 +120,6 @@
 
     return containsHostName;
 }
-
 
 /**
  Returns the public key for a given host
@@ -151,6 +160,45 @@
     return nil;
 }
 
+/**
+ Returns the client certificate for a given host
+ 
+ This first performs a quick lookup by comparing hostnames. If none matched
+ we check if any wildcard entries are defined and do a regex compare against those.
+ 
+ @param host Host to get the client-certificate for
+ 
+ @return The client-certificate if found or nil
+ */
+- (ClientCertificate *)clientCertificateForHost:(NSString *)host {
+  ClientCertificate *directMatch = self.dnsNameToClientCertificateMap[host];
+  if (directMatch != nil) {
+    return directMatch;
+  }
+  
+  NSError *error = nil;
+  for (NSString *hostKey in self.dnsNameToClientCertificateMap.allKeys) {
+    if ([hostKey rangeOfString:@"*."].length == 0) {
+      continue;
+    }
+    
+    NSString *wildcardRegexPattern = [NSRegularExpression escapedPatternForString:hostKey];
+    wildcardRegexPattern = [wildcardRegexPattern stringByReplacingOccurrencesOfString:@"\\*\\." withString:@"([a-z0-9\\-]+\\.)*"];
+    NSRegularExpression *wildcardRegex = [NSRegularExpression regularExpressionWithPattern:wildcardRegexPattern options:NSRegularExpressionCaseInsensitive error:&error];
+    if (error != nil) {
+      NSLog(@"[ERROR] Could not initialize RegEx with pattern %@ to match possible wildcard certificates.", wildcardRegexPattern);
+      NSLog(@"[ERROR] The error was: %@", error.localizedDescription);
+      continue;
+    }
+    NSInteger numberOfMatches = [wildcardRegex numberOfMatchesInString:host options:0 range:NSMakeRange(0, host.length)];
+    if (numberOfMatches > 0) {
+      return self.dnsNameToClientCertificateMap[hostKey];
+    }
+  }
+  
+  return nil;
+}
+
 // If this security manager was configured to handle this url then return self.
 -(id<APSConnectionDelegate>) connectionDelegateForUrl:(NSURL*)url {
     DebugLog(@"%s url = %@", __PRETTY_FUNCTION__, url);
@@ -163,13 +211,14 @@
 
 #pragma mark APSConnectionDelegate methods
 
+
 // Return FALSE unless the NSURLAuthenticationChallenge is for TLS trust
 // validation (aka NSURLAuthenticationMethodServerTrust) and this security
 // manager was configured to handle the current url.
 -(BOOL)willHandleChallenge:(NSURLAuthenticationChallenge *)challenge forConnection:(NSURLConnection *)connection {
     BOOL result = NO;
-    if ([challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust])
-    {
+    if ([challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust] ||
+        [challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodClientCertificate]) {
         NSURL *currentURL = [NSURL URLWithString:challenge.protectionSpace.host];
         if (currentURL.scheme == nil) {
             currentURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@",challenge.protectionSpace.host]];
@@ -187,7 +236,55 @@
 {
     DebugLog(@"%s connection = %@, challenge = %@", __PRETTY_FUNCTION__, connection, challenge);
 
-    if (![challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust]) {
+    // Normalize the server's host name to lower case.
+    NSString *host = [connection.currentRequest.URL.host lowercaseString];
+  
+    DebugLog(@"%s Normalized host name = %@", __PRETTY_FUNCTION__, host);
+    
+    // Get the PinnedURL for this server.
+    ClientCertificate *pinnedClientCertificate = [self clientCertificateForHost:host];
+    NSString *authenticationMethod = [[challenge protectionSpace] authenticationMethod];
+
+    // Handle Two-phase mutual client-authentification
+    if ([authenticationMethod isEqualToString:NSURLAuthenticationMethodClientCertificate] && pinnedClientCertificate != nil) {
+        NSData *p12Data = [NSData dataWithContentsOfURL:pinnedClientCertificate.url];
+        
+        if (!p12Data) {
+          NSString *reason = [NSString stringWithFormat:@"Certificate data could not be extracted for host = %@.", connection.currentRequest.URL.host];
+          NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                           reason:reason
+                                                         userInfo:nil];
+          
+          @throw exception;
+        }
+      
+        CFDataRef inPKCS12Data = (__bridge CFDataRef)p12Data;
+        SecIdentityRef identity;
+      
+        OSStatus result = [self extractIdentity:&identity from:inPKCS12Data with:pinnedClientCertificate.password];
+      
+        if (result != noErr) {
+            [challenge.sender cancelAuthenticationChallenge:challenge];
+            return;
+        }
+      
+        SecCertificateRef certificate = NULL;
+        SecIdentityCopyCertificate (identity, &certificate);
+      
+        const void *certificates[] = { certificate };
+        CFArrayRef certificatesArray = CFArrayCreate(kCFAllocatorDefault, certificates, 1, NULL);
+      
+        // create a credential from the certificate and ideneity, then reply to the challenge with the credential
+        NSURLCredential *credential = [NSURLCredential credentialWithIdentity:identity
+                                                                 certificates:(__bridge NSArray*)certificatesArray
+                                                                  persistence:NSURLCredentialPersistencePermanent];
+      
+        [challenge.sender useCredential:credential forAuthenticationChallenge:challenge];
+
+        return;
+    }
+  
+    if (![authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust]) {
         return [challenge.sender cancelAuthenticationChallenge:challenge];
     }
 
@@ -222,11 +319,6 @@
     }
 
     DebugLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
-
-    // Normalize the server's host name to lower case.
-    NSString *host = [connection.currentRequest.URL.host lowercaseString];
-
-    DebugLog(@"%s Normalized host name = %@", __PRETTY_FUNCTION__, host);
 
     // Get the PinnedURL for this server.
     PublicKey *pinnedPublicKey = [self publicKeyForHost:host];
@@ -301,9 +393,9 @@
     BOOL publicKeysAreEqual = [pinnedPublicKey isEqualToPublicKey:serverPublicKey];
     if(!publicKeysAreEqual) {
         DebugLog(@"[WARN] Potential \"Man-in-the-Middle\" attack detected since host %@ does not hold the private key corresponding to the public key %@.", host, pinnedPublicKey);
-
-        NSDictionary *userDict = @{@"pinnedPublicKey":pinnedPublicKey, @"serverPublicKey":serverPublicKey };
-
+        
+        NSDictionary *userDict = @{@"pinnedPublicKey": pinnedPublicKey, @"serverPublicKey": serverPublicKey };
+        
         NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                          reason:@"Certificate could not be verified with provided public key"
                                                        userInfo:userDict];
@@ -336,6 +428,34 @@
 
 - (NSString *)description {
     return [NSString stringWithFormat:@"%@: %@", NSStringFromClass(self.class), self.pinnedUrlSet];
+}
+
+#pragma mark - Utilities
+
+- (OSStatus)extractIdentity:(SecIdentityRef*)identity from:(CFDataRef)p12Data with:(NSString *)password {
+    OSStatus result = errSecSuccess;
+  
+    CFStringRef _password = (__bridge CFStringRef)password;
+    const void *keys[] = { kSecImportExportPassphrase };
+    const void *values[] = { _password };
+  
+    CFDictionaryRef options = CFDictionaryCreate(NULL, keys, values, 1, NULL, NULL);
+  
+    CFArrayRef items = CFArrayCreate(NULL, 0, 0, NULL);
+    result = SecPKCS12Import(p12Data, options, &items);
+  
+    if (result == 0) {
+        CFDictionaryRef ident = CFArrayGetValueAtIndex(items,0);
+        const void *tempIdentity = NULL;
+        tempIdentity = CFDictionaryGetValue(ident, kSecImportItemIdentity);
+        *identity = (SecIdentityRef)tempIdentity;
+    }
+  
+    if (options) {
+        CFRelease(options);
+    }
+  
+    return result;
 }
 
 @end

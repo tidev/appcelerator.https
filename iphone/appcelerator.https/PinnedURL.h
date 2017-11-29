@@ -5,6 +5,7 @@
 
 #import <Foundation/Foundation.h>
 #import "PublicKey.h"
+#import "ClientCertificate.h"
 
 /*!
  @discussion
@@ -31,7 +32,7 @@
   @result An object associating a DNS name with the publc key contained in an X509 certificate.
   @seealso initWithURL:andPublicKey:
  */
-+(instancetype)pinnedURLWithURL:(NSURL *)url andPublicKey:(PublicKey *)publicKey;
++(instancetype)pinnedURLWithURL:(NSURL *)url andPublicKey:(PublicKey *)publicKey clientCertificate:(ClientCertificate *)clientCertificate;
 
 /*!
   @abstract Designated initializer.
@@ -40,7 +41,7 @@
   @result An object associating a DNS name with the publc key contained in an X509 certificate.
   @seealso PinnedURLWithURL:andPublicKey:
 */
--(instancetype)initWithURL:(NSURL *)url andPublicKey:(PublicKey *) publicKey;
+-(instancetype)initWithURL:(NSURL *)url andPublicKey:(PublicKey *)publicKey clientCertificate:(ClientCertificate *)clientCertificate;
 
 /*!
  @abstract The host element of the NSURL argument used to instantiate this object.
@@ -51,6 +52,11 @@
  @abstract The publicKey used to instantiate this object.
  */
 @property (nonatomic, strong, readonly) PublicKey *publicKey;
+
+/*!
+ @abstract TODO: Docs
+ */
+@property (nonatomic, strong, readonly) ClientCertificate *clientCertificate;
 
 /*!
  @abstract The url used to instantiate this object.
