@@ -29,8 +29,9 @@ var https = require('appcelerator.https');
  *
  * The second URL, https://www.wellsfargo.com, is pinned to the public
  * key in the X.509 certificate in the file named
- * wellsfargo.cer. This is configured correctly. Connections to
- * https://www.wellsfargo.com must succeed. Note that these request redirect.
+ * SC3.cer. This is configured correctly. Connections to
+ * https://www.wellsfargo.com must succeed using a provided trust-chain-index. 
+ * Note that these request redirect.
  * The redirected request is not handled by the security manager since it is
  * not configured but will succeed if the system is able to validate the
  * certificate chain presented by the redirected host.
@@ -45,7 +46,8 @@ var securityManager = https.createX509CertificatePinningSecurityManager([
   },
   {
     url: 'https://www.wellsfargo.com',
-    serverCertificate: 'wellsfargo.cer'
+    serverCertificate: 'SC3.der',
+    trustChainIndex: 1
   }
 ]);
 
