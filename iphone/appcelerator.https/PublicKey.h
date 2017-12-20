@@ -63,6 +63,11 @@
 @property (nonatomic, weak, readonly) X509Certificate *x509Certificate;
 
 /*!
+ @abstract The index describing the position of the trust-chain certificate to use.
+ */
+@property (nonatomic, assign, readonly) NSInteger trustChainIndex;
+
+/*!
  @abstract The SecKeyRef contained in the X509 certificate used to instantiate this object.
  */
 @property (nonatomic, strong, readonly) __attribute__((NSObject)) SecKeyRef SecKey;

@@ -7,6 +7,7 @@
 #import "PinnedURL.h"
 #import "X509Certificate.h"
 #import "PublicKey.h"
+#import "ClientCertificate.h"
 #import "TiUtils.h"
 
 // Private extensions required by the implementation of
@@ -112,6 +113,19 @@ static dispatch_queue_t syncQueue;
                 self = nil;
                 @throw exception;
             }
+          
+            // Optional: Pass a "clientCertificate" key that is a string.
+            NSString *clientCertificate = pinnedURLDict[@"clientCertificate"];
+            if (clientCertificate && ![clientCertificate isKindOfClass:[NSString class]]) {
+                NSString *reason = @"Malformed clientCertificate property for X509CertificatePinningSecurityManager, must be String";
+                NSDictionary *userInfo = nil;
+                NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                                 reason:reason
+                                                               userInfo:userInfo];
+              
+                self = nil;
+                @throw exception;
+            }
             
             NSURL *url = [NSURL URLWithString:urlString];
             if (!(nil != url)) {
@@ -124,7 +138,7 @@ static dispatch_queue_t syncQueue;
                 self = nil;
                 @throw exception;
             }
-            
+          
             NSURL *certificateURL = [TiUtils toURL:serverCertificate proxy:self];
             if (!(nil != certificateURL)) {
                 NSString *reason = [NSString stringWithFormat:@"Could not find X509 certificate resource with file name %@", serverCertificate];
@@ -137,6 +151,30 @@ static dispatch_queue_t syncQueue;
                 @throw exception;
             }
             
+            NSURL *clientCertificateURL = [TiUtils toURL:clientCertificate proxy:self];
+            if (clientCertificate != nil && certificateURL == nil) {
+                NSString *reason = [NSString stringWithFormat:@"Could not find X509 client-certificate resource with file name %@", serverCertificate];
+                NSDictionary *userInfo = @{ @"clientCertificate": clientCertificate };
+                NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                                 reason:reason
+                                                               userInfo:userInfo];
+                
+                self = nil;
+                @throw exception;
+            }
+          
+            NSString *clientPassword = [TiUtils stringValue:@"clientPassword" properties:pinnedURLDict];
+            if (clientCertificateURL != nil && clientPassword == nil) {
+                NSString *reason = [NSString stringWithFormat:@"Could not find X509 client-certificate password"];
+                NSDictionary *userInfo = @{ @"clientCertificate": clientCertificate };
+                NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                                 reason:reason
+                                                               userInfo:userInfo];
+              
+                self = nil;
+                @throw exception;
+            }
+          
             NSInteger certificateIndex = [TiUtils intValue:pinnedURLDict[@"trustChainIndex"] def:0];
             if (certificateIndex < 0) {
                 NSString *reason = [NSString stringWithFormat:@"Cannot use negative trust-chain certificate-index %li", (long)certificateIndex];
@@ -152,8 +190,15 @@ static dispatch_queue_t syncQueue;
             // The following factory methods are self-validating and will throw
             // NSInvalidArgumentException exceptions. If construction succeeds then
             // the objects are guaranteed to be in a good state.
-            X509Certificate *x509Certificate = [X509Certificate x509CertificateWithURL:certificateURL andTrustChainIndex:certificateIndex];
-            PinnedURL       *pinnedURL       = [PinnedURL pinnedURLWithURL:url andPublicKey:x509Certificate.publicKey];
+            X509Certificate *serverX509Certificate = [X509Certificate x509CertificateWithURL:certificateURL andTrustChainIndex:certificateIndex];
+            ClientCertificate *clientX509Certificate = nil;
+          
+            if (clientCertificateURL != nil) {
+                clientX509Certificate = [[ClientCertificate alloc] initWithURL:clientCertificateURL
+                                                                 andPassword:clientPassword];
+            }
+          
+            PinnedURL *pinnedURL = [PinnedURL pinnedURLWithURL:url andPublicKey:serverX509Certificate.publicKey clientCertificate:clientX509Certificate];
             [pinnedUrlSet addObject:pinnedURL];
         }
         

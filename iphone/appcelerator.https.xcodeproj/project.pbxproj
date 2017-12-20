@@ -30,6 +30,7 @@
 		C9A3A15D192E530E00FC7696 /* AppceleratorHttpsModuleAssets.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A3A15B192E530E00FC7696 /* AppceleratorHttpsModuleAssets.m */; };
 		C9A3A161192E704400FC7696 /* X509CertificatePinningSecurityManagerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A3A160192E704400FC7696 /* X509CertificatePinningSecurityManagerProxy.m */; };
 		C9B1A2A1193026510080C7DA /* SecurityManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B1A2A0193026510080C7DA /* SecurityManagerTests.m */; };
+		DB9120CF1F858B3F009BD333 /* ClientCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = DB9120CE1F858B3F009BD333 /* ClientCertificate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +92,8 @@
 		C9A3A15F192E704400FC7696 /* X509CertificatePinningSecurityManagerProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X509CertificatePinningSecurityManagerProxy.h; sourceTree = "<group>"; };
 		C9A3A160192E704400FC7696 /* X509CertificatePinningSecurityManagerProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = X509CertificatePinningSecurityManagerProxy.m; sourceTree = "<group>"; };
 		C9B1A2A0193026510080C7DA /* SecurityManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecurityManagerTests.m; sourceTree = "<group>"; };
+		DB9120CD1F858B3F009BD333 /* ClientCertificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientCertificate.h; sourceTree = "<group>"; };
+		DB9120CE1F858B3F009BD333 /* ClientCertificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClientCertificate.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +166,8 @@
 				C944826B192E825B00ECCC14 /* X509Certificate.m */,
 				C9448264192E825B00ECCC14 /* PublicKey.h */,
 				C9448265192E825B00ECCC14 /* PublicKey.m */,
+				DB9120CD1F858B3F009BD333 /* ClientCertificate.h */,
+				DB9120CE1F858B3F009BD333 /* ClientCertificate.m */,
 				C9078D0A192E4E1400B7BDDE /* Supporting Files */,
 			);
 			path = appcelerator.https;
@@ -308,6 +313,7 @@
 				C944826D192E825B00ECCC14 /* PublicKey.m in Sources */,
 				C90DD284193251AB0084E138 /* AppceleratorHttpsUtils.m in Sources */,
 				C944826C192E825B00ECCC14 /* PinnedURL.m in Sources */,
+				DB9120CF1F858B3F009BD333 /* ClientCertificate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -415,6 +421,7 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -442,9 +449,11 @@
 		C9078D29192E4E1400B7BDDE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = /tmp/appcelerator_https.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "appcelerator.https/appcelerator.https-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
