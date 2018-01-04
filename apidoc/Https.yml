@@ -1,3 +1,4 @@
+---
 name: Modules.Https
 summary: Prevents a man-in-the-middle attack when used with the `Titanium.Network.HTTPClient` class.
 description: |
