@@ -211,10 +211,24 @@
 
 #pragma mark APSConnectionDelegate methods
 
-
 // Return FALSE unless the NSURLAuthenticationChallenge is for TLS trust
 // validation (aka NSURLAuthenticationMethodServerTrust) and this security
 // manager was configured to handle the current url.
+-(BOOL)willHandleChallenge:(NSURLAuthenticationChallenge *)challenge forSession:(NSURLSession *)session {
+    BOOL result = NO;
+    if ([challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust] ||
+      [challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodClientCertificate]) {
+        NSURL *currentURL = [NSURL URLWithString:challenge.protectionSpace.host];
+        if (currentURL.scheme == nil) {
+            currentURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@",challenge.protectionSpace.host]];
+        }
+        result = [self willHandleURL:currentURL];
+    }
+    
+    DebugLog(@"%s returns %@, challenge = %@, session = %@ URL = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(result), challenge, session, challenge.protectionSpace.host);
+    return result;
+}
+
 -(BOOL)willHandleChallenge:(NSURLAuthenticationChallenge *)challenge forConnection:(NSURLConnection *)connection {
     BOOL result = NO;
     if ([challenge.protectionSpace.authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust] ||
@@ -232,13 +246,182 @@
 
 #pragma mark NSURLConnectionDelegate methods
 
+-(void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler
+{
+  DebugLog(@"%s session = %@, challenge = %@", __PRETTY_FUNCTION__, session, challenge);
+  // Normalize the server's host name to lower case.
+  NSString *host = [task.currentRequest.URL.host lowercaseString];
+  DebugLog(@"%s Normalized host name = %@", __PRETTY_FUNCTION__, host);
+  
+  // Get the PinnedURL for this server.
+  ClientCertificate *pinnedClientCertificate = [self clientCertificateForHost:host];
+  NSString *authenticationMethod = [[challenge protectionSpace] authenticationMethod];
+  
+  // Handle Two-phase mutual client-authentification
+  if ([authenticationMethod isEqualToString:NSURLAuthenticationMethodClientCertificate] && pinnedClientCertificate != nil) {
+    NSData *p12Data = [NSData dataWithContentsOfURL:pinnedClientCertificate.url];
+    
+    if (!p12Data) {
+      NSString *reason = [NSString stringWithFormat:@"Certificate data could not be extracted for host = %@.", task.currentRequest.URL.host];
+      NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                       reason:reason
+                                                     userInfo:nil];
+      @throw exception;
+    }
+    
+    CFDataRef inPKCS12Data = (__bridge CFDataRef)p12Data;
+    SecIdentityRef identity;
+    OSStatus result = [self extractIdentity:&identity from:inPKCS12Data with:pinnedClientCertificate.password];
+    
+    if (result != noErr) {
+      [challenge.sender cancelAuthenticationChallenge:challenge];
+      completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
+      return;
+    }
+    
+    SecCertificateRef certificate = NULL;
+    SecIdentityCopyCertificate (identity, &certificate);
+    const void *certificates[] = { certificate };
+    CFArrayRef certificatesArray = CFArrayCreate(kCFAllocatorDefault, certificates, 1, NULL);
+    
+    // create a credential from the certificate and ideneity, then reply to the challenge with the credential
+    NSURLCredential *credential = [NSURLCredential credentialWithIdentity:identity
+                                                             certificates:(__bridge NSArray*)certificatesArray
+                                                              persistence:NSURLCredentialPersistencePermanent];
+    [challenge.sender useCredential:credential forAuthenticationChallenge:challenge];
+    completionHandler(NSURLSessionAuthChallengeUseCredential, credential);
+    return;
+  }
+  
+  if (![authenticationMethod isEqualToString: NSURLAuthenticationMethodServerTrust]) {
+    [challenge.sender cancelAuthenticationChallenge:challenge];
+    completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
+    return;
+  }
+  
+  // It is a logic error (i.e. a bug in Titanium) if this method is
+  // called with a URL the security manager was not configured to
+  // handle.
+  if (![self willHandleURL:task.currentRequest.URL]) {
+    NSString *reason = [NSString stringWithFormat:@"LOGIC ERROR: Titanium bug called this SecurityManager with an unknown host \"%@\". Please report this issue to us at https://jira.appcelerator.org/browse/TIMOB", task.currentRequest.URL.host];
+    NSDictionary *userInfo = @{ @"session" : session };
+    NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:reason
+                                                   userInfo:userInfo];
+    @throw exception;
+  }
+  
+  SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
+  if(serverTrust == nil) {
+    DebugLog(@"%s FAIL: challenge.protectionSpace.serverTrust is nil", __PRETTY_FUNCTION__);
+    [challenge.sender cancelAuthenticationChallenge:challenge];
+    completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
+    return;
+  }
+  
+  // SecTrustEvaluate performs customary X509
+  // checks. Unusual conditions will cause the function to
+  // return *non-success*. Unusual conditions include an
+  // expired certifcate or self signed certifcate.
+  OSStatus status = SecTrustEvaluate(serverTrust, NULL);
+  if(status != errSecSuccess) {
+    DebugLog(@"%s FAIL: standard TLS validation failed. SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
+    [challenge.sender cancelAuthenticationChallenge:challenge];
+    completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
+    return;
+  }
+  DebugLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
+  
+  // Get the PinnedURL for this server.
+  PublicKey *pinnedPublicKey = [self publicKeyForHost:host];
+  
+  // It is a logic error (a bug in this SecurityManager class) if this
+  // security manager does not have a PinnedURL for this server.
+  if (pinnedPublicKey == nil) {
+    NSString *reason = [NSString stringWithFormat:@"LOGIC ERROR: appcelerator.https module bug: SecurityManager could not find a PublicKey for host \"%@\". Please report this issue to us at https://jira.appcelerator.org/browse/MOD-1706", task.currentRequest.URL.host];
+    NSDictionary *userInfo = @{ @"session" : session };
+    NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:reason
+                                                   userInfo:userInfo];
+    @throw exception;
+  }
+  DebugLog(@"%s host %@ pinned to publicKey %@", __PRETTY_FUNCTION__, host, pinnedPublicKey);
+  
+  CFIndex count = SecTrustGetCertificateCount(serverTrust);
+  CFIndex i = 0;
+  DebugLog(@"Number of certificates: %ld", count);
+  
+  for (i = 0; i < count; i++) {
+    SecCertificateRef item = SecTrustGetCertificateAtIndex(serverTrust, i);
+    NSString *desc = (NSString *)CFBridgingRelease(CFCopyDescription(item));
+    DebugLog(@"%ld: %@", i, desc);
+  }
+  
+  // Obtain the server's X509 certificate and public key.
+  SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, pinnedPublicKey.trustChainIndex);
+  if(serverCertificate == nil) {
+    DebugLog(@"%s FAIL: Could not find the server's X509 certificate in serverTrust", __PRETTY_FUNCTION__);
+    [challenge.sender cancelAuthenticationChallenge:challenge];
+    completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
+    return;
+  }
+  
+  // Create a friendlier Objective-C wrapper around this server's X509
+  // certificate.
+  X509Certificate *x509Certificate = [X509Certificate x509CertificateWithSecCertificate:serverCertificate andTrustChainIndex:pinnedPublicKey.trustChainIndex];
+  if (x509Certificate == nil) {
+    // CFBridgingRelease transfer's ownership of the CFStringRef
+    // returned by CFCopyDescription to ARC.
+    NSString *serverCertificateDescription = (NSString *)CFBridgingRelease(CFCopyDescription(serverCertificate));
+    NSString *reason = [NSString stringWithFormat:@"LOGIC ERROR: appcelerator.https module bug: SecurityManager could not create an X509Certificate for host \"%@\" using the SecCertificateRef \"%@\". Please report this issue to us at https://jira.appcelerator.org/browse/MOD-1706", task.currentRequest.URL.host, serverCertificateDescription];
+    NSDictionary *userInfo = @{ @"x509Certificate" : [NSNull null] };
+    NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:reason
+                                                   userInfo:userInfo];
+    @throw exception;
+  }
+  
+  DebugLog(@"%s server's X509 certificate = %@", __PRETTY_FUNCTION__, x509Certificate);
+  // Get the public key from this server's X509 certificate.
+  PublicKey *serverPublicKey = x509Certificate.publicKey;
+  if (serverPublicKey == nil) {
+    NSString *reason = [NSString stringWithFormat:@"LOGIC ERROR: appcelerator.https module bug: SecurityManager could not find the server's public key for host \"%@\" in the X509 certificate \"%@\". Please report this issue to us at https://jira.appcelerator.org/browse/MOD-1706", task.currentRequest.URL.host, x509Certificate];
+    NSDictionary *userInfo = @{ @"x509Certificate" : x509Certificate };
+    NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:reason
+                                                   userInfo:userInfo];
+    @throw exception;
+  }
+  
+  DebugLog(@"%s server's public key = %@", __PRETTY_FUNCTION__, serverPublicKey);
+  
+  // Compare the public keys. If they match, then the server is
+  // authenticated.
+  BOOL publicKeysAreEqual = [pinnedPublicKey isEqualToPublicKey:serverPublicKey];
+  if(!publicKeysAreEqual) {
+    DebugLog(@"[WARN] Potential \"Man-in-the-Middle\" attack detected since host %@ does not hold the private key corresponding to the public key %@.", host, pinnedPublicKey);
+    
+    NSDictionary *userDict = @{@"pinnedPublicKey": pinnedPublicKey, @"serverPublicKey": serverPublicKey };
+    NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:@"Certificate could not be verified with provided public key"
+                                                   userInfo:userDict];
+    @throw exception;
+  }
+  
+  DebugLog(@"%s publicKeysAreEqual = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(publicKeysAreEqual));
+  // Return success since the server holds the private key
+  // corresponding to the public key held bu this security manager.
+  NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
+  [challenge.sender useCredential:credential forAuthenticationChallenge:challenge];
+  completionHandler(NSURLSessionAuthChallengeUseCredential, credential);
+}
+
 - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
     DebugLog(@"%s connection = %@, challenge = %@", __PRETTY_FUNCTION__, connection, challenge);
 
     // Normalize the server's host name to lower case.
     NSString *host = [connection.currentRequest.URL.host lowercaseString];
-  
     DebugLog(@"%s Normalized host name = %@", __PRETTY_FUNCTION__, host);
     
     // Get the PinnedURL for this server.
@@ -248,13 +431,11 @@
     // Handle Two-phase mutual client-authentification
     if ([authenticationMethod isEqualToString:NSURLAuthenticationMethodClientCertificate] && pinnedClientCertificate != nil) {
         NSData *p12Data = [NSData dataWithContentsOfURL:pinnedClientCertificate.url];
-        
         if (!p12Data) {
           NSString *reason = [NSString stringWithFormat:@"Certificate data could not be extracted for host = %@.", connection.currentRequest.URL.host];
           NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                            reason:reason
                                                          userInfo:nil];
-          
           @throw exception;
         }
       
@@ -262,7 +443,6 @@
         SecIdentityRef identity;
       
         OSStatus result = [self extractIdentity:&identity from:inPKCS12Data with:pinnedClientCertificate.password];
-      
         if (result != noErr) {
             [challenge.sender cancelAuthenticationChallenge:challenge];
             return;
@@ -270,7 +450,6 @@
       
         SecCertificateRef certificate = NULL;
         SecIdentityCopyCertificate (identity, &certificate);
-      
         const void *certificates[] = { certificate };
         CFArrayRef certificatesArray = CFArrayCreate(kCFAllocatorDefault, certificates, 1, NULL);
       
@@ -278,9 +457,7 @@
         NSURLCredential *credential = [NSURLCredential credentialWithIdentity:identity
                                                                  certificates:(__bridge NSArray*)certificatesArray
                                                                   persistence:NSURLCredentialPersistencePermanent];
-      
         [challenge.sender useCredential:credential forAuthenticationChallenge:challenge];
-
         return;
     }
   
@@ -297,10 +474,8 @@
         NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                          reason:reason
                                                        userInfo:userInfo];
-
         @throw exception;
     }
-
 
     SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
     if(serverTrust == nil) {
@@ -317,7 +492,6 @@
         DebugLog(@"%s FAIL: standard TLS validation failed. SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
         return [challenge.sender cancelAuthenticationChallenge:challenge];
     }
-
     DebugLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
 
     // Get the PinnedURL for this server.
@@ -331,15 +505,12 @@
         NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                          reason:reason
                                                        userInfo:userInfo];
-
         @throw exception;
     }
-
     DebugLog(@"%s host %@ pinned to publicKey %@", __PRETTY_FUNCTION__, host, pinnedPublicKey);
 
     CFIndex count = SecTrustGetCertificateCount(serverTrust);
     CFIndex i = 0;
-
     DebugLog(@"Number of certificates: %ld", count);
 
     for (i = 0; i < count; i++) {
@@ -348,7 +519,6 @@
 
         DebugLog(@"%ld: %@", i, desc);
     }
-
 
     // Obtain the server's X509 certificate and public key.
     SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, pinnedPublicKey.trustChainIndex);
@@ -369,7 +539,6 @@
         NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                          reason:reason
                                                        userInfo:userInfo];
-
         @throw exception;
     }
 
@@ -382,7 +551,6 @@
         NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                          reason:reason
                                                        userInfo:userInfo];
-
         @throw exception;
     }
 
