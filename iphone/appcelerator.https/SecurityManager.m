@@ -390,8 +390,7 @@
   // Compare the public keys. If they match, then the server is
   // authenticated.
     BOOL publicKeysAreEqual = false;
-    for (PublicKey *pinnedPublicKey in pinnedPublicKeys)
-    {
+    for (PublicKey *pinnedPublicKey in pinnedPublicKeys) {
      publicKeysAreEqual = publicKeysAreEqual || [pinnedPublicKey isEqualToPublicKey:serverPublicKey];
     }
   if(!publicKeysAreEqual) {
