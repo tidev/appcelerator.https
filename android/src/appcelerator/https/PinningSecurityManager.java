@@ -33,7 +33,7 @@ import ti.modules.titanium.network.SecurityManagerProtocol;
 @Kroll.proxy
 public class PinningSecurityManager extends KrollProxy implements SecurityManagerProtocol {
 
-	private Map<String, PublicKey> supportedHosts = new HashMap<String, PublicKey>();
+	private Map<String, ArrayList<PublicKey>> supportedHosts = new HashMap<String, ArrayList<PublicKey>>();
 	private Map<KeyStore, String> keyStores = new HashMap<KeyStore, String>();
 	private int trustChainIndex = 0;
 
@@ -103,12 +103,12 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	 */
 	protected void addProfile(String host, PublicKey key, int index) throws Exception {
 		if (key != null) {
+			String map_key = host.toLowerCase(Locale.ENGLISH);
 			if (!hostConfigured(host)) {
-				supportedHosts.put(host.toLowerCase(Locale.ENGLISH), key);
-				trustChainIndex = index;
-			} else {
-				throw new Exception("Duplicate host configuration.");
+				supportedHosts.put(map_key, new ArrayList<PublicKey>());
 			}
+			supportedHosts.get(map_key).add(key);
+			trustChainIndex = index;
 		} else {
 			throw new Exception("Invalid arguments passed to addProfile");
 		}

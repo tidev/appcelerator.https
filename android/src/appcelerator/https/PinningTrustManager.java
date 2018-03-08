@@ -15,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ import android.net.Uri;
 
 public class PinningTrustManager implements X509TrustManager {
 
-	private Map<String, PublicKey> supportedHosts;
+	private Map<String, ArrayList<PublicKey>> supportedHosts;
 	private HTTPClientProxy proxy;
 	private X509TrustManager standardTrustManager;
 	private int trustChainIndex;
@@ -40,7 +41,7 @@ public class PinningTrustManager implements X509TrustManager {
 	 * @param trustChainIndex - The index of the trust-chain certificate to validate against.
 	 * @throws Exception - If a standard Trustmanager could not be instantiated.
 	 */
-	protected PinningTrustManager(HTTPClientProxy proxy, Map<String, PublicKey> supportedHosts, int trustChainIndex) throws Exception {
+	protected PinningTrustManager(HTTPClientProxy proxy, Map<String, ArrayList<PublicKey>> supportedHosts, int trustChainIndex) throws Exception {
 		TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 		factory.init((KeyStore) null);
 		TrustManager[] trustmanagers = factory.getTrustManagers();
@@ -49,7 +50,7 @@ public class PinningTrustManager implements X509TrustManager {
 		}
 		this.standardTrustManager = (X509TrustManager) trustmanagers[0];
 		this.proxy = proxy;
-		this.supportedHosts = (supportedHosts == null) ? new HashMap<String, PublicKey>() : supportedHosts;
+		this.supportedHosts = (supportedHosts == null) ? new HashMap<String, ArrayList<PublicKey>>() : supportedHosts;
 		this.trustChainIndex = trustChainIndex;
 	}
 
@@ -83,8 +84,8 @@ public class PinningTrustManager implements X509TrustManager {
 			if (hostPinned) {
 				X509Certificate leaf = chain[this.trustChainIndex];
 				PublicKey leafKey = leaf.getPublicKey();
-				PublicKey compareKey = supportedHosts.get(host);
-				if (!leafKey.equals(compareKey)) {
+				ArrayList<PublicKey> compareKeys =  supportedHosts.get(host);
+				if (!compareKeys.contains(leafKey)) {
 					throw new CertificateException("Certificate could not be verified with provided public key");
 				}
 			}

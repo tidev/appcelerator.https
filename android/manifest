@@ -1,6 +1,6 @@
-version: 2.1.0
-apiversion: 3
-architectures: armeabi-v7a x86
+version: 2.2.0
+apiversion: 4
+architectures: arm64-v8a armeabi-v7a x86
 description: Authenticate server in HTTPS connections made by TiHTTPClient
 author: Matt Langston
 license: Appcelerator Commercial License
@@ -10,4 +10,4 @@ name: https
 moduleid: appcelerator.https
 guid: 2163621d-1a78-4215-8244-bda08724ffed
 platform: android
-minsdk: 6.0.0
+minsdk: 7.0.0
