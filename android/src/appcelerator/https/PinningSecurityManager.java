@@ -13,6 +13,7 @@ import java.security.KeyStore;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -33,7 +34,7 @@ import ti.modules.titanium.network.SecurityManagerProtocol;
 @Kroll.proxy
 public class PinningSecurityManager extends KrollProxy implements SecurityManagerProtocol {
 
-	private Map<String, ArrayList<PublicKey>> supportedHosts = new HashMap<String, ArrayList<PublicKey>>();
+	private Map<String, HashSet<PublicKey>> supportedHosts = new HashMap<String, HashSet<PublicKey>>();
 	private Map<KeyStore, String> keyStores = new HashMap<KeyStore, String>();
 	private int trustChainIndex = 0;
 
@@ -105,7 +106,7 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 		if (key != null) {
 			String map_key = host.toLowerCase(Locale.ENGLISH);
 			if (!hostConfigured(host)) {
-				supportedHosts.put(map_key, new ArrayList<PublicKey>());
+				supportedHosts.put(map_key, new HashSet<PublicKey>());
 			}
 			supportedHosts.get(map_key).add(key);
 			trustChainIndex = index;
