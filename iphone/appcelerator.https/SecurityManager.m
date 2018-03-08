@@ -203,7 +203,7 @@
 
 #pragma mark APSConnectionDelegate methods
 
-// Return FALSE unless the NSURLAuthenticationChallenge is for TLS trust
+// Return NO unless the NSURLAuthenticationChallenge is for TLS trust
 // validation (aka NSURLAuthenticationMethodServerTrust) and this security
 // manager was configured to handle the current url.
 -(BOOL)willHandleChallenge:(NSURLAuthenticationChallenge *)challenge forSession:(NSURLSession *)session {
@@ -389,7 +389,7 @@
   
   // Compare the public keys. If they match, then the server is
   // authenticated.
-    BOOL publicKeysAreEqual = false;
+    BOOL publicKeysAreEqual = NO;
     for (PublicKey *pinnedPublicKey in pinnedPublicKeys) {
      publicKeysAreEqual = publicKeysAreEqual || [pinnedPublicKey isEqualToPublicKey:serverPublicKey];
     }
@@ -553,7 +553,7 @@
 
     // Compare the public keys. If they match, then the server is
     // authenticated.
-    BOOL publicKeysAreEqual = false;
+    BOOL publicKeysAreEqual = NO;
     for (PublicKey *pinnedPublicKey in pinnedPublicKeys)
     {
         publicKeysAreEqual = publicKeysAreEqual || [pinnedPublicKey isEqualToPublicKey:serverPublicKey];
