@@ -12,7 +12,7 @@
 // This property exists as an optimiation to provide O(1) lookup time of the
 // public key for a specific host. The keys are the host element of the URL and
 // the values are instances of PublicKey.
-@property (nonatomic, strong, readonly) NSDictionary<NSString *, NSMutableArray<PublicKey *> *>  *dnsNameToPublicKeyMap;
+@property (nonatomic, strong, readonly) NSDictionary<NSString *, NSMutableSet<PublicKey *> *>  *dnsNameToPublicKeyMap;
 
 // Try the same for client-certificates
 @property (nonatomic, strong, readonly) NSDictionary<NSString *, ClientCertificate *> *dnsNameToClientCertificateMap;
@@ -67,7 +67,7 @@
             // It is an error to pin the same URL more than once.
             NSString *host = [pinnedURL.host lowercaseString];
             if (dnsNameToPublicKeyMap[host] == nil) {
-                dnsNameToPublicKeyMap[pinnedURL.host] = [[NSMutableArray alloc] init];
+                dnsNameToPublicKeyMap[pinnedURL.host] = [[NSMutableSet alloc] init];
             }
             
             [dnsNameToPublicKeyMap[host]  addObject: pinnedURL.publicKey];
@@ -123,8 +123,8 @@
 
  @return The public key if found or nil
  */
-- (NSMutableArray<PublicKey *> *)publicKeyForHost:(NSString *)host {
-    NSMutableArray<PublicKey *> *directMatches = self.dnsNameToPublicKeyMap[host];
+- (NSMutableSet<PublicKey *> *)publicKeyForHost:(NSString *)host {
+    NSMutableSet<PublicKey *> *directMatches = self.dnsNameToPublicKeyMap[host];
     if (directMatches != nil) {
         return directMatches;
     }
@@ -325,7 +325,7 @@
   DebugLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
   
   // Get the PinnedURL for this server.
-  NSMutableArray<PublicKey *> *pinnedPublicKeys = [self publicKeyForHost:host];
+  NSMutableSet<PublicKey *> *pinnedPublicKeys = [self publicKeyForHost:host];
   
   // It is a logic error (a bug in this SecurityManager class) if this
   // security manager does not have a PinnedURL for this server.
@@ -350,7 +350,7 @@
   }
   
   // Obtain the server's X509 certificate and public key.
-  SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, pinnedPublicKeys[0].trustChainIndex);
+  SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, pinnedPublicKeys.anyObject.trustChainIndex);
   if(serverCertificate == nil) {
     DebugLog(@"%s FAIL: Could not find the server's X509 certificate in serverTrust", __PRETTY_FUNCTION__);
     [challenge.sender cancelAuthenticationChallenge:challenge];
@@ -360,7 +360,7 @@
   
   // Create a friendlier Objective-C wrapper around this server's X509
   // certificate.
-  X509Certificate *x509Certificate = [X509Certificate x509CertificateWithSecCertificate:serverCertificate andTrustChainIndex:pinnedPublicKeys[0].trustChainIndex];
+  X509Certificate *x509Certificate = [X509Certificate x509CertificateWithSecCertificate:serverCertificate andTrustChainIndex:pinnedPublicKeys.anyObject.trustChainIndex];
   if (x509Certificate == nil) {
     // CFBridgingRelease transfer's ownership of the CFStringRef
     // returned by CFCopyDescription to ARC.
@@ -490,7 +490,7 @@
     DebugLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
 
     // Get the PinnedURL for this server.
-    NSMutableArray<PublicKey *> *pinnedPublicKeys = [self publicKeyForHost:host];
+    NSMutableSet<PublicKey *> *pinnedPublicKeys = [self publicKeyForHost:host];
 
     // It is a logic error (a bug in this SecurityManager class) if this
     // security manager does not have a PinnedURL for this server.
@@ -516,7 +516,7 @@
     }
 
     // Obtain the server's X509 certificate and public key.
-    SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, pinnedPublicKeys[0].trustChainIndex);
+    SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, pinnedPublicKeys.anyObject.trustChainIndex);
     if(serverCertificate == nil) {
         DebugLog(@"%s FAIL: Could not find the server's X509 certificate in serverTrust", __PRETTY_FUNCTION__);
         return [challenge.sender cancelAuthenticationChallenge:challenge];
@@ -524,7 +524,7 @@
 
     // Create a friendlier Objective-C wrapper around this server's X509
     // certificate.
-    X509Certificate *x509Certificate = [X509Certificate x509CertificateWithSecCertificate:serverCertificate andTrustChainIndex:pinnedPublicKeys[0].trustChainIndex];
+    X509Certificate *x509Certificate = [X509Certificate x509CertificateWithSecCertificate:serverCertificate andTrustChainIndex:pinnedPublicKeys.anyObject.trustChainIndex];
     if (x509Certificate == nil) {
         // CFBridgingRelease transfer's ownership of the CFStringRef
         // returned by CFCopyDescription to ARC.
