@@ -28,3 +28,4 @@ example/modules/
 
 # macOS
 .DS_Store
+dist

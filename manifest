@@ -1,4 +1,4 @@
-version: 2.2.0
+version: 2.3.1
 apiversion: 2
 description: Authenticate server in HTTPS connections made by TiHTTPClient
 author: Matt Langston
@@ -9,4 +9,4 @@ name: https
 moduleid: appcelerator.https
 guid: 2163621d-1a78-4215-8244-bda08724ffed
 platform: android, ios
-minsdk: 6.0.0
+minsdk: 7.0.0
