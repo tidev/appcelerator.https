@@ -42,7 +42,7 @@ var https = require('appcelerator.https');
 var securityManager = https.createX509CertificatePinningSecurityManager([
   {
     url: 'https://www.americanexpress.com',
-    serverCertificate: 'wellsfargo.cer'
+    serverCertificate: 'wellsfargo.der'
   },
   {
     url: 'https://www.wellsfargo.com',
