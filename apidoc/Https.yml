@@ -50,26 +50,31 @@ description: |
 
     ### Getting Started
 
-    Once you have [installed](#!/guide/Using_a_Module) the module and added it as a depedency,
-    use `require()` to access it from JavaScript:
+    Once you have [installed](#!/guide/Using_a_Module) the module and added it as a depedency and
+    use `require()` (ES5) or `import` (ES6+) to access it from JavaScript:
 
+        // ES5
         var https = require('appcelerator.https');
 
-    The `https` variable is a reference to the Module object.  Use this reference to call the 
+        // ES6+
+        import 'https' from 'appcelerator.https';
+
+    The `https` variable is a reference to the module object.  Use this reference to call the 
     `createX509CertificatePinningSecurityManager()` method to authenticate the specified HTTPS URLs.
     Pass in an array of dictionaries as the only required parameter to the method. Each
-    dictionary in the array contains two keys:
+    dictionary in the array contains three keys (two of them required):
 
-      * `url`: URL of the server to contact
+      * `url`: URL of the server to contact. Can be a fixed URL or wildcard URL (if supported by the certificate)
       * `serverCertificate`: X.509 certificate in DER format to verify the server's identity
-      * `trustChainIndex`: Index of the trust-chain certificate to validate against (default: 0 - leaf certificate). 
+      * `trustChainIndex`: (Optional) index of the trust-chain certificate to validate against (default: 0 - leaf certificate). 
 
     For example:
 
         var securityManager = https.createX509CertificatePinningSecurityManager([
             {
-                url: 'https://www.yourorg.com',
-                serverCertificate: 'yourorg.der'
+                url: 'https://www.example.com',
+                serverCertificate: 'exampleServerCertificate.der',
+                trustChainIndex: 0
             }
         ]);
 
@@ -79,12 +84,12 @@ description: |
 
         var httpClient = Ti.Network.createHTTPClient({
             onload: function(e) {
-                Ti.API.info('Received text: ' + this.responseText);
+                Ti.API.info('Received text: ' + httpClient.responseText);
             },
             onerror: function(e) {
                 Ti.API.error(e.error);
             },
-            timeout : 5000,
+            timeout: 5000,
             // You can only set this property when creating the HTTPClient
             securityManager: securityManager
         });
@@ -92,7 +97,7 @@ description: |
     After the `securityManager` property is set, call the `HTTPClient`'s `open()` and `send()`
     methods to initiate the HTTPS request.
 
-        httpClient.open('GET', 'https://yourorg.com');
+        httpClient.open('GET', 'https://example.com');
         httpClient.send();
 
     If the authentication fails, a security exception is thrown. The HTTP client's `onerror`
@@ -140,11 +145,11 @@ examples:
          
         The first URL, https://dashboard.appcelerator.com, is pinned to the
         public key in the X.509 certificate, named `appcelerator.com.pem`, located in the
-        application's `Resources` directory or `app/assets/` directory for Alloy projects.
+        application's `Resources` directory (Classic) or `app/assets/` directory (Alloy).
 
         The second URL, https://www.wellsfargo.com, is pinned to the public
         key in the X.509 certificate, named `wellsfargo.der`, located the application's
-        `Resources` directory or `app/assets/` directory for Alloy projects.
+        `Resources` directory (Classic) or `app/assets/` directory (Alloy).
 
             // Require in the module
             var https = require('appcelerator.https'),
@@ -167,12 +172,12 @@ examples:
             // but pass in the optional Security Manager that was created previously.
             httpClient = Ti.Network.createHTTPClient({
                 onload: function(e) {
-                    Ti.API.info('Received text: ' + this.responseText);
+                    Ti.API.info('Received text: ' + httpClient.responseText);
                 },
                 onerror: function(e) {
                     Ti.API.error(e.error);
                 },
-                timeout : 5000,
+                timeout: 5000,
                 // Set this property before calling the `open` method. 
                 securityManager: securityManager
             });
