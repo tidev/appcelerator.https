@@ -1,13 +1,18 @@
-version: 3.0.1
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 4.0.0
 apiversion: 4
-architectures: arm64-v8a armeabi-v7a x86
+architectures: arm64-v8a armeabi-v7a x86 x86_64
 description: Authenticate server in HTTPS connections made by TiHTTPClient
 author: Matt Langston
 license: Appcelerator Commercial License
 copyright: Copyright (c) 2014-2017 by Axway, Inc. All Rights Reserved.
 
+# these should not be edited
 name: https
 moduleid: appcelerator.https
 guid: 2163621d-1a78-4215-8244-bda08724ffed
 platform: android
-minsdk: 7.0.0
+minsdk: 9.0.0
