@@ -281,6 +281,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
+					"USE_TI_NETWORK",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -363,6 +364,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
+					"USE_TI_NETWORK",
 				);
 				INFOPLIST_FILE = "appcelerator.httpsTests/appcelerator.httpsTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -380,6 +382,10 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "appcelerator.https/appcelerator.https-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"USE_TI_NETWORK",
+				);
 				INFOPLIST_FILE = "appcelerator.httpsTests/appcelerator.httpsTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xctest;
