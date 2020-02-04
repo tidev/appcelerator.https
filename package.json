@@ -12,7 +12,7 @@
     "lint": "npm run lint:android && npm run lint:ios && npm run lint:js && npm run lint:docs",
     "lint:android": "clang-format-lint android/src/**/*.java",
     "lint:docs": "tdoc-validate apidoc",
-    "lint:ios": "clang-format-lint ios/**/*.m ios/**/*.h",
+    "lint:ios": "clang-format-lint iphone/**/*.m iphone/**/*.h",
     "lint:js": "eslint .",
     "test": "npm run lint"
   },
@@ -56,7 +56,7 @@
     }
   },
   "lint-staged": {
-    "ios/**/*.{m,h}": [
+    "iphone/**/*.{m,h}": [
       "npx clang-format -style=file -i",
       "git add"
     ],
