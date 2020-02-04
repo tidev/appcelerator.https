@@ -30,7 +30,7 @@ var https = require('appcelerator.https');
  * The second URL, https://www.wellsfargo.com, is pinned to the public
  * key in the X.509 certificate in the file named
  * SC3.cer. This is configured correctly. Connections to
- * https://www.wellsfargo.com must succeed using a provided trust-chain-index. 
+ * https://www.wellsfargo.com must succeed using a provided trust-chain-index.
  * Note that these request redirect.
  * The redirected request is not handled by the security manager since it is
  * not configured but will succeed if the system is able to validate the
@@ -40,56 +40,56 @@ var https = require('appcelerator.https');
  * wish, but they must be in the standard DER binary format.
  */
 var securityManager = https.createX509CertificatePinningSecurityManager([
-  {
-    url: 'https://www.americanexpress.com',
-    serverCertificate: 'wellsfargo.der'
-  },
-  {
-    url: 'https://www.wellsfargo.com',
-    serverCertificate: 'SC3.der',
-    trustChainIndex: 1
-  }
+	{
+		url: 'https://www.americanexpress.com',
+		serverCertificate: 'wellsfargo.der'
+	},
+	{
+		url: 'https://www.wellsfargo.com',
+		serverCertificate: 'SC3.der',
+		trustChainIndex: 1
+	}
 ]);
 
 var win = Titanium.UI.createWindow({
-  title: 'Pin Example',
-  backgroundColor: 'white'
+	title: 'Pin Example',
+	backgroundColor: 'white'
 });
 
 var view = Ti.UI.createView({
-  backgroundColor: 'white',
-  layout: 'vertical',
-  top: 20
+	backgroundColor: 'white',
+	layout: 'vertical',
+	top: 20
 });
 
 var button1 = Titanium.UI.createButton({
-  title: 'Load wellsfargo',
-  color: 'green',
-  top: 20
+	title: 'Load wellsfargo',
+	color: 'green',
+	top: 20
 });
 
 var button2 = Titanium.UI.createButton({
-  title: 'Load americanexpress',
-  color: 'red',
-  top: 20
+	title: 'Load americanexpress',
+	color: 'red',
+	top: 20
 });
 
 var button3 = Titanium.UI.createButton({
-  title: 'Load appcelerator',
-  color: 'blue',
-  top: 20
+	title: 'Load appcelerator',
+	color: 'blue',
+	top: 20
 });
 
 var label1 = Titanium.UI.createLabel({
-  text: 'Desc:',
-  color: 'black',
-  top: 20
+	text: 'Desc:',
+	color: 'black',
+	top: 20
 });
 
 var label2 = Titanium.UI.createLabel({
-  text: 'Status:',
-  color: 'black',
-  top: 20
+	text: 'Status:',
+	color: 'black',
+	top: 20
 });
 
 view.add(button1);
@@ -108,49 +108,49 @@ win.open();
  */
 
 function getXHR(url) {
-  var xhr = Ti.Network.createHTTPClient({
-    onload: function(e) {
-      label2.text = 'onload called. Request succeeded';
-    },
-    onerror: function(e) {
-      label2.text = 'onerror called. Request failed.';
-    },
-    timeout: 30000,
-    securityManager: securityManager
-  });
+	var xhr = Ti.Network.createHTTPClient({
+		onload: function (e) {
+			label2.text = 'onload called. Request succeeded';
+		},
+		onerror: function (e) {
+			label2.text = 'onerror called. Request failed.';
+		},
+		timeout: 30000,
+		securityManager: securityManager
+	});
 
-  xhr.open('GET', url);
+	xhr.open('GET', url);
 
-  return xhr;
+	return xhr;
 }
 
 var wf = 'https://www.wellsfargo.com';
 var amex = 'https://www.americanexpress.com';
 var appc = 'https://dashboard.appcelerator.com';
 
-button1.addEventListener('click', function(e) {
-  var xhr = getXHR(wf);
-  label1.text =
-    'SecurityManager is configured correctly for this request. Request must succeed. ';
-  label1.color = 'green';
-  label2.text = 'Desc:';
-  xhr.send();
+button1.addEventListener('click', function (e) {
+	var xhr = getXHR(wf);
+	label1.text
+    = 'SecurityManager is configured correctly for this request. Request must succeed. ';
+	label1.color = 'green';
+	label2.text = 'Desc:';
+	xhr.send();
 });
 
-button2.addEventListener('click', function(e) {
-  var xhr = getXHR(amex);
-  label1.text =
-    'SecurityManager is configured incorrectly for this request. Request must fail. ';
-  label1.color = 'red';
-  label2.text = 'Desc:';
-  xhr.send();
+button2.addEventListener('click', function (e) {
+	var xhr = getXHR(amex);
+	label1.text
+    = 'SecurityManager is configured incorrectly for this request. Request must fail. ';
+	label1.color = 'red';
+	label2.text = 'Desc:';
+	xhr.send();
 });
 
-button3.addEventListener('click', function(e) {
-  var xhr = getXHR(appc);
-  label1.text =
-    'SecurityManager does not participate in the validation of this request. Request should succeed. ';
-  label1.color = 'blue';
-  label2.text = 'Desc:';
-  xhr.send();
+button3.addEventListener('click', function (e) {
+	var xhr = getXHR(appc);
+	label1.text
+    = 'SecurityManager does not participate in the validation of this request. Request should succeed. ';
+	label1.color = 'blue';
+	label2.text = 'Desc:';
+	xhr.send();
 });
