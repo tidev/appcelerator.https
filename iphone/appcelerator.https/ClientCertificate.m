@@ -10,20 +10,23 @@
 
 @implementation ClientCertificate
 
-- (instancetype)initWithURL:(NSURL *)url andPassword:(NSString *)password {
+- (instancetype)initWithURL:(NSURL *)url andPassword:(NSString *)password
+{
   if (self = [super init]) {
     _url = url;
     _password = password;
   }
-  
+
   return self;
 }
 
-- (NSString *)password {
+- (NSString *)password
+{
   return _password;
 }
 
-- (NSURL *)url {
+- (NSURL *)url
+{
   return _url;
 }
 

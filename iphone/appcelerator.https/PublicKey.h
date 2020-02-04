@@ -3,8 +3,8 @@
   @copyright Copyright (c) 2014 Appcelerator. All rights reserved.
 */
 
-#import <Foundation/Foundation.h>
 #import "X509Certificate.h"
+#import <Foundation/Foundation.h>
 
 /*!
  @discussion
@@ -47,7 +47,7 @@
   @throws NSInvalidArgumentException
   @seealso initWithX509Certificate:
  */
-+(instancetype)publicKeyWithX509Certificate:(X509Certificate *)x509Certificate;
++ (instancetype)publicKeyWithX509Certificate:(X509Certificate *)x509Certificate;
 
 /*!
   @abstract Designated initializer. Initialize an instance from an X509Certificate.
@@ -55,7 +55,7 @@
   @throws NSInvalidArgumentException
   @seealso X509CertificateWithURL:
 */
--(instancetype)initWithX509Certificate:(X509Certificate *)x509Certificate;
+- (instancetype)initWithX509Certificate:(X509Certificate *)x509Certificate;
 
 /*!
  @abstract The X509 certificate used to instantiate this object.

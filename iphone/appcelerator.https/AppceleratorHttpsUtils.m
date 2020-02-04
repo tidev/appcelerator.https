@@ -3,6 +3,7 @@
 
 #import "AppceleratorHttpsUtils.h"
 
-NSString *NSStringFromBOOL(BOOL boolean) {
-    return boolean ? @"YES" : @"NO";
+NSString *NSStringFromBOOL(BOOL boolean)
+{
+  return boolean ? @"YES" : @"NO";
 }

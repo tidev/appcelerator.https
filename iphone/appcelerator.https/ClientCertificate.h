@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface ClientCertificate : NSObject {
-@private
+  @private
   NSURL *_url;
   NSString *_password;
 }

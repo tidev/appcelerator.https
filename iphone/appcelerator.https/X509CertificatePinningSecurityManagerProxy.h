@@ -3,9 +3,9 @@
  @copyright Copyright (c) 2014 Appcelerator. All rights reserved.
  */
 
-#import <Foundation/Foundation.h>
 #import "TiBase.h"
 #import "TiNetworkHTTPClientProxy.h"
+#import <Foundation/Foundation.h>
 
 /*!
  @discussion

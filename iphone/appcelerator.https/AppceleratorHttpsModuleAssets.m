@@ -3,18 +3,18 @@
  */
 #import "AppceleratorHttpsModuleAssets.h"
 
-extern NSData* filterDataInRange(NSData* thedata, NSRange range);
+extern NSData *filterDataInRange(NSData *thedata, NSRange range);
 
 @implementation AppceleratorHttpsModuleAssets
 
-- (NSData*) moduleAsset
+- (NSData *)moduleAsset
 {
-    return nil; // DEFAULT BEHAVIOR
+  return nil; // DEFAULT BEHAVIOR
 }
 
-- (NSData*) resolveModuleAsset:(NSString*)path
+- (NSData *)resolveModuleAsset:(NSString *)path
 {
-    return nil; // DEFAULT BEHAVIOR
+  return nil; // DEFAULT BEHAVIOR
 }
 
 @end
