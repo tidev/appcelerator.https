@@ -9,12 +9,12 @@
  */
 package appcelerator.https;
 
+import android.net.Uri;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.util.HashMap;
-
 import org.appcelerator.kroll.KrollModule;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiApplication;
@@ -22,14 +22,12 @@ import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.util.TiFileHelper;
 import org.appcelerator.titanium.util.TiUrl;
 
-import android.net.Uri;
-
-@Kroll.module(name="Https", id="appcelerator.https")
+@Kroll.module(name = "Https", id = "appcelerator.https")
 public class HttpsModule extends KrollModule
 {
 	// Standard Debugging variables
 	protected static final String TAG = "HttpsModule";
-    
+
 	// Proxy variables
 	private static final String PROP_URL = "url";
 	private static final String PROP_TRUST_CHAIN_INDEX = "trustChainIndex";
@@ -94,7 +92,7 @@ public class HttpsModule extends KrollModule
 					is = tfh.openInputStream(serverCertUri.resolve(), false);
 					Certificate serverCert = factory.generateCertificate(is);
 					manager.addProfile(hostUri.getHost(), serverCert.getPublicKey(), trustChainIndex);
-					
+
 					if (clientCertPath != null) {
 						if (is != null) {
 							is.close();

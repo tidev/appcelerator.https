@@ -3,9 +3,9 @@
   @copyright Copyright (c) 2014 Appcelerator. All rights reserved.
 */
 
-#import <Foundation/Foundation.h>
 #import "TiBase.h"
 #import "TiNetworkHTTPClientProxy.h"
+#import <Foundation/Foundation.h>
 
 /*!
  @discussion
@@ -39,14 +39,14 @@
   @result A SecurityManager that will authenticate the given set of servers using their pinned public keys.
   @seealso initWithX509Certificate:
  */
-+(instancetype)securityManagerWithPinnedUrlSet:(NSSet *)pinnedUrlSet;
++ (instancetype)securityManagerWithPinnedUrlSet:(NSSet *)pinnedUrlSet;
 
 /*!
   @abstract Designated initializer.
   @param pinnedUrlSet The set of PinnedURL objects to enforce.
   @seealso SecurityManagerWithPinnedURLs:
 */
--(instancetype)initWithPinnedURLs:(NSSet *)pinnedUrlSet;
+- (instancetype)initWithPinnedURLs:(NSSet *)pinnedUrlSet;
 
 /*!
  @abstract The set of PinnedURL objects enforced by this SecurityManager.

@@ -10,6 +10,7 @@
 
 package appcelerator.https;
 
+import android.net.Uri;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -17,16 +18,13 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-
 import ti.modules.titanium.network.HTTPClientProxy;
 
-import android.net.Uri;
-
-public class PinningTrustManager implements X509TrustManager {
+public class PinningTrustManager implements X509TrustManager
+{
 
 	private Map<String, PublicKey> supportedHosts;
 	private HTTPClientProxy proxy;
@@ -40,7 +38,9 @@ public class PinningTrustManager implements X509TrustManager {
 	 * @param trustChainIndex - The index of the trust-chain certificate to validate against.
 	 * @throws Exception - If a standard Trustmanager could not be instantiated.
 	 */
-	protected PinningTrustManager(HTTPClientProxy proxy, Map<String, PublicKey> supportedHosts, int trustChainIndex) throws Exception {
+	protected PinningTrustManager(HTTPClientProxy proxy, Map<String, PublicKey> supportedHosts, int trustChainIndex)
+		throws Exception
+	{
 		TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 		factory.init((KeyStore) null);
 		TrustManager[] trustmanagers = factory.getTrustManagers();
@@ -54,12 +54,14 @@ public class PinningTrustManager implements X509TrustManager {
 	}
 
 	@Override
-	public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+	public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException
+	{
 		this.standardTrustManager.checkClientTrusted(chain, authType);
 	}
 
 	@Override
-	public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+	public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException
+	{
 		if (this.proxy == null || this.proxy.getValidatesSecureCertificate()) {
 			this.standardTrustManager.checkServerTrusted(chain, authType);
 		}
@@ -89,15 +91,16 @@ public class PinningTrustManager implements X509TrustManager {
 				}
 			}
 		}
-
 	}
 
 	@Override
-	public X509Certificate[] getAcceptedIssuers() {
+	public X509Certificate[] getAcceptedIssuers()
+	{
 		return this.standardTrustManager.getAcceptedIssuers();
 	}
 
-	private boolean hostConfigured(String host) {
+	private boolean hostConfigured(String host)
+	{
 		return supportedHosts.keySet().contains(host);
 	}
 }

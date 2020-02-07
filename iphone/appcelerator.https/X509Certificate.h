@@ -58,7 +58,7 @@
  @throws NSInvalidArgumentException
  @seealso initWithSecCertificate:
  */
-+(instancetype)x509CertificateWithSecCertificate:(SecCertificateRef)secCertificate andTrustChainIndex:(NSInteger)trustChainIndex;
++ (instancetype)x509CertificateWithSecCertificate:(SecCertificateRef)secCertificate andTrustChainIndex:(NSInteger)trustChainIndex;
 
 /*!
  @abstract Convenience factory method to create X509Certificate objects.
@@ -68,7 +68,7 @@
  @throws NSInvalidArgumentException
  @seealso initWithURL:
  */
-+(instancetype)x509CertificateWithURL:(NSURL *)url andTrustChainIndex:(NSInteger)trustChainIndex;
++ (instancetype)x509CertificateWithURL:(NSURL *)url andTrustChainIndex:(NSInteger)trustChainIndex;
 
 /*!
  @abstract Designated initializer. Initialize an instance from a SecCertificateRef.
@@ -78,7 +78,7 @@
  @throws NSInvalidArgumentException
  @seealso X509CertificateWithSecCertificate:
  */
--(instancetype)initWithSecCertificate:(SecCertificateRef)secCertificate andTrustChainIndex:(NSInteger)trustChainIndex;
+- (instancetype)initWithSecCertificate:(SecCertificateRef)secCertificate andTrustChainIndex:(NSInteger)trustChainIndex;
 
 /*!
  @abstract Initialize an instance from a URL pointing to a DER encoded X509 certificate.
@@ -88,7 +88,7 @@
  @throws NSInvalidArgumentException
  @seealso X509CertificateWithURL:
 */
--(instancetype)initWithURL:(NSURL *)url andTrustChainIndex:(NSInteger)trustChainIndex;
+- (instancetype)initWithURL:(NSURL *)url andTrustChainIndex:(NSInteger)trustChainIndex;
 
 /*!
  @abstract The PublicKey contained in the DER encoded X509 certificate.

@@ -9,6 +9,7 @@
  */
 package appcelerator.https;
 
+import android.net.Uri;
 import java.security.KeyStore;
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -16,22 +17,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.X509KeyManager;
 import javax.net.ssl.X509TrustManager;
-
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.kroll.common.Log;
-
-import android.net.Uri;
 import ti.modules.titanium.network.HTTPClientProxy;
 import ti.modules.titanium.network.SecurityManagerProtocol;
 
 @Kroll.proxy
-public class PinningSecurityManager extends KrollProxy implements SecurityManagerProtocol {
+public class PinningSecurityManager extends KrollProxy implements SecurityManagerProtocol
+{
 
 	private Map<String, PublicKey> supportedHosts = new HashMap<String, PublicKey>();
 	private Map<KeyStore, String> keyStores = new HashMap<KeyStore, String>();
@@ -43,7 +41,8 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	 * @return Return array of X509KeyManager for custom client certificate management. Null otherwise.
 	 */
 	@Override
-	public X509KeyManager[] getKeyManagers(HTTPClientProxy proxy) {
+	public X509KeyManager[] getKeyManagers(HTTPClientProxy proxy)
+	{
 		List<X509KeyManager> managers = new ArrayList<X509KeyManager>();
 
 		for (Map.Entry<KeyStore, String> entry : keyStores.entrySet()) {
@@ -71,10 +70,11 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	 * @return Return array of X509TrustManager for custom client certificate management. Null otherwise.
 	 */
 	@Override
-	public X509TrustManager[] getTrustManagers(HTTPClientProxy proxy) {
+	public X509TrustManager[] getTrustManagers(HTTPClientProxy proxy)
+	{
 		try {
 			PinningTrustManager tm = new PinningTrustManager(proxy, supportedHosts, trustChainIndex);
-			return new X509TrustManager[]{tm};
+			return new X509TrustManager[] { tm };
 		} catch (Exception e) {
 			Log.e(HttpsModule.TAG, "Unable to create PinningTrustManager. Returning null.", e);
 			return null;
@@ -87,7 +87,8 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	 * @return true if SecurityManagers will define SSL Context, false otherwise.
 	 */
 	@Override
-	public boolean willHandleURL(Uri uri) {
+	public boolean willHandleURL(Uri uri)
+	{
 		if (uri == null) {
 			return false;
 		}
@@ -101,7 +102,8 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	 * @param trustChainIndex - The index of the trust-chain certificate to validate against.
 	 * @throws Exception - If the arguments are invalid or if the given host is already added as a supported configuration.
 	 */
-	protected void addProfile(String host, PublicKey key, int index) throws Exception {
+	protected void addProfile(String host, PublicKey key, int index) throws Exception
+	{
 		if (key != null) {
 			if (!hostConfigured(host)) {
 				supportedHosts.put(host.toLowerCase(Locale.ENGLISH), key);
@@ -119,7 +121,8 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	 * @param keyStore - Key store containing the client private key.
 	 * @param password - The password for the key store.
 	 */
-	protected void addKeyStore(KeyStore keyStore, String password) {
+	protected void addKeyStore(KeyStore keyStore, String password)
+	{
 		if (!this.keyStores.keySet().contains(keyStore)) {
 			this.keyStores.put(keyStore, password);
 		}
@@ -130,21 +133,24 @@ public class PinningSecurityManager extends KrollProxy implements SecurityManage
 	 * @param host - String representing the host portion of supported Uris
 	 * @return - True if the host is configured, false otherwise.
 	 */
-	private boolean hostConfigured(String host) {
+	private boolean hostConfigured(String host)
+	{
 		String theHost = (host == null) ? "" : host;
 		return supportedHosts.keySet().contains(theHost.toLowerCase(Locale.ENGLISH));
 	}
-    
+
 	/**
 	 * Returns the trust-chain index.
 	 * @return - The index representing the trust-chain index-position.
 	 */
-	public int getTrustChainIndex() {
-	    return trustChainIndex;
+	public int getTrustChainIndex()
+	{
+		return trustChainIndex;
 	}
 
 	@Override
-	public String getApiName() {
+	public String getApiName()
+	{
 		return "appcelerator.https.PinningSecurityManager";
 	}
 }

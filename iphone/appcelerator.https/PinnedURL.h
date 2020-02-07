@@ -3,9 +3,9 @@
   @copyright Copyright (c) 2014 Appcelerator. All rights reserved.
 */
 
-#import <Foundation/Foundation.h>
-#import "PublicKey.h"
 #import "ClientCertificate.h"
+#import "PublicKey.h"
+#import <Foundation/Foundation.h>
 
 /*!
  @discussion
@@ -32,7 +32,7 @@
   @result An object associating a DNS name with the publc key contained in an X509 certificate.
   @seealso initWithURL:andPublicKey:
  */
-+(instancetype)pinnedURLWithURL:(NSURL *)url andPublicKey:(PublicKey *)publicKey clientCertificate:(ClientCertificate *)clientCertificate;
++ (instancetype)pinnedURLWithURL:(NSURL *)url andPublicKey:(PublicKey *)publicKey clientCertificate:(ClientCertificate *)clientCertificate;
 
 /*!
   @abstract Designated initializer.
@@ -41,7 +41,7 @@
   @result An object associating a DNS name with the publc key contained in an X509 certificate.
   @seealso PinnedURLWithURL:andPublicKey:
 */
--(instancetype)initWithURL:(NSURL *)url andPublicKey:(PublicKey *)publicKey clientCertificate:(ClientCertificate *)clientCertificate;
+- (instancetype)initWithURL:(NSURL *)url andPublicKey:(PublicKey *)publicKey clientCertificate:(ClientCertificate *)clientCertificate;
 
 /*!
  @abstract The host element of the NSURL argument used to instantiate this object.

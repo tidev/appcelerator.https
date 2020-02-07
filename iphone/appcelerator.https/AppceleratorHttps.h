@@ -28,9 +28,10 @@
  clang: error: linker command failed with exit code 1 (use -v to see invocation)
  @/textblock
  */
-#define TiLogMessage(...) {\
-NSLog(__VA_ARGS__);\
-}
+#define TiLogMessage(...) \
+  {                       \
+    NSLog(__VA_ARGS__);   \
+  }
 
 #endif //ifdef NSLog
 
@@ -38,8 +39,13 @@ NSLog(__VA_ARGS__);\
 
 #ifndef DebugLog
 #if defined(DEBUG) || defined(DEVELOPER)
-#define DebugLog(...) { NSLog(__VA_ARGS__); }
+#define DebugLog(...)   \
+  {                     \
+    NSLog(__VA_ARGS__); \
+  }
 #else
-#define DebugLog(...) {}
+#define DebugLog(...) \
+  {                   \
+  }
 #endif
 #endif
