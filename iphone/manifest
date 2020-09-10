@@ -1,4 +1,4 @@
-version: 2.3.1
+version: 3.0.0
 apiversion: 2
 architectures: armv7 i386 x86_64 arm64
 description: Authenticate server in HTTPS connections made by TiHTTPClient
@@ -10,4 +10,4 @@ name: https
 moduleid: appcelerator.https
 guid: 2163621d-1a78-4215-8244-bda08724ffed
 platform: iphone
-minsdk: 5.0.0
+minsdk: 9.2.0
