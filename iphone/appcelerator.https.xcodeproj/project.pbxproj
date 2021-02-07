@@ -18,8 +18,6 @@
 		C944826D192E825B00ECCC14 /* PublicKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448265192E825B00ECCC14 /* PublicKey.m */; };
 		C944826E192E825B00ECCC14 /* SecurityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448267192E825B00ECCC14 /* SecurityManager.m */; };
 		C9448270192E825B00ECCC14 /* X509Certificate.m in Sources */ = {isa = PBXBuildFile; fileRef = C944826B192E825B00ECCC14 /* X509Certificate.m */; };
-		C9448279192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-1.cer in Resources */ = {isa = PBXBuildFile; fileRef = C9448271192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-1.cer */; };
-		C944827A192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-2.cer in Resources */ = {isa = PBXBuildFile; fileRef = C9448272192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-2.cer */; };
 		C944827B192E9EE800ECCC14 /* AbstractBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448274192E9EE800ECCC14 /* AbstractBaseTest.m */; };
 		C944827C192E9EE800ECCC14 /* PublicKeyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448275192E9EE800ECCC14 /* PublicKeyTests.m */; };
 		C944827D192E9EE800ECCC14 /* random-org.der in Resources */ = {isa = PBXBuildFile; fileRef = C9448276192E9EE800ECCC14 /* random-org.der */; };
@@ -75,8 +73,6 @@
 		C9448267192E825B00ECCC14 /* SecurityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecurityManager.m; sourceTree = "<group>"; };
 		C944826A192E825B00ECCC14 /* X509Certificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X509Certificate.h; sourceTree = "<group>"; };
 		C944826B192E825B00ECCC14 /* X509Certificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = X509Certificate.m; sourceTree = "<group>"; };
-		C9448271192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-1.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = "*.prod.ace.appcelerator.com-1.cer"; path = "appcelerator.httpsTests/*.prod.ace.appcelerator.com-1.cer"; sourceTree = "<group>"; };
-		C9448272192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-2.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = "*.prod.ace.appcelerator.com-2.cer"; path = "appcelerator.httpsTests/*.prod.ace.appcelerator.com-2.cer"; sourceTree = "<group>"; };
 		C9448273192E9EE800ECCC14 /* AbstractBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractBaseTest.h; sourceTree = "<group>"; };
 		C9448274192E9EE800ECCC14 /* AbstractBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AbstractBaseTest.m; sourceTree = "<group>"; };
 		C9448275192E9EE800ECCC14 /* PublicKeyTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PublicKeyTests.m; sourceTree = "<group>"; };
@@ -211,8 +207,6 @@
 		C9448282192E9F2E00ECCC14 /* certs */ = {
 			isa = PBXGroup;
 			children = (
-				C9448271192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-1.cer */,
-				C9448272192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-2.cer */,
 				C9448276192E9EE800ECCC14 /* random-org.der */,
 				C9448277192E9EE800ECCC14 /* random-org2.der */,
 			);
@@ -272,6 +266,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = C9078CFB192E4E1400B7BDDE;
@@ -290,8 +285,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9448279192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-1.cer in Resources */,
-				C944827A192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-2.cer in Resources */,
 				C944827D192E9EE800ECCC14 /* random-org.der in Resources */,
 				C944827E192E9EE800ECCC14 /* random-org2.der in Resources */,
 				C9078D22192E4E1400B7BDDE /* InfoPlist.strings in Resources */,
@@ -382,7 +375,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 					"APPCELERATOR_HTTPS_DEBUG=1",
-					"USE_TI_NETWORK",
+					USE_TI_NETWORK,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -423,9 +416,9 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"NDEBUG",
+					NDEBUG,
 					"$(inherited)",
-					"USE_TI_NETWORK",
+					USE_TI_NETWORK,
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -459,9 +452,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "appcelerator.https/appcelerator.https-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"NDEBUG",
+					NDEBUG,
 					"$(inherited)",
-					"USE_TI_NETWORK",
+					USE_TI_NETWORK,
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
