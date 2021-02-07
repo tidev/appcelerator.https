@@ -12,7 +12,7 @@
 // This property exists as an optimiation to provide O(1) lookup time of the
 // public key for a specific host. The keys are the host element of the URL and
 // the values are instances of PublicKey.
-@property (nonatomic, strong, readonly) NSDictionary *dnsNameToPublicKeyMap;
+@property (nonatomic, strong, readonly) NSDictionary<NSString *, NSMutableSet<PublicKey *> *>  *dnsNameToPublicKeyMap;
 
 // Try the same for client-certificates
 @property (nonatomic, strong, readonly) NSDictionary<NSString *, ClientCertificate *> *dnsNameToClientCertificateMap;
@@ -66,21 +66,13 @@
     NSMutableDictionary *dnsNameToClientCertificateMap = [NSMutableDictionary dictionaryWithCapacity:_pinnedUrlSet.count];
 
     for (PinnedURL *pinnedURL in _pinnedUrlSet) {
-      // It is an error to pin the same URL more than once.
-      if (dnsNameToPublicKeyMap[pinnedURL.host] != nil) {
-        NSString *reason = [NSString stringWithFormat:@"A host name can only be pinned to one public key: %@", pinnedURL.host];
-        NSDictionary *userInfo = @{ @"url" : pinnedURL.url };
-        NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                         reason:reason
-                                                       userInfo:userInfo];
-
-        self = nil;
-        @throw exception;
-      }
-
       // Normalize the host to lower case.
       NSString *host = [pinnedURL.host lowercaseString];
-      dnsNameToPublicKeyMap[host] = pinnedURL.publicKey;
+      if (dnsNameToPublicKeyMap[host] == nil) {
+          dnsNameToPublicKeyMap[pinnedURL.host] = [[NSMutableSet alloc] init];
+      }
+
+      [dnsNameToPublicKeyMap[host]  addObject: pinnedURL.publicKey];
 
       if (pinnedURL.clientCertificate != nil) {
         dnsNameToClientCertificateMap[host] = pinnedURL.clientCertificate;
@@ -135,12 +127,11 @@
 
  @return The public key if found or nil
  */
-- (PublicKey *)publicKeyForHost:(NSString *)host
-{
-  PublicKey *directMatch = self.dnsNameToPublicKeyMap[host];
-  if (directMatch != nil) {
-    return directMatch;
-  }
+- (NSMutableSet<PublicKey *> *)publicKeyForHost:(NSString *)host {
+    NSMutableSet<PublicKey *> *directMatches = self.dnsNameToPublicKeyMap[host];
+    if (directMatches != nil) {
+        return directMatches;
+    }
 
   NSError *error = nil;
   for (NSString *hostKey in self.dnsNameToPublicKeyMap.allKeys) {
@@ -342,11 +333,11 @@
   DebugLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
 
   // Get the PinnedURL for this server.
-  PublicKey *pinnedPublicKey = [self publicKeyForHost:host];
+  NSMutableSet<PublicKey *> *pinnedPublicKeys = [self publicKeyForHost:host];
 
   // It is a logic error (a bug in this SecurityManager class) if this
   // security manager does not have a PinnedURL for this server.
-  if (pinnedPublicKey == nil) {
+  if (pinnedPublicKeys == nil) {
     NSString *reason = [NSString stringWithFormat:@"LOGIC ERROR: appcelerator.https module bug: SecurityManager could not find a PublicKey for host \"%@\". Please report this issue to us at https://jira.appcelerator.org/browse/MOD-1706", task.currentRequest.URL.host];
     NSDictionary *userInfo = @{ @"session" : session };
     NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
@@ -354,7 +345,7 @@
                                                    userInfo:userInfo];
     @throw exception;
   }
-  DebugLog(@"%s host %@ pinned to publicKey %@", __PRETTY_FUNCTION__, host, pinnedPublicKey);
+  DebugLog(@"%s host %@ pinned to publicKey %@", __PRETTY_FUNCTION__, host, pinnedPublicKeys);
 
   CFIndex count = SecTrustGetCertificateCount(serverTrust);
   CFIndex i = 0;
@@ -367,7 +358,7 @@
   }
 
   // Obtain the server's X509 certificate and public key.
-  SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, pinnedPublicKey.trustChainIndex);
+  SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, pinnedPublicKey.anyObject.trustChainIndex);
   if (serverCertificate == nil) {
     DebugLog(@"%s FAIL: Could not find the server's X509 certificate in serverTrust", __PRETTY_FUNCTION__);
     [challenge.sender cancelAuthenticationChallenge:challenge];
@@ -406,9 +397,12 @@
 
   // Compare the public keys. If they match, then the server is
   // authenticated.
-  BOOL publicKeysAreEqual = [pinnedPublicKey isEqualToPublicKey:serverPublicKey];
+  BOOL publicKeysAreEqual = NO;
+  for (PublicKey *pinnedPublicKey in pinnedPublicKeys) {
+   publicKeysAreEqual = publicKeysAreEqual || [pinnedPublicKey isEqualToPublicKey:serverPublicKey];
+  }
   if (!publicKeysAreEqual) {
-    DebugLog(@"[WARN] Potential \"Man-in-the-Middle\" attack detected since host %@ does not hold the private key corresponding to the public key %@.", host, pinnedPublicKey);
+    DebugLog(@"[WARN] Potential \"Man-in-the-Middle\" attack detected since host %@ does not hold the private key corresponding to the public key", host);
 
     NSDictionary *userDict = @{ @"pinnedPublicKey" : pinnedPublicKey, @"serverPublicKey" : serverPublicKey };
     NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
@@ -504,11 +498,11 @@
   DebugLog(@"%s SecTrustEvaluate returned %@", __PRETTY_FUNCTION__, @(status));
 
   // Get the PinnedURL for this server.
-  PublicKey *pinnedPublicKey = [self publicKeyForHost:host];
+  NSMutableSet<PublicKey *> *pinnedPublicKeys = [self publicKeyForHost:host];
 
   // It is a logic error (a bug in this SecurityManager class) if this
   // security manager does not have a PinnedURL for this server.
-  if (pinnedPublicKey == nil) {
+  if (pinnedPublicKeys == nil) {
     NSString *reason = [NSString stringWithFormat:@"LOGIC ERROR: appcelerator.https module bug: SecurityManager could not find a PublicKey for host \"%@\". Please report this issue to us at https://jira.appcelerator.org/browse/MOD-1706", connection.currentRequest.URL.host];
     NSDictionary *userInfo = @{ @"connection" : connection };
     NSException *exception = [NSException exceptionWithName:NSInternalInconsistencyException
@@ -516,7 +510,7 @@
                                                    userInfo:userInfo];
     @throw exception;
   }
-  DebugLog(@"%s host %@ pinned to publicKey %@", __PRETTY_FUNCTION__, host, pinnedPublicKey);
+  DebugLog(@"%s host %@ pinned to publicKey %@", __PRETTY_FUNCTION__, host, pinnedPublicKeys);
 
   CFIndex count = SecTrustGetCertificateCount(serverTrust);
   CFIndex i = 0;
@@ -530,7 +524,7 @@
   }
 
   // Obtain the server's X509 certificate and public key.
-  SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, pinnedPublicKey.trustChainIndex);
+  SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, pinnedPublicKeys.anyObject.trustChainIndex);
   if (serverCertificate == nil) {
     DebugLog(@"%s FAIL: Could not find the server's X509 certificate in serverTrust", __PRETTY_FUNCTION__);
     return [challenge.sender cancelAuthenticationChallenge:challenge];
@@ -538,7 +532,7 @@
 
   // Create a friendlier Objective-C wrapper around this server's X509
   // certificate.
-  X509Certificate *x509Certificate = [X509Certificate x509CertificateWithSecCertificate:serverCertificate andTrustChainIndex:pinnedPublicKey.trustChainIndex];
+  X509Certificate *x509Certificate = [X509Certificate x509CertificateWithSecCertificate:serverCertificate andTrustChainIndex:pinnedPublicKeys.anyObject.trustChainIndex];
   if (x509Certificate == nil) {
     // CFBridgingRelease transfer's ownership of the CFStringRef
     // returned by CFCopyDescription to ARC.
@@ -567,11 +561,15 @@
 
   // Compare the public keys. If they match, then the server is
   // authenticated.
-  BOOL publicKeysAreEqual = [pinnedPublicKey isEqualToPublicKey:serverPublicKey];
+  BOOL publicKeysAreEqual = NO;
+  for (PublicKey *pinnedPublicKey in pinnedPublicKeys)
+  {
+      publicKeysAreEqual = publicKeysAreEqual || [pinnedPublicKey isEqualToPublicKey:serverPublicKey];
+  }
   if (!publicKeysAreEqual) {
-    DebugLog(@"[WARN] Potential \"Man-in-the-Middle\" attack detected since host %@ does not hold the private key corresponding to the public key %@.", host, pinnedPublicKey);
+    DebugLog(@"[WARN] Potential \"Man-in-the-Middle\" attack detected since host %@ does not hold the private key corresponding to the public key.", host);
 
-    NSDictionary *userDict = @{ @"pinnedPublicKey" : pinnedPublicKey, @"serverPublicKey" : serverPublicKey };
+    NSDictionary *userDict = @{ @"pinnedPublicKeys" : pinnedPublicKeys, @"serverPublicKey" : serverPublicKey };
 
     NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:@"Certificate could not be verified with provided public key"
