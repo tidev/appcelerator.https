@@ -358,7 +358,7 @@
   }
 
   // Obtain the server's X509 certificate and public key.
-  SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, pinnedPublicKey.anyObject.trustChainIndex);
+  SecCertificateRef serverCertificate = SecTrustGetCertificateAtIndex(serverTrust, pinnedPublicKeys.anyObject.trustChainIndex);
   if (serverCertificate == nil) {
     DebugLog(@"%s FAIL: Could not find the server's X509 certificate in serverTrust", __PRETTY_FUNCTION__);
     [challenge.sender cancelAuthenticationChallenge:challenge];
@@ -368,7 +368,7 @@
 
   // Create a friendlier Objective-C wrapper around this server's X509
   // certificate.
-  X509Certificate *x509Certificate = [X509Certificate x509CertificateWithSecCertificate:serverCertificate andTrustChainIndex:pinnedPublicKey.trustChainIndex];
+  X509Certificate *x509Certificate = [X509Certificate x509CertificateWithSecCertificate:serverCertificate andTrustChainIndex:pinnedPublicKeys.anyObject.trustChainIndex];
   if (x509Certificate == nil) {
     // CFBridgingRelease transfer's ownership of the CFStringRef
     // returned by CFCopyDescription to ARC.
@@ -404,7 +404,7 @@
   if (!publicKeysAreEqual) {
     DebugLog(@"[WARN] Potential \"Man-in-the-Middle\" attack detected since host %@ does not hold the private key corresponding to the public key", host);
 
-    NSDictionary *userDict = @{ @"pinnedPublicKey" : pinnedPublicKey, @"serverPublicKey" : serverPublicKey };
+    NSDictionary *userDict = @{ @"pinnedPublicKey" : pinnedPublicKeys, @"serverPublicKey" : serverPublicKey };
     NSException *exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:@"Certificate could not be verified with provided public key"
                                                    userInfo:userDict];
