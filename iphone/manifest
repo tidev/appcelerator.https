@@ -1,4 +1,4 @@
-version: 3.0.1
+version: 3.1.1
 apiversion: 2
 architectures: armv7 i386 x86_64 arm64
 description: Authenticate server in HTTPS connections made by TiHTTPClient
@@ -6,7 +6,7 @@ author: Matt Langston
 license: Appcelerator Commercial License
 copyright: Copyright (c) 2014-present by Axway Appcelerator. All Rights Reserved.
 
-name: https
+name: appcelerator.https
 moduleid: appcelerator.https
 guid: 2163621d-1a78-4215-8244-bda08724ffed
 platform: iphone
