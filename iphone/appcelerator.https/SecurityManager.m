@@ -3,7 +3,6 @@
 
 #import "SecurityManager.h"
 #import "AppceleratorHttps.h"
-#import "AppceleratorHttpsUtils.h"
 #import "PinnedURL.h"
 
 // Private extensions required by the implementation of SecurityManager.
@@ -120,7 +119,7 @@
   NSString *host = [url.host lowercaseString];
   BOOL containsHostName = [self publicKeyForHost:host] != nil;
 
-  DebugLog(@"%s returns %@ for url = %@ host = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(containsHostName), url, host);
+  DebugLog(@"%s returns %@ for url = %@ host = %@", __PRETTY_FUNCTION__, containsHostName ? @"YES" : @"NO", url, host);
 
   return containsHostName;
 }
@@ -233,7 +232,7 @@
     result = [self willHandleURL:currentURL];
   }
 
-  DebugLog(@"%s returns %@, challenge = %@, session = %@ URL = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(result), challenge, session, challenge.protectionSpace.host);
+  DebugLog(@"%s returns %@, challenge = %@, session = %@ URL = %@", __PRETTY_FUNCTION__, result ? @"YES" : @"NO", challenge, session, challenge.protectionSpace.host);
   return result;
 }
 
@@ -249,7 +248,7 @@
     result = [self willHandleURL:currentURL];
   }
 
-  DebugLog(@"%s returns %@, challenge = %@, connection = %@ URL = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(result), challenge, connection, challenge.protectionSpace.host);
+  DebugLog(@"%s returns %@, challenge = %@, connection = %@ URL = %@", __PRETTY_FUNCTION__, result ? @"YES" : @"NO", challenge, connection, challenge.protectionSpace.host);
   return result;
 }
 
@@ -417,7 +416,7 @@
     @throw exception;
   }
 
-  DebugLog(@"%s publicKeysAreEqual = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(publicKeysAreEqual));
+  DebugLog(@"%s publicKeysAreEqual = %@", __PRETTY_FUNCTION__, publicKeysAreEqual ? @"YES" : @"NO");
   // Return success since the server holds the private key
   // corresponding to the public key held bu this security manager.
   NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
@@ -579,7 +578,7 @@
     @throw exception;
   }
 
-  DebugLog(@"%s publicKeysAreEqual = %@", __PRETTY_FUNCTION__, NSStringFromBOOL(publicKeysAreEqual));
+  DebugLog(@"%s publicKeysAreEqual = %@", __PRETTY_FUNCTION__, publicKeysAreEqual ? @"YES" : @"NO");
   // Return success since the server holds the private key
   // corresponding to the public key held bu this security manager.
   return [challenge.sender useCredential:[NSURLCredential credentialForTrust:serverTrust] forAuthenticationChallenge:challenge];
