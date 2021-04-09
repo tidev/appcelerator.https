@@ -1,6 +1,3 @@
-const ANDROID = (Ti.Platform.osname === 'android');
-const IOS = (Ti.Platform.osname === 'iphone' || Ti.Platform.osname === 'ipad');
-
 describe('appcelerator.https', () => {
 	let https;
 	it('can be required', () => {
@@ -33,7 +30,7 @@ describe('appcelerator.https', () => {
 					timeout: 30000,
 					securityManager
 				});
-			
+
 				xhr.open('GET', 'https://www.wellsfargo.com');
 				xhr.send();
 			});
@@ -52,7 +49,7 @@ describe('appcelerator.https', () => {
 					timeout: 30000,
 					securityManager
 				});
-			
+
 				xhr.open('GET', 'https://www.americanexpress.com');
 				xhr.send();
 			});
@@ -72,7 +69,7 @@ describe('appcelerator.https', () => {
 					timeout: 30000,
 					securityManager
 				});
-			
+
 				xhr.open('GET', 'https://www.wellsfargo.com');
 				xhr.send();
 			});
@@ -91,7 +88,7 @@ describe('appcelerator.https', () => {
 					timeout: 30000,
 					securityManager
 				});
-			
+
 				xhr.open('GET', 'https://dashboard.appcelerator.com');
 				xhr.send();
 			});
