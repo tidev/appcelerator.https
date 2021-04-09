@@ -109,10 +109,10 @@ win.open();
 
 function getXHR(url) {
 	var xhr = Ti.Network.createHTTPClient({
-		onload: function (e) {
+		onload: function (_e) {
 			label2.text = 'onload called. Request succeeded';
 		},
-		onerror: function (e) {
+		onerror: function (_e) {
 			label2.text = 'onerror called. Request failed.';
 		},
 		timeout: 30000,
@@ -128,7 +128,7 @@ var wf = 'https://www.wellsfargo.com';
 var amex = 'https://www.americanexpress.com';
 var appc = 'https://dashboard.appcelerator.com';
 
-button1.addEventListener('click', function (e) {
+button1.addEventListener('click', function (_e) {
 	var xhr = getXHR(wf);
 	label1.text
     = 'SecurityManager is configured correctly for this request. Request must succeed. ';
@@ -137,7 +137,7 @@ button1.addEventListener('click', function (e) {
 	xhr.send();
 });
 
-button2.addEventListener('click', function (e) {
+button2.addEventListener('click', function (_e) {
 	var xhr = getXHR(amex);
 	label1.text
     = 'SecurityManager is configured incorrectly for this request. Request must fail. ';
@@ -146,7 +146,7 @@ button2.addEventListener('click', function (e) {
 	xhr.send();
 });
 
-button3.addEventListener('click', function (e) {
+button3.addEventListener('click', function (_e) {
 	var xhr = getXHR(appc);
 	label1.text
     = 'SecurityManager does not participate in the validation of this request. Request should succeed. ';
