@@ -50,7 +50,7 @@ jobs:
     - run: ti sdk install ${{ env.SDK_VERSION }} --force
       name: Install Titanium SDK
 
-    - run: sed -i .bak 's/TITANIUM_SDK_VERSION = .*/TITANIUM_SDK_VERSION = ${{ env.SDK_VERSION }}/' ios/titanium.xcconfig
+    - run: sed -i .bak 's/TITANIUM_SDK_VERSION = .*/TITANIUM_SDK_VERSION = ${{ env.SDK_VERSION }}/' iphone/titanium.xcconfig
       name: Set to Build with newly installed SDK
 
     - run: npm run test:ios -- --sdkVersion ${{ env.SDK_VERSION }}
