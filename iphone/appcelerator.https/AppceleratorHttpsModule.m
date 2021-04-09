@@ -34,4 +34,9 @@
   return @"appcelerator.https";
 }
 
+- (NSString *)apiName
+{
+  return @"appcelerator.https";
+}
+
 @end
