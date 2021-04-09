@@ -7,7 +7,7 @@ describe('appcelerator.https', () => {
 	});
 
 	it('.apiName', () => {
-		expect(https.apiName).toBe('Appcelerator.HTTPS');
+		expect(https.apiName).toBe('appcelerator.https');
 	});
 
 	describe('methods', () => {
