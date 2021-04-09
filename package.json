@@ -42,7 +42,7 @@
     "eslint-plugin-jasmine": "^4.1.2",
     "husky": "^5.0.9",
     "jasmine-core": "^3.6.0",
-    "karma": "^6.1.1",
+    "karma": "^5.2.3",
     "karma-jasmine": "^4.0.1",
     "karma-junit-reporter": "^2.0.1",
     "karma-mocha-reporter": "^2.2.5",
@@ -50,7 +50,6 @@
     "lint-staged": "^10.5.4",
     "titanium-docgen": "^4.10.1"
   },
-  "dependencies": {},
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
