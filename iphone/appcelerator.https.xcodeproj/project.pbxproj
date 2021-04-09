@@ -3,10 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B7AF21A22620DF78003A3A4A /* TitaniumKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7AF21A12620DF78003A3A4A /* TitaniumKit.xcframework */; };
+		B7AF21A32620DF78003A3A4A /* TitaniumKit.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = B7AF21A12620DF78003A3A4A /* TitaniumKit.xcframework */; };
 		C9078D08192E4E1400B7BDDE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9078D07192E4E1400B7BDDE /* Foundation.framework */; };
 		C9078D16192E4E1400B7BDDE /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9078D15192E4E1400B7BDDE /* XCTest.framework */; };
 		C9078D17192E4E1400B7BDDE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9078D07192E4E1400B7BDDE /* Foundation.framework */; };
@@ -17,8 +19,8 @@
 		C944826D192E825B00ECCC14 /* PublicKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448265192E825B00ECCC14 /* PublicKey.m */; };
 		C944826E192E825B00ECCC14 /* SecurityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448267192E825B00ECCC14 /* SecurityManager.m */; };
 		C9448270192E825B00ECCC14 /* X509Certificate.m in Sources */ = {isa = PBXBuildFile; fileRef = C944826B192E825B00ECCC14 /* X509Certificate.m */; };
-		C9448279192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-1.cer in Resources */ = {isa = PBXBuildFile; fileRef = C9448271192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-1.cer */; };
-		C944827A192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-2.cer in Resources */ = {isa = PBXBuildFile; fileRef = C9448272192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-2.cer */; };
+		C9448279192E9EE800ECCC14 /* prod.ace.appcelerator.com-1.cer in Resources */ = {isa = PBXBuildFile; fileRef = C9448271192E9EE800ECCC14 /* prod.ace.appcelerator.com-1.cer */; };
+		C944827A192E9EE800ECCC14 /* prod.ace.appcelerator.com-2.cer in Resources */ = {isa = PBXBuildFile; fileRef = C9448272192E9EE800ECCC14 /* prod.ace.appcelerator.com-2.cer */; };
 		C944827B192E9EE800ECCC14 /* AbstractBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448274192E9EE800ECCC14 /* AbstractBaseTest.m */; };
 		C944827C192E9EE800ECCC14 /* PublicKeyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C9448275192E9EE800ECCC14 /* PublicKeyTests.m */; };
 		C944827D192E9EE800ECCC14 /* random-org.der in Resources */ = {isa = PBXBuildFile; fileRef = C9448276192E9EE800ECCC14 /* random-org.der */; };
@@ -55,6 +57,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B7AF21A12620DF78003A3A4A /* TitaniumKit.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = TitaniumKit.xcframework; path = "$(TITANIUM_SDK)/iphone/Frameworks/TitaniumKit.xcframework"; sourceTree = "<group>"; };
 		C9078D04192E4E1400B7BDDE /* libappcelerator.https.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libappcelerator.https.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9078D07192E4E1400B7BDDE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C9078D0B192E4E1400B7BDDE /* appcelerator.https-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "appcelerator.https-Prefix.pch"; sourceTree = "<group>"; };
@@ -72,8 +75,8 @@
 		C9448267192E825B00ECCC14 /* SecurityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecurityManager.m; sourceTree = "<group>"; };
 		C944826A192E825B00ECCC14 /* X509Certificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X509Certificate.h; sourceTree = "<group>"; };
 		C944826B192E825B00ECCC14 /* X509Certificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = X509Certificate.m; sourceTree = "<group>"; };
-		C9448271192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-1.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = "*.prod.ace.appcelerator.com-1.cer"; path = "appcelerator.httpsTests/*.prod.ace.appcelerator.com-1.cer"; sourceTree = "<group>"; };
-		C9448272192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-2.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = "*.prod.ace.appcelerator.com-2.cer"; path = "appcelerator.httpsTests/*.prod.ace.appcelerator.com-2.cer"; sourceTree = "<group>"; };
+		C9448271192E9EE800ECCC14 /* prod.ace.appcelerator.com-1.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = "prod.ace.appcelerator.com-1.cer"; path = "appcelerator.httpsTests/prod.ace.appcelerator.com-1.cer"; sourceTree = "<group>"; };
+		C9448272192E9EE800ECCC14 /* prod.ace.appcelerator.com-2.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = "prod.ace.appcelerator.com-2.cer"; path = "appcelerator.httpsTests/prod.ace.appcelerator.com-2.cer"; sourceTree = "<group>"; };
 		C9448273192E9EE800ECCC14 /* AbstractBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractBaseTest.h; sourceTree = "<group>"; };
 		C9448274192E9EE800ECCC14 /* AbstractBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AbstractBaseTest.m; sourceTree = "<group>"; };
 		C9448275192E9EE800ECCC14 /* PublicKeyTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PublicKeyTests.m; sourceTree = "<group>"; };
@@ -99,6 +102,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9078D08192E4E1400B7BDDE /* Foundation.framework in Frameworks */,
+				B7AF21A22620DF78003A3A4A /* TitaniumKit.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,6 +112,7 @@
 			files = (
 				C9078D1C192E4E1400B7BDDE /* libappcelerator.https.a in Frameworks */,
 				C9078D16192E4E1400B7BDDE /* XCTest.framework in Frameworks */,
+				B7AF21A32620DF78003A3A4A /* TitaniumKit.xcframework in Frameworks */,
 				C9078D19192E4E1400B7BDDE /* UIKit.framework in Frameworks */,
 				C9078D17192E4E1400B7BDDE /* Foundation.framework in Frameworks */,
 			);
@@ -138,6 +143,7 @@
 		C9078D06192E4E1400B7BDDE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B7AF21A12620DF78003A3A4A /* TitaniumKit.xcframework */,
 				C9078D07192E4E1400B7BDDE /* Foundation.framework */,
 				C9078D15192E4E1400B7BDDE /* XCTest.framework */,
 				C9078D18192E4E1400B7BDDE /* UIKit.framework */,
@@ -206,8 +212,8 @@
 		C9448282192E9F2E00ECCC14 /* certs */ = {
 			isa = PBXGroup;
 			children = (
-				C9448271192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-1.cer */,
-				C9448272192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-2.cer */,
+				C9448271192E9EE800ECCC14 /* prod.ace.appcelerator.com-1.cer */,
+				C9448272192E9EE800ECCC14 /* prod.ace.appcelerator.com-2.cer */,
 				C9448276192E9EE800ECCC14 /* random-org.der */,
 				C9448277192E9EE800ECCC14 /* random-org2.der */,
 			);
@@ -286,8 +292,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9448279192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-1.cer in Resources */,
-				C944827A192E9EE800ECCC14 /* *.prod.ace.appcelerator.com-2.cer in Resources */,
+				C9448279192E9EE800ECCC14 /* prod.ace.appcelerator.com-1.cer in Resources */,
+				C944827A192E9EE800ECCC14 /* prod.ace.appcelerator.com-2.cer in Resources */,
 				C944827D192E9EE800ECCC14 /* random-org.der in Resources */,
 				C944827E192E9EE800ECCC14 /* random-org2.der in Resources */,
 				C9078D22192E4E1400B7BDDE /* InfoPlist.strings in Resources */,
@@ -377,7 +383,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 					"APPCELERATOR_HTTPS_DEBUG=1",
-					"USE_TI_NETWORK",
+					USE_TI_NETWORK,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -418,9 +424,9 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"NDEBUG",
+					NDEBUG,
 					"$(inherited)",
-					"USE_TI_NETWORK",
+					USE_TI_NETWORK,
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -454,9 +460,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "appcelerator.https/appcelerator.https-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"NDEBUG",
+					NDEBUG,
 					"$(inherited)",
-					"USE_TI_NETWORK",
+					USE_TI_NETWORK,
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

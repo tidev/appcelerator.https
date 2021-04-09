@@ -6,7 +6,7 @@ author: Matt Langston
 license: Appcelerator Commercial License
 copyright: Copyright (c) 2014-present by Axway Appcelerator. All Rights Reserved.
 
-name: https
+name: appcelerator.https
 moduleid: appcelerator.https
 guid: 2163621d-1a78-4215-8244-bda08724ffed
 platform: iphone
