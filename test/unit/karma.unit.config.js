@@ -6,8 +6,8 @@ const path = require('path');
 function projectManagerHook(projectManager) {
 	projectManager.once('prepared', function () {
 		// Copy our test resources into the project!
-		const src = path.join(__dirname, 'images');
-		const dest = path.join(this.karmaRunnerProjectPath, 'Resources/certificates');
+		const src = path.join(__dirname, 'certificates');
+		const dest = path.join(this.karmaRunnerProjectPath, 'Resources');
 		console.log(`Copying ${src} to ${dest}`);
 		fs.copySync(src, dest);
 	});
