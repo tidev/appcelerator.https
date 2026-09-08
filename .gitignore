@@ -30,9 +30,9 @@ android/dist/
 android/launch-*
 android/java-sources.txt
 nbproject
-/iphone/metadata.json
-/iphone/dist
-/iphone/appcelerator.https-iphone-*.zip
+/ios/metadata.json
+/ios/dist
+/ios/appcelerator.https-iphone-*.zip
 
 node_modules/
 

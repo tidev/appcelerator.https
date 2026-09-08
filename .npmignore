@@ -1,9 +1,9 @@
 android/documentation/
 android/example/
 
-iphone/documentation/
-iphone/example/
-iphone/platform/
+ios/documentation/
+ios/example/
+ios/platform/
 
 test/
 apidoc/
