@@ -2,12 +2,10 @@ name: Android Build
 on: 
   push:
     paths-ignore:
-    - 'iphone/**'
     - 'ios/**'
     - 'apidoc/**'
   pull_request:
     paths-ignore:
-    - 'iphone/**'
     - 'ios/**'
     - 'apidoc/**'
   workflow_dispatch:
